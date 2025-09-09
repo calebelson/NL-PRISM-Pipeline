@@ -11,3 +11,6 @@ wheels/
 
 # Run data
 runs/*
+
+# Various
+**/.DS_Store
