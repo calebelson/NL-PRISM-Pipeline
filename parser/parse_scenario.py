@@ -45,7 +45,7 @@ def _log_response(resp, out_dir: pathlib.Path, start_time: float, messages: list
     }
 
     update_meta(out_dir, "parse_scenario", meta)
-    (out_dir / "validated.json").write_text(validated_scenario.model_dump_json(indent=2))
+    (out_dir / "validated_scenario.json").write_text(validated_scenario.model_dump_json(indent=2))
 
     return validated_scenario.model_dump()
 
