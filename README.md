@@ -2,6 +2,19 @@
 
 This project uses large language models (LLMs), specifically ChatGPT, and formal verification to generate optimal resource delivery strategies for disaster response scenarios. Given a natural language description of a disaster scenario, the system automatically generates a probabilistic model, verifies it using the PRISM model checker, and produces a human-readable explanation of the optimal strategy.
 
+## Table of Contents
+- [What This Does](#what-this-does)
+- [Requirements](#requirements)
+  - [Software Dependencies](#software-dependencies)
+  - [Installation](#installation)
+- [Project Structure](#project-structure)
+- [How It Works](#how-it-works)
+- [Running the System](#running-the-system)
+- [Error Handling](#error-handling)
+- [Metadata and Logging](#metadata-and-logging)
+- [LLM Prompts Location](#llm-prompts-location)
+- [Acknowledgements](#acknowledgements)
+
 ## What This Does
 
 In disaster response, teams need to deliver critical resources (medical supplies, food, equipment, etc.) through potentially hazardous environments. Each route has different safety levels, and teams must coordinate to achieve delivery objectives while maximising their chances of success.
