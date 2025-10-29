@@ -51,7 +51,7 @@ The goal is to bridge the gap between formal verification techniques and practic
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd dissertation
+cd NL-PRISM-Pipeline
 
 # Install Python dependencies
 pip install openai
@@ -93,20 +93,22 @@ prism --version
 
 The pipeline consists of five main stages:
 
-**1. Natural Language Parsing**  
-User provides a scenario description (e.g., "Two teams at locations a and c, each can carry 4 resources..."). The system uses OpenAI's structured outputs to convert this into a validated JSON object containing teams, locations, resources, routes, and objectives.
+**1. Natural Language Input (Disaster Scenario)**  
+User provides a plain English description of the disaster scenario (e.g., "Two teams at locations a and c, each can carry 4 resources..."), including team positions, resource locations, route safety levels, and delivery objectives.
 
-**2. PRISM Model Generation**  
-The JSON scenario is transformed into a PRISM model (a Markov Decision Process) where states represent team positions and resource holdings, and transitions represent team movements with probabilities based on route safety levels (red = 50%, orange = 70%, green = 90%).
+**2. Parser: Natural Language → JSON**  
+The Parser uses OpenAI's structured outputs to convert the natural language description into a validated JSON object containing teams, locations, resources, routes, and objectives. This structured representation is validated against a Pydantic schema to ensure completeness and correctness.
 
-**3. Verification and Strategy Export**  
+**3. Composer: JSON → PRISM Model**  
+The Composer transforms the JSON scenario into a formal PRISM model (a Markov Decision Process) where states represent team positions and resource holdings, and transitions represent team movements with probabilities based on route safety levels (e.g., red = 50%, orange = 70%, green = 90%).
+
+**4. Verification: PRISM Model Checker**  
 PRISM verifies the model and computes the maximum probability of achieving the objective. It exports an induced strategy showing which actions maximise success probability from each reachable state. If PRISM reports errors, the system can attempt automatic fixes via LLM or regenerate the model.
 
-**4. Optimal Path Extraction**  
-The full strategy may contain thousands of states. The system re-imports the strategy to create a restricted model containing only reachable states, then uses Dijkstra's algorithm with -log(probability) weights to find the single highest-probability path from the initial state to the goal.
-
-**5. Strategy Explanation**  
-The optimal path is sent to an LLM to generate a step-by-step explanation in plain language, including transition probabilities, cumulative success rates, and final team positions. This makes the formal verification results accessible to decision-makers.
+**5. Navigator: Strategy Explanation**  
+The Navigator takes the verified strategy and produces a human-readable explanation:
+- **Path Extraction**: The full strategy may contain hundreds of thousands of states. The system re-imports the strategy to create a restricted model containing only reachable states, then uses Dijkstra's algorithm with -log(probability) weights to find the single highest-probability path from the initial state to the goal.
+- **Explanation Generation**: The optimal path is sent to an LLM to generate a step-by-step explanation in plain language, including transition probabilities, cumulative success rates, and final team positions. This makes the formal verification results accessible to decision-makers.
 
 [↑ Back to top](#nl-prism-pipeline)
 
@@ -122,10 +124,10 @@ You'll be prompted to enter a disaster scenario description. Type or paste your 
 
 Example input:
 ```
-Two teams starting at locations a and c. Each team can carry 4 resources.
-Location d has 6 resources, location g needs 8 resources.
-Routes: a-b green distance 5, b-d orange distance 3, d-e red distance 4,
-e-g green distance 2, c-f green distance 6, f-g orange distance 3.
+Two teams: T1 at a, and T2 at c, each can carry 4 resources at a time.
+Point c has 4 resources, a and d each have 2. Point g wants 7 resources.
+Routes: a-b red distance 9, a-d red distance 5, b-c red distance 4, b-d yellow distance 12, c-g red distance 6, c-f red distance 12, d-e green distance 2, e-f green distance 4, f-g yellow distance 10. Undirected.
+Safety probabilities are green = 0.99, yellow = 0.85, red = 0.5. Objective is to maximise probability of reaching the goal.
 ```
 
 Output files are saved to `runs/Prism_Pipeline/prism-pipeline-run-<timestamp>/`:
