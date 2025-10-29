@@ -28,8 +28,9 @@ The goal is to bridge the gap between formal verification techniques and practic
   - The `prism` command must be executable from the terminal
 
 - **OpenAI API Key**
-  - Set the `OPENAI_API_KEY` environment variable with your API key
   - Required for all LLM-based components (Parser, Composer, Navigator, Fixer)
+  - Must be set as an environment variable in your shell: `export OPENAI_API_KEY="your-key-here"`
+  - Not stored in the project files for security
 
 ### Installation
 ```bash
@@ -95,6 +96,8 @@ python main.py
 ```
 
 You'll be prompted to enter a disaster scenario description. Type or paste your scenario, then press **Ctrl+D** (macOS/Linux) or **Ctrl+Z then Enter** (Windows) to submit.
+
+**Performance Note**: With the default model (`gpt-5-mini-2025-08-07`), a typical run takes 5-10 minutes and costs approximately $0.10 in API usage (as of October 2025).
 
 Example input:
 ```
