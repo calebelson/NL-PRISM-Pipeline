@@ -58,7 +58,7 @@ def _build_messages(scenario_json: str, template_text: Optional[str]) -> list[di
     return messages
 
 
-def generate_prism_llm(messages: list[dict[str, str]], model: str) -> dict:
+def compose_prism_llm(messages: list[dict[str, str]], model: str) -> dict:
     client = OpenAI()
     resp = client.responses.create(
         model=model,
@@ -82,18 +82,20 @@ def _log_response(resp, out_dir: pathlib.Path, template_used: bool, start_time: 
     usage_obj = getattr(resp, 'usage', None)
     usage_repr = repr(usage_obj) if usage_obj is not None else None
 
+    # Store metadata without full PRISM model (too verbose)
     meta = {
-        'input': messages,
         'template_used': template_used,
         'used_model': resp.model,
         'usage': usage_repr,
-        'elapsed_time': elapsed_human
+        'elapsed_time': elapsed_human,
+        'model_lines': len(model_block.splitlines()),
+        'properties_lines': len(props_block.splitlines())
     }
 
-    update_meta(out_dir, "generate_mdp", meta)
+    update_meta(out_dir, "composer", meta)
     (out_dir / "model.prism").write_text(model_block)
     (out_dir / "properties.props").write_text(props_block)
-    (out_dir / "generate_mdp_full_response.txt").write_text(content)
+    (out_dir / "composer_full_response.txt").write_text(content)
 
     return
 
@@ -102,10 +104,7 @@ def _log_response(resp, out_dir: pathlib.Path, template_used: bool, start_time: 
 def main(scenario_obj: dict, template_text: Optional[str], out_dir: pathlib.Path, model: str = "gpt-5-mini-2025-08-07"):
     time_zero = time.time()
     messages = _build_messages(json.dumps(scenario_obj, indent=2), template_text)
-    resp = generate_prism_llm(messages, model)
+    resp = compose_prism_llm(messages, model)
     _log_response(resp, out_dir, bool(template_text), time_zero, messages)
 
     return
-
-if __name__ == '__main__':
-    main()

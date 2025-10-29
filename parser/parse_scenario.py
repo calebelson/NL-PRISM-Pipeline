@@ -1,5 +1,3 @@
-# pip install openai pydantic jsonschema
-
 from utils.meta import update_meta
 from openai import OpenAI
 from schema.scenario_schema import Scenario
@@ -61,6 +59,3 @@ def main(user_input: str, out_dir: str, model: str = MODEL):
 
     # Return as dict for programmatic use
     return validated_json_obj
-
-if __name__ == "__main__":
-    main()

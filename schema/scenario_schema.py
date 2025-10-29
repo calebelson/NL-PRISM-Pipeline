@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict
 from enum import Enum
 
 # ---------- Pydantic models (schema) ----------
@@ -35,13 +35,8 @@ class SafetyProbs(AppModel):
     Y: float = Field(ge=0, le=1)
     R: float = Field(ge=0, le=1)
 
-class CostWeights(AppModel):
-    distance: float = Field(ge=0)
-    risk_penalty: float = Field(ge=0)
-
 class Constraints(AppModel):
     safety_probs: SafetyProbs
-    cost_weights: CostWeights
     node_capacity: list[Supply] | None = None
 
 class ScenarioObjective(str, Enum):
