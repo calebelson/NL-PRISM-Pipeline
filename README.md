@@ -27,11 +27,9 @@ The goal is to bridge the gap between formal verification techniques and practic
   - Download from: https://www.prismmodelchecker.org/
   - The `prism` command must be executable from the terminal
 
-### Environment Variables
-- **`OPENAI_API_KEY`**: Your OpenAI API key for accessing GPT models
-  ```bash
-  export OPENAI_API_KEY="sk-your-api-key-here"
-  ```
+- **OpenAI API Key**
+  - Set the `OPENAI_API_KEY` environment variable with your API key
+  - Required for all LLM-based components (Parser, Composer, Navigator, Fixer)
 
 ### Installation
 ```bash
