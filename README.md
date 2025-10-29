@@ -28,6 +28,8 @@ This system takes a plain English description of such a scenario and:
 
 The goal is to bridge the gap between formal verification techniques and practical disaster response planning, making probabilistic reasoning accessible to non-technical users.
 
+[↑ Back to top](#nl-prism-pipeline)
+
 ## Requirements
 
 ### Software Dependencies
@@ -59,6 +61,8 @@ which prism
 prism --version
 ```
 
+[↑ Back to top](#nl-prism-pipeline)
+
 ## Project Structure
 
 ```
@@ -83,6 +87,8 @@ prism --version
     └── Prism_Pipeline/      # Output directory for each run
 ```
 
+[↑ Back to top](#nl-prism-pipeline)
+
 ## How It Works
 
 The pipeline consists of five main stages:
@@ -101,6 +107,8 @@ The full strategy may contain thousands of states. The system re-imports the str
 
 **5. Strategy Explanation**  
 The optimal path is sent to an LLM to generate a step-by-step explanation in plain language, including transition probabilities, cumulative success rates, and final team positions. This makes the formal verification results accessible to decision-makers.
+
+[↑ Back to top](#nl-prism-pipeline)
 
 ## Running the System
 
@@ -128,6 +136,8 @@ Output files are saved to `runs/Prism_Pipeline/prism-pipeline-run-<timestamp>/`:
 - `strategy_explanation.md` - Human-readable strategy
 - `meta.json` - Complete metadata and execution logs
 
+[↑ Back to top](#nl-prism-pipeline)
+
 ## Error Handling
 
 If PRISM verification fails, the system offers three options:
@@ -136,6 +146,8 @@ If PRISM verification fails, the system offers three options:
 - **[E] Exit**: Terminate the run
 
 All recovery attempts are logged in `meta.json` under `prism_error_recovery` for debugging.
+
+[↑ Back to top](#nl-prism-pipeline)
 
 ## Metadata and Logging
 
@@ -148,6 +160,8 @@ Each run produces comprehensive metadata tracking:
 - Overall execution time
 
 This enables reproducibility and systematic analysis of the system's performance across different scenarios and configurations.
+
+[↑ Back to top](#nl-prism-pipeline)
 
 ## LLM Prompts Location
 
@@ -182,6 +196,10 @@ The system uses LLM prompts at four key stages. Here's where each prompt is defi
 - Input: JSON scenario + optimal path data (states, actions, probabilities)
 - Output: Markdown-formatted strategy explanation
 
+[↑ Back to top](#nl-prism-pipeline)
+
 ## Acknowledgements
 
 This project is part of a dissertation on applying formal verification to practical decision-making problems. It builds on the PRISM model checker (www.prismmodelchecker.org) and OpenAI's language models to create a bridge between rigorous probabilistic reasoning and accessible natural language interfaces.
+
+[↑ Back to top](#nl-prism-pipeline)
