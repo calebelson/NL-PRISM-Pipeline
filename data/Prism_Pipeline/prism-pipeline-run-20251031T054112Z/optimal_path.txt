@@ -1,0 +1,361 @@
+Optimal Path (Maximum Probability Path via PRISM Induced Strategy)
+============================================================
+Total steps: 25
+Initial state: 110
+Final state: 25
+Goal reached: YES
+Path probability: 0.020478
+Note: This path MAXIMIZES success probability
+      Failed states (team location = -1) are excluded
+
+Path:
+------------------------------------------------------------
+
+Step 0: State 110
+  Labels: init
+  Variables:
+    xa = 2
+    xb = 0
+    xc = 4
+    xd = 2
+    xe = 0
+    xf = 0
+    xg = 0
+    locteam1 = 0
+    locteam2 = 2
+  Action: t2_c_g_4 (prob=0.5000)
+
+Step 1: State 109
+  Labels: none
+  Variables:
+    xa = 2
+    xb = 0
+    xc = 0
+    xd = 2
+    xe = 0
+    xf = 0
+    xg = 4
+    locteam1 = 0
+    locteam2 = 6
+  Action: t2_g_f_0 (prob=0.8500)
+
+Step 2: State 108
+  Labels: none
+  Variables:
+    xa = 2
+    xb = 0
+    xc = 0
+    xd = 2
+    xe = 0
+    xf = 0
+    xg = 4
+    locteam1 = 0
+    locteam2 = 5
+  Action: t2_f_e_0 (prob=0.9900)
+
+Step 3: State 107
+  Labels: none
+  Variables:
+    xa = 2
+    xb = 0
+    xc = 0
+    xd = 2
+    xe = 0
+    xf = 0
+    xg = 4
+    locteam1 = 0
+    locteam2 = 4
+  Action: t2_e_d_0 (prob=0.9900)
+
+Step 4: State 106
+  Labels: none
+  Variables:
+    xa = 2
+    xb = 0
+    xc = 0
+    xd = 2
+    xe = 0
+    xf = 0
+    xg = 4
+    locteam1 = 0
+    locteam2 = 3
+  Action: t1_a_d_1 (prob=0.5000)
+
+Step 5: State 101
+  Labels: none
+  Variables:
+    xa = 1
+    xb = 0
+    xc = 0
+    xd = 3
+    xe = 0
+    xf = 0
+    xg = 4
+    locteam1 = 3
+    locteam2 = 3
+  Action: t1_d_a_0 (prob=0.5000)
+
+Step 6: State 99
+  Labels: none
+  Variables:
+    xa = 1
+    xb = 0
+    xc = 0
+    xd = 3
+    xe = 0
+    xf = 0
+    xg = 4
+    locteam1 = 0
+    locteam2 = 3
+  Action: t1_a_d_1 (prob=0.5000)
+
+Step 7: State 80
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 4
+    xe = 0
+    xf = 0
+    xg = 4
+    locteam1 = 3
+    locteam2 = 3
+  Action: t1_d_e_1 (prob=0.9900)
+
+Step 8: State 79
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 3
+    xe = 1
+    xf = 0
+    xg = 4
+    locteam1 = 4
+    locteam2 = 3
+  Action: t1_e_d_0 (prob=0.9900)
+
+Step 9: State 78
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 3
+    xe = 1
+    xf = 0
+    xg = 4
+    locteam1 = 3
+    locteam2 = 3
+  Action: t1_d_e_1 (prob=0.9900)
+
+Step 10: State 75
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 2
+    xe = 2
+    xf = 0
+    xg = 4
+    locteam1 = 4
+    locteam2 = 3
+  Action: t1_e_d_0 (prob=0.9900)
+
+Step 11: State 74
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 2
+    xe = 2
+    xf = 0
+    xg = 4
+    locteam1 = 3
+    locteam2 = 3
+  Action: t1_d_e_1 (prob=0.9900)
+
+Step 12: State 70
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 1
+    xe = 3
+    xf = 0
+    xg = 4
+    locteam1 = 4
+    locteam2 = 3
+  Action: t2_d_e_1 (prob=0.9900)
+
+Step 13: State 58
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 0
+    xe = 4
+    xf = 0
+    xg = 4
+    locteam1 = 4
+    locteam2 = 4
+  Action: t1_e_f_1 (prob=0.9900)
+
+Step 14: State 57
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 0
+    xe = 3
+    xf = 1
+    xg = 4
+    locteam1 = 5
+    locteam2 = 4
+  Action: t1_f_e_0 (prob=0.9900)
+
+Step 15: State 56
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 0
+    xe = 3
+    xf = 1
+    xg = 4
+    locteam1 = 4
+    locteam2 = 4
+  Action: t1_e_f_1 (prob=0.9900)
+
+Step 16: State 52
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 0
+    xe = 2
+    xf = 2
+    xg = 4
+    locteam1 = 5
+    locteam2 = 4
+  Action: t1_f_e_0 (prob=0.9900)
+
+Step 17: State 51
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 0
+    xe = 2
+    xf = 2
+    xg = 4
+    locteam1 = 4
+    locteam2 = 4
+  Action: t1_e_f_1 (prob=0.9900)
+
+Step 18: State 47
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 0
+    xe = 1
+    xf = 3
+    xg = 4
+    locteam1 = 5
+    locteam2 = 4
+  Action: t2_e_f_1 (prob=0.9900)
+
+Step 19: State 36
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 0
+    xe = 0
+    xf = 4
+    xg = 4
+    locteam1 = 5
+    locteam2 = 5
+  Action: t1_f_g_1 (prob=0.8500)
+
+Step 20: State 35
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 0
+    xe = 0
+    xf = 3
+    xg = 5
+    locteam1 = 6
+    locteam2 = 5
+  Action: t1_g_f_0 (prob=0.8500)
+
+Step 21: State 34
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 0
+    xe = 0
+    xf = 3
+    xg = 5
+    locteam1 = 5
+    locteam2 = 5
+  Action: t1_f_g_1 (prob=0.8500)
+
+Step 22: State 30
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 0
+    xe = 0
+    xf = 2
+    xg = 6
+    locteam1 = 6
+    locteam2 = 5
+  Action: t1_g_f_0 (prob=0.8500)
+
+Step 23: State 29
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 0
+    xe = 0
+    xf = 2
+    xg = 6
+    locteam1 = 5
+    locteam2 = 5
+  Action: t1_f_g_1 (prob=0.8500)
+
+Step 24: State 25
+  Labels: none
+  Variables:
+    xa = 0
+    xb = 0
+    xc = 0
+    xd = 0
+    xe = 0
+    xf = 1
+    xg = 7
+    locteam1 = 6
+    locteam2 = 5

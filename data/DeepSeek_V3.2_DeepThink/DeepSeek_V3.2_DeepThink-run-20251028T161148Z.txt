@@ -1,0 +1,29 @@
+### Analysis of Feasibility and Optimal Plan
+
+The total resources available are 8 (2 at a, 4 at c, and 2 at d), which exceeds the demand of 7 at g. Therefore, it is feasible to satisfy the demand. The goal is to maximize the probability that g receives at least 7 resources, which requires both teams to succeed in delivering their resources, as each team carries 4 resources and 4 < 7. If either team fails, g receives at most 4 resources, which is insufficient.
+
+### Optimal Routing and Allocation Plan
+To maximize reliability, the plan minimizes the number of trips and uses the safest possible paths for each team. The optimal plan involves:
+- Team 1 (T1) starting at a, picking up the 2 resources from a, then moving to d to pick up the 2 resources from d, and finally proceeding to g via the path a-d-e-f-g. This path has the highest probability for T1, as it avoids the riskier red routes where possible and uses greener routes for the latter segments.
+- Team 2 (T2) starting at c, picking up the 4 resources from c, and moving directly to g via c-g. This path has the highest probability for T2, as alternative paths through other points have lower probabilities.
+
+The probability of success for the plan is the product of the probabilities that both T1 and T2 reach g safely, calculated as follows:
+- P(T1 success) = P(a-d) × P(d-e) × P(e-f) × P(f-g) = 0.5 × 0.99 × 0.99 × 0.85 = 0.4165425
+- P(T2 success) = P(c-g) = 0.5
+- P(overall success) = P(T1 success) × P(T2 success) = 0.4165425 × 0.5 = 0.20827125
+
+Thus, the probability of success is approximately 0.2083.
+
+### Step-by-Step Description of the Plan
+1. **Team 1 (T1) at a**:
+   - T1 picks up the 2 resources from a.
+   - T1 moves from a to d via the direct route a-d (red, probability 0.5). If successful, T1 reaches d and picks up the 2 resources from d. T1 now carries 4 resources.
+   - T1 moves from d to g via d-e-f-g (probability: d-e = 0.99, e-f = 0.99, f-g = 0.85). If successful, T1 delivers 4 resources to g.
+
+2. **Team 2 (T2) at c**:
+   - T2 picks up the 4 resources from c.
+   - T2 moves from c to g via the direct route c-g (red, probability 0.5). If successful, T2 delivers 4 resources to g.
+
+If both teams succeed, g receives 8 resources, which satisfies the demand of 7. If either team fails, the plan fails, and g receives insufficient resources.
+
+This plan optimizes reliability by using the safest available paths for each team, considering the constraints on resource allocation and routing.

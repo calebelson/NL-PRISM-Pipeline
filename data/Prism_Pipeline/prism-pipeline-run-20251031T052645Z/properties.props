@@ -1,0 +1,3 @@
+// Objective: maximize probability to meet demand at node g (JSON:/objective = "max_reach_prob")
+// Pmax: probability of eventually reaching xg >= 7 (delivering at least 7 resources to node "g")
+Pmax=? [ F "goal" ]

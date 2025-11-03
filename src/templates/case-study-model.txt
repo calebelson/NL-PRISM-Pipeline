@@ -1,0 +1,1236 @@
+//description: Pmax=?[F((xa = 3 & xh = 2))]
+
+mdp
+
+const int fail = -1;
+const int a = 0;
+const int b = 1;
+const int c = 2;
+const int d = 3;
+const int e = 4;
+const int g = 5;
+const int h = 6;
+const int f = 7;
+
+//initial resources for each location
+const int inita = 0;
+const int initb = 2;
+const int initc = 0;
+const int initd = 0;
+const int inite = 2;
+const int initg = 0;
+const int inith = 0;
+const int initf = 3;
+
+//team start locations
+const int team1Start = a;
+const int team2Start = f;
+
+//maximimum resources for each location
+const int maxa = 3;
+const int maxb = 3;
+const int maxc = 3;
+const int maxd = 3;
+const int maxe = 3;
+const int maxg = 3;
+const int maxh = 3;
+const int maxf = 3;
+
+
+const double factor_team1 = 1.0;
+const double factor_team2 = 1.0;
+
+const double RED = 0.40;
+const double YELLOW = 0.85;
+const double GREEN = 0.99;
+
+
+const double factor_team1ab = factor_team1;
+const double factor_team1ba = factor_team1;
+const double factor_team1ac = factor_team1;
+const double factor_team1ca = factor_team1;
+const double factor_team1ad = factor_team1;
+const double factor_team1da = factor_team1;
+const double factor_team1bc = factor_team1;
+const double factor_team1cb = factor_team1;
+const double factor_team1ce = factor_team1;
+const double factor_team1ec = factor_team1;
+const double factor_team1cd = factor_team1;
+const double factor_team1dc = factor_team1;
+const double factor_team1dg = factor_team1;
+const double factor_team1gd = factor_team1;
+const double factor_team1dh = factor_team1;
+const double factor_team1hd = factor_team1;
+const double factor_team1ef = factor_team1;
+const double factor_team1fe = factor_team1;
+const double factor_team1eg = factor_team1;
+const double factor_team1ge = factor_team1;
+const double factor_team1fg = factor_team1;
+const double factor_team1gf = factor_team1;
+const double factor_team1hg = factor_team1;
+const double factor_team1gh = factor_team1;
+const double factor_team2ab = factor_team2;
+const double factor_team2ba = factor_team2;
+const double factor_team2ac = factor_team2;
+const double factor_team2ca = factor_team2;
+const double factor_team2ad = factor_team2;
+const double factor_team2da = factor_team2;
+const double factor_team2bc = factor_team2;
+const double factor_team2cb = factor_team2;
+const double factor_team2ce = factor_team2;
+const double factor_team2ec = factor_team2;
+const double factor_team2cd = factor_team2;
+const double factor_team2dc = factor_team2;
+const double factor_team2dg = factor_team2;
+const double factor_team2gd = factor_team2;
+const double factor_team2dh = factor_team2;
+const double factor_team2hd = factor_team2;
+const double factor_team2ef = factor_team2;
+const double factor_team2fe = factor_team2;
+const double factor_team2eg = factor_team2;
+const double factor_team2ge = factor_team2;
+const double factor_team2fg = factor_team2;
+const double factor_team2gf = factor_team2;
+const double factor_team2hg = factor_team2;
+const double factor_team2gh = factor_team2;
+
+
+module city_resourcing
+    xa : [0..maxa] init inita;
+    xb : [0..maxb] init initb;
+    xc : [0..maxc] init initc;
+    xd : [0..maxd] init initd;
+    xe : [0..maxe] init inite;
+    xg : [0..maxg] init initg;
+    xh : [0..maxh] init inith;
+    xf : [0..maxf] init initf;
+    locteam1 : [-1..8] init team1Start;
+    locteam2 : [-1..8] init team2Start;
+
+
+    [team1_a_b_0] (locteam1=a)&(xa>=0)&(xb<=maxb-0) -> RED*factor_team1ab:(xb'=xb+0)&(xa'=xa-0)&(locteam1'=b)+(1-RED*factor_team1ab):(xa'=xa-0)&(locteam1'= fail);
+    [team1_a_b_1] (locteam1=a)&(xa>=1)&(xb<=maxb-1) -> RED*factor_team1ab:(xb'=xb+1)&(xa'=xa-1)&(locteam1'=b)+(1-RED*factor_team1ab):(xa'=xa-1)&(locteam1'= fail);
+    [team1_a_b_2] (locteam1=a)&(xa>=2)&(xb<=maxb-2) -> RED*factor_team1ab:(xb'=xb+2)&(xa'=xa-2)&(locteam1'=b)+(1-RED*factor_team1ab):(xa'=xa-2)&(locteam1'= fail);
+    [team1_a_b_3] (locteam1=a)&(xa>=3)&(xb<=maxb-3) -> RED*factor_team1ab:(xb'=xb+3)&(xa'=xa-3)&(locteam1'=b)+(1-RED*factor_team1ab):(xa'=xa-3)&(locteam1'= fail);
+
+    [team1_b_a_0] (locteam1=b)&(xb>=0)&(xa<=maxa-0) -> RED*factor_team1ba:(xa'=xa+0)&(xb'=xb-0)&(locteam1'=a)+(1-RED*factor_team1ba):(xb'=xb-0)&(locteam1'= fail);
+    [team1_b_a_1] (locteam1=b)&(xb>=1)&(xa<=maxa-1) -> RED*factor_team1ba:(xa'=xa+1)&(xb'=xb-1)&(locteam1'=a)+(1-RED*factor_team1ba):(xb'=xb-1)&(locteam1'= fail);
+    [team1_b_a_2] (locteam1=b)&(xb>=2)&(xa<=maxa-2) -> RED*factor_team1ba:(xa'=xa+2)&(xb'=xb-2)&(locteam1'=a)+(1-RED*factor_team1ba):(xb'=xb-2)&(locteam1'= fail);
+    [team1_b_a_3] (locteam1=b)&(xb>=3)&(xa<=maxa-3) -> RED*factor_team1ba:(xa'=xa+3)&(xb'=xb-3)&(locteam1'=a)+(1-RED*factor_team1ba):(xb'=xb-3)&(locteam1'= fail);
+
+    [team1_a_c_0] (locteam1=a)&(xa>=0)&(xc<=maxc-0) -> YELLOW*factor_team1ac:(xc'=xc+0)&(xa'=xa-0)&(locteam1'=c)+(1-YELLOW*factor_team1ac):(xa'=xa-0)&(locteam1'= fail);
+    [team1_a_c_1] (locteam1=a)&(xa>=1)&(xc<=maxc-1) -> YELLOW*factor_team1ac:(xc'=xc+1)&(xa'=xa-1)&(locteam1'=c)+(1-YELLOW*factor_team1ac):(xa'=xa-1)&(locteam1'= fail);
+    [team1_a_c_2] (locteam1=a)&(xa>=2)&(xc<=maxc-2) -> YELLOW*factor_team1ac:(xc'=xc+2)&(xa'=xa-2)&(locteam1'=c)+(1-YELLOW*factor_team1ac):(xa'=xa-2)&(locteam1'= fail);
+    [team1_a_c_3] (locteam1=a)&(xa>=3)&(xc<=maxc-3) -> YELLOW*factor_team1ac:(xc'=xc+3)&(xa'=xa-3)&(locteam1'=c)+(1-YELLOW*factor_team1ac):(xa'=xa-3)&(locteam1'= fail);
+
+    [team1_c_a_0] (locteam1=c)&(xc>=0)&(xa<=maxa-0) -> YELLOW*factor_team1ca:(xa'=xa+0)&(xc'=xc-0)&(locteam1'=a)+(1-YELLOW*factor_team1ca):(xc'=xc-0)&(locteam1'= fail);
+    [team1_c_a_1] (locteam1=c)&(xc>=1)&(xa<=maxa-1) -> YELLOW*factor_team1ca:(xa'=xa+1)&(xc'=xc-1)&(locteam1'=a)+(1-YELLOW*factor_team1ca):(xc'=xc-1)&(locteam1'= fail);
+    [team1_c_a_2] (locteam1=c)&(xc>=2)&(xa<=maxa-2) -> YELLOW*factor_team1ca:(xa'=xa+2)&(xc'=xc-2)&(locteam1'=a)+(1-YELLOW*factor_team1ca):(xc'=xc-2)&(locteam1'= fail);
+    [team1_c_a_3] (locteam1=c)&(xc>=3)&(xa<=maxa-3) -> YELLOW*factor_team1ca:(xa'=xa+3)&(xc'=xc-3)&(locteam1'=a)+(1-YELLOW*factor_team1ca):(xc'=xc-3)&(locteam1'= fail);
+
+    [team1_a_d_0] (locteam1=a)&(xa>=0)&(xd<=maxd-0) -> GREEN*factor_team1ad:(xd'=xd+0)&(xa'=xa-0)&(locteam1'=d)+(1-GREEN*factor_team1ad):(xa'=xa-0)&(locteam1'= fail);
+    [team1_a_d_1] (locteam1=a)&(xa>=1)&(xd<=maxd-1) -> GREEN*factor_team1ad:(xd'=xd+1)&(xa'=xa-1)&(locteam1'=d)+(1-GREEN*factor_team1ad):(xa'=xa-1)&(locteam1'= fail);
+    [team1_a_d_2] (locteam1=a)&(xa>=2)&(xd<=maxd-2) -> GREEN*factor_team1ad:(xd'=xd+2)&(xa'=xa-2)&(locteam1'=d)+(1-GREEN*factor_team1ad):(xa'=xa-2)&(locteam1'= fail);
+    [team1_a_d_3] (locteam1=a)&(xa>=3)&(xd<=maxd-3) -> GREEN*factor_team1ad:(xd'=xd+3)&(xa'=xa-3)&(locteam1'=d)+(1-GREEN*factor_team1ad):(xa'=xa-3)&(locteam1'= fail);
+
+    [team1_d_a_0] (locteam1=d)&(xd>=0)&(xa<=maxa-0) -> GREEN*factor_team1da:(xa'=xa+0)&(xd'=xd-0)&(locteam1'=a)+(1-GREEN*factor_team1da):(xd'=xd-0)&(locteam1'= fail);
+    [team1_d_a_1] (locteam1=d)&(xd>=1)&(xa<=maxa-1) -> GREEN*factor_team1da:(xa'=xa+1)&(xd'=xd-1)&(locteam1'=a)+(1-GREEN*factor_team1da):(xd'=xd-1)&(locteam1'= fail);
+    [team1_d_a_2] (locteam1=d)&(xd>=2)&(xa<=maxa-2) -> GREEN*factor_team1da:(xa'=xa+2)&(xd'=xd-2)&(locteam1'=a)+(1-GREEN*factor_team1da):(xd'=xd-2)&(locteam1'= fail);
+    [team1_d_a_3] (locteam1=d)&(xd>=3)&(xa<=maxa-3) -> GREEN*factor_team1da:(xa'=xa+3)&(xd'=xd-3)&(locteam1'=a)+(1-GREEN*factor_team1da):(xd'=xd-3)&(locteam1'= fail);
+
+    [team1_b_c_0] (locteam1=b)&(xb>=0)&(xc<=maxc-0) -> GREEN*factor_team1bc:(xc'=xc+0)&(xb'=xb-0)&(locteam1'=c)+(1-GREEN*factor_team1bc):(xb'=xb-0)&(locteam1'= fail);
+    [team1_b_c_1] (locteam1=b)&(xb>=1)&(xc<=maxc-1) -> GREEN*factor_team1bc:(xc'=xc+1)&(xb'=xb-1)&(locteam1'=c)+(1-GREEN*factor_team1bc):(xb'=xb-1)&(locteam1'= fail);
+    [team1_b_c_2] (locteam1=b)&(xb>=2)&(xc<=maxc-2) -> GREEN*factor_team1bc:(xc'=xc+2)&(xb'=xb-2)&(locteam1'=c)+(1-GREEN*factor_team1bc):(xb'=xb-2)&(locteam1'= fail);
+    [team1_b_c_3] (locteam1=b)&(xb>=3)&(xc<=maxc-3) -> GREEN*factor_team1bc:(xc'=xc+3)&(xb'=xb-3)&(locteam1'=c)+(1-GREEN*factor_team1bc):(xb'=xb-3)&(locteam1'= fail);
+
+    [team1_c_b_0] (locteam1=c)&(xc>=0)&(xb<=maxb-0) -> GREEN*factor_team1cb:(xb'=xb+0)&(xc'=xc-0)&(locteam1'=b)+(1-GREEN*factor_team1cb):(xc'=xc-0)&(locteam1'= fail);
+    [team1_c_b_1] (locteam1=c)&(xc>=1)&(xb<=maxb-1) -> GREEN*factor_team1cb:(xb'=xb+1)&(xc'=xc-1)&(locteam1'=b)+(1-GREEN*factor_team1cb):(xc'=xc-1)&(locteam1'= fail);
+    [team1_c_b_2] (locteam1=c)&(xc>=2)&(xb<=maxb-2) -> GREEN*factor_team1cb:(xb'=xb+2)&(xc'=xc-2)&(locteam1'=b)+(1-GREEN*factor_team1cb):(xc'=xc-2)&(locteam1'= fail);
+    [team1_c_b_3] (locteam1=c)&(xc>=3)&(xb<=maxb-3) -> GREEN*factor_team1cb:(xb'=xb+3)&(xc'=xc-3)&(locteam1'=b)+(1-GREEN*factor_team1cb):(xc'=xc-3)&(locteam1'= fail);
+
+    [team1_c_e_0] (locteam1=c)&(xc>=0)&(xe<=maxe-0) -> RED*factor_team1ce:(xe'=xe+0)&(xc'=xc-0)&(locteam1'=e)+(1-RED*factor_team1ce):(xc'=xc-0)&(locteam1'= fail);
+    [team1_c_e_1] (locteam1=c)&(xc>=1)&(xe<=maxe-1) -> RED*factor_team1ce:(xe'=xe+1)&(xc'=xc-1)&(locteam1'=e)+(1-RED*factor_team1ce):(xc'=xc-1)&(locteam1'= fail);
+    [team1_c_e_2] (locteam1=c)&(xc>=2)&(xe<=maxe-2) -> RED*factor_team1ce:(xe'=xe+2)&(xc'=xc-2)&(locteam1'=e)+(1-RED*factor_team1ce):(xc'=xc-2)&(locteam1'= fail);
+    [team1_c_e_3] (locteam1=c)&(xc>=3)&(xe<=maxe-3) -> RED*factor_team1ce:(xe'=xe+3)&(xc'=xc-3)&(locteam1'=e)+(1-RED*factor_team1ce):(xc'=xc-3)&(locteam1'= fail);
+
+    [team1_e_c_0] (locteam1=e)&(xe>=0)&(xc<=maxc-0) -> RED*factor_team1ec:(xc'=xc+0)&(xe'=xe-0)&(locteam1'=c)+(1-RED*factor_team1ec):(xe'=xe-0)&(locteam1'= fail);
+    [team1_e_c_1] (locteam1=e)&(xe>=1)&(xc<=maxc-1) -> RED*factor_team1ec:(xc'=xc+1)&(xe'=xe-1)&(locteam1'=c)+(1-RED*factor_team1ec):(xe'=xe-1)&(locteam1'= fail);
+    [team1_e_c_2] (locteam1=e)&(xe>=2)&(xc<=maxc-2) -> RED*factor_team1ec:(xc'=xc+2)&(xe'=xe-2)&(locteam1'=c)+(1-RED*factor_team1ec):(xe'=xe-2)&(locteam1'= fail);
+    [team1_e_c_3] (locteam1=e)&(xe>=3)&(xc<=maxc-3) -> RED*factor_team1ec:(xc'=xc+3)&(xe'=xe-3)&(locteam1'=c)+(1-RED*factor_team1ec):(xe'=xe-3)&(locteam1'= fail);
+
+    [team1_c_d_0] (locteam1=c)&(xc>=0)&(xd<=maxd-0) -> RED*factor_team1cd:(xd'=xd+0)&(xc'=xc-0)&(locteam1'=d)+(1-RED*factor_team1cd):(xc'=xc-0)&(locteam1'= fail);
+    [team1_c_d_1] (locteam1=c)&(xc>=1)&(xd<=maxd-1) -> RED*factor_team1cd:(xd'=xd+1)&(xc'=xc-1)&(locteam1'=d)+(1-RED*factor_team1cd):(xc'=xc-1)&(locteam1'= fail);
+    [team1_c_d_2] (locteam1=c)&(xc>=2)&(xd<=maxd-2) -> RED*factor_team1cd:(xd'=xd+2)&(xc'=xc-2)&(locteam1'=d)+(1-RED*factor_team1cd):(xc'=xc-2)&(locteam1'= fail);
+    [team1_c_d_3] (locteam1=c)&(xc>=3)&(xd<=maxd-3) -> RED*factor_team1cd:(xd'=xd+3)&(xc'=xc-3)&(locteam1'=d)+(1-RED*factor_team1cd):(xc'=xc-3)&(locteam1'= fail);
+
+    [team1_d_c_0] (locteam1=d)&(xd>=0)&(xc<=maxc-0) -> RED*factor_team1dc:(xc'=xc+0)&(xd'=xd-0)&(locteam1'=c)+(1-RED*factor_team1dc):(xd'=xd-0)&(locteam1'= fail);
+    [team1_d_c_1] (locteam1=d)&(xd>=1)&(xc<=maxc-1) -> RED*factor_team1dc:(xc'=xc+1)&(xd'=xd-1)&(locteam1'=c)+(1-RED*factor_team1dc):(xd'=xd-1)&(locteam1'= fail);
+    [team1_d_c_2] (locteam1=d)&(xd>=2)&(xc<=maxc-2) -> RED*factor_team1dc:(xc'=xc+2)&(xd'=xd-2)&(locteam1'=c)+(1-RED*factor_team1dc):(xd'=xd-2)&(locteam1'= fail);
+    [team1_d_c_3] (locteam1=d)&(xd>=3)&(xc<=maxc-3) -> RED*factor_team1dc:(xc'=xc+3)&(xd'=xd-3)&(locteam1'=c)+(1-RED*factor_team1dc):(xd'=xd-3)&(locteam1'= fail);
+
+    [team1_d_g_0] (locteam1=d)&(xd>=0)&(xg<=maxg-0) -> GREEN*factor_team1dg:(xg'=xg+0)&(xd'=xd-0)&(locteam1'=g)+(1-GREEN*factor_team1dg):(xd'=xd-0)&(locteam1'= fail);
+    [team1_d_g_1] (locteam1=d)&(xd>=1)&(xg<=maxg-1) -> GREEN*factor_team1dg:(xg'=xg+1)&(xd'=xd-1)&(locteam1'=g)+(1-GREEN*factor_team1dg):(xd'=xd-1)&(locteam1'= fail);
+    [team1_d_g_2] (locteam1=d)&(xd>=2)&(xg<=maxg-2) -> GREEN*factor_team1dg:(xg'=xg+2)&(xd'=xd-2)&(locteam1'=g)+(1-GREEN*factor_team1dg):(xd'=xd-2)&(locteam1'= fail);
+    [team1_d_g_3] (locteam1=d)&(xd>=3)&(xg<=maxg-3) -> GREEN*factor_team1dg:(xg'=xg+3)&(xd'=xd-3)&(locteam1'=g)+(1-GREEN*factor_team1dg):(xd'=xd-3)&(locteam1'= fail);
+
+    [team1_g_d_0] (locteam1=g)&(xg>=0)&(xd<=maxd-0) -> GREEN*factor_team1gd:(xd'=xd+0)&(xg'=xg-0)&(locteam1'=d)+(1-GREEN*factor_team1gd):(xg'=xg-0)&(locteam1'= fail);
+    [team1_g_d_1] (locteam1=g)&(xg>=1)&(xd<=maxd-1) -> GREEN*factor_team1gd:(xd'=xd+1)&(xg'=xg-1)&(locteam1'=d)+(1-GREEN*factor_team1gd):(xg'=xg-1)&(locteam1'= fail);
+    [team1_g_d_2] (locteam1=g)&(xg>=2)&(xd<=maxd-2) -> GREEN*factor_team1gd:(xd'=xd+2)&(xg'=xg-2)&(locteam1'=d)+(1-GREEN*factor_team1gd):(xg'=xg-2)&(locteam1'= fail);
+    [team1_g_d_3] (locteam1=g)&(xg>=3)&(xd<=maxd-3) -> GREEN*factor_team1gd:(xd'=xd+3)&(xg'=xg-3)&(locteam1'=d)+(1-GREEN*factor_team1gd):(xg'=xg-3)&(locteam1'= fail);
+
+    [team1_d_h_0] (locteam1=d)&(xd>=0)&(xh<=maxh-0) -> RED*factor_team1dh:(xh'=xh+0)&(xd'=xd-0)&(locteam1'=h)+(1-RED*factor_team1dh):(xd'=xd-0)&(locteam1'= fail);
+    [team1_d_h_1] (locteam1=d)&(xd>=1)&(xh<=maxh-1) -> RED*factor_team1dh:(xh'=xh+1)&(xd'=xd-1)&(locteam1'=h)+(1-RED*factor_team1dh):(xd'=xd-1)&(locteam1'= fail);
+    [team1_d_h_2] (locteam1=d)&(xd>=2)&(xh<=maxh-2) -> RED*factor_team1dh:(xh'=xh+2)&(xd'=xd-2)&(locteam1'=h)+(1-RED*factor_team1dh):(xd'=xd-2)&(locteam1'= fail);
+    [team1_d_h_3] (locteam1=d)&(xd>=3)&(xh<=maxh-3) -> RED*factor_team1dh:(xh'=xh+3)&(xd'=xd-3)&(locteam1'=h)+(1-RED*factor_team1dh):(xd'=xd-3)&(locteam1'= fail);
+
+    [team1_h_d_0] (locteam1=h)&(xh>=0)&(xd<=maxd-0) -> RED*factor_team1hd:(xd'=xd+0)&(xh'=xh-0)&(locteam1'=d)+(1-RED*factor_team1hd):(xh'=xh-0)&(locteam1'= fail);
+    [team1_h_d_1] (locteam1=h)&(xh>=1)&(xd<=maxd-1) -> RED*factor_team1hd:(xd'=xd+1)&(xh'=xh-1)&(locteam1'=d)+(1-RED*factor_team1hd):(xh'=xh-1)&(locteam1'= fail);
+    [team1_h_d_2] (locteam1=h)&(xh>=2)&(xd<=maxd-2) -> RED*factor_team1hd:(xd'=xd+2)&(xh'=xh-2)&(locteam1'=d)+(1-RED*factor_team1hd):(xh'=xh-2)&(locteam1'= fail);
+    [team1_h_d_3] (locteam1=h)&(xh>=3)&(xd<=maxd-3) -> RED*factor_team1hd:(xd'=xd+3)&(xh'=xh-3)&(locteam1'=d)+(1-RED*factor_team1hd):(xh'=xh-3)&(locteam1'= fail);
+
+    [team1_e_f_0] (locteam1=e)&(xe>=0)&(xf<=maxf-0) -> YELLOW*factor_team1ef:(xf'=xf+0)&(xe'=xe-0)&(locteam1'=f)+(1-YELLOW*factor_team1ef):(xe'=xe-0)&(locteam1'= fail);
+    [team1_e_f_1] (locteam1=e)&(xe>=1)&(xf<=maxf-1) -> YELLOW*factor_team1ef:(xf'=xf+1)&(xe'=xe-1)&(locteam1'=f)+(1-YELLOW*factor_team1ef):(xe'=xe-1)&(locteam1'= fail);
+    [team1_e_f_2] (locteam1=e)&(xe>=2)&(xf<=maxf-2) -> YELLOW*factor_team1ef:(xf'=xf+2)&(xe'=xe-2)&(locteam1'=f)+(1-YELLOW*factor_team1ef):(xe'=xe-2)&(locteam1'= fail);
+    [team1_e_f_3] (locteam1=e)&(xe>=3)&(xf<=maxf-3) -> YELLOW*factor_team1ef:(xf'=xf+3)&(xe'=xe-3)&(locteam1'=f)+(1-YELLOW*factor_team1ef):(xe'=xe-3)&(locteam1'= fail);
+
+    [team1_f_e_0] (locteam1=f)&(xf>=0)&(xe<=maxe-0) -> YELLOW*factor_team1fe:(xe'=xe+0)&(xf'=xf-0)&(locteam1'=e)+(1-YELLOW*factor_team1fe):(xf'=xf-0)&(locteam1'= fail);
+    [team1_f_e_1] (locteam1=f)&(xf>=1)&(xe<=maxe-1) -> YELLOW*factor_team1fe:(xe'=xe+1)&(xf'=xf-1)&(locteam1'=e)+(1-YELLOW*factor_team1fe):(xf'=xf-1)&(locteam1'= fail);
+    [team1_f_e_2] (locteam1=f)&(xf>=2)&(xe<=maxe-2) -> YELLOW*factor_team1fe:(xe'=xe+2)&(xf'=xf-2)&(locteam1'=e)+(1-YELLOW*factor_team1fe):(xf'=xf-2)&(locteam1'= fail);
+    [team1_f_e_3] (locteam1=f)&(xf>=3)&(xe<=maxe-3) -> YELLOW*factor_team1fe:(xe'=xe+3)&(xf'=xf-3)&(locteam1'=e)+(1-YELLOW*factor_team1fe):(xf'=xf-3)&(locteam1'= fail);
+
+    [team1_e_g_0] (locteam1=e)&(xe>=0)&(xg<=maxg-0) -> RED*factor_team1eg:(xg'=xg+0)&(xe'=xe-0)&(locteam1'=g)+(1-RED*factor_team1eg):(xe'=xe-0)&(locteam1'= fail);
+    [team1_e_g_1] (locteam1=e)&(xe>=1)&(xg<=maxg-1) -> RED*factor_team1eg:(xg'=xg+1)&(xe'=xe-1)&(locteam1'=g)+(1-RED*factor_team1eg):(xe'=xe-1)&(locteam1'= fail);
+    [team1_e_g_2] (locteam1=e)&(xe>=2)&(xg<=maxg-2) -> RED*factor_team1eg:(xg'=xg+2)&(xe'=xe-2)&(locteam1'=g)+(1-RED*factor_team1eg):(xe'=xe-2)&(locteam1'= fail);
+    [team1_e_g_3] (locteam1=e)&(xe>=3)&(xg<=maxg-3) -> RED*factor_team1eg:(xg'=xg+3)&(xe'=xe-3)&(locteam1'=g)+(1-RED*factor_team1eg):(xe'=xe-3)&(locteam1'= fail);
+
+    [team1_g_e_0] (locteam1=g)&(xg>=0)&(xe<=maxe-0) -> RED*factor_team1ge:(xe'=xe+0)&(xg'=xg-0)&(locteam1'=e)+(1-RED*factor_team1ge):(xg'=xg-0)&(locteam1'= fail);
+    [team1_g_e_1] (locteam1=g)&(xg>=1)&(xe<=maxe-1) -> RED*factor_team1ge:(xe'=xe+1)&(xg'=xg-1)&(locteam1'=e)+(1-RED*factor_team1ge):(xg'=xg-1)&(locteam1'= fail);
+    [team1_g_e_2] (locteam1=g)&(xg>=2)&(xe<=maxe-2) -> RED*factor_team1ge:(xe'=xe+2)&(xg'=xg-2)&(locteam1'=e)+(1-RED*factor_team1ge):(xg'=xg-2)&(locteam1'= fail);
+    [team1_g_e_3] (locteam1=g)&(xg>=3)&(xe<=maxe-3) -> RED*factor_team1ge:(xe'=xe+3)&(xg'=xg-3)&(locteam1'=e)+(1-RED*factor_team1ge):(xg'=xg-3)&(locteam1'= fail);
+
+    [team1_f_g_0] (locteam1=f)&(xf>=0)&(xg<=maxg-0) -> YELLOW*factor_team1fg:(xg'=xg+0)&(xf'=xf-0)&(locteam1'=g)+(1-YELLOW*factor_team1fg):(xf'=xf-0)&(locteam1'= fail);
+    [team1_f_g_1] (locteam1=f)&(xf>=1)&(xg<=maxg-1) -> YELLOW*factor_team1fg:(xg'=xg+1)&(xf'=xf-1)&(locteam1'=g)+(1-YELLOW*factor_team1fg):(xf'=xf-1)&(locteam1'= fail);
+    [team1_f_g_2] (locteam1=f)&(xf>=2)&(xg<=maxg-2) -> YELLOW*factor_team1fg:(xg'=xg+2)&(xf'=xf-2)&(locteam1'=g)+(1-YELLOW*factor_team1fg):(xf'=xf-2)&(locteam1'= fail);
+    [team1_f_g_3] (locteam1=f)&(xf>=3)&(xg<=maxg-3) -> YELLOW*factor_team1fg:(xg'=xg+3)&(xf'=xf-3)&(locteam1'=g)+(1-YELLOW*factor_team1fg):(xf'=xf-3)&(locteam1'= fail);
+
+    [team1_g_f_0] (locteam1=g)&(xg>=0)&(xf<=maxf-0) -> YELLOW*factor_team1gf:(xf'=xf+0)&(xg'=xg-0)&(locteam1'=f)+(1-YELLOW*factor_team1gf):(xg'=xg-0)&(locteam1'= fail);
+    [team1_g_f_1] (locteam1=g)&(xg>=1)&(xf<=maxf-1) -> YELLOW*factor_team1gf:(xf'=xf+1)&(xg'=xg-1)&(locteam1'=f)+(1-YELLOW*factor_team1gf):(xg'=xg-1)&(locteam1'= fail);
+    [team1_g_f_2] (locteam1=g)&(xg>=2)&(xf<=maxf-2) -> YELLOW*factor_team1gf:(xf'=xf+2)&(xg'=xg-2)&(locteam1'=f)+(1-YELLOW*factor_team1gf):(xg'=xg-2)&(locteam1'= fail);
+    [team1_g_f_3] (locteam1=g)&(xg>=3)&(xf<=maxf-3) -> YELLOW*factor_team1gf:(xf'=xf+3)&(xg'=xg-3)&(locteam1'=f)+(1-YELLOW*factor_team1gf):(xg'=xg-3)&(locteam1'= fail);
+
+    [team1_h_g_0] (locteam1=h)&(xh>=0)&(xg<=maxg-0) -> GREEN*factor_team1hg:(xg'=xg+0)&(xh'=xh-0)&(locteam1'=g)+(1-GREEN*factor_team1hg):(xh'=xh-0)&(locteam1'= fail);
+    [team1_h_g_1] (locteam1=h)&(xh>=1)&(xg<=maxg-1) -> GREEN*factor_team1hg:(xg'=xg+1)&(xh'=xh-1)&(locteam1'=g)+(1-GREEN*factor_team1hg):(xh'=xh-1)&(locteam1'= fail);
+    [team1_h_g_2] (locteam1=h)&(xh>=2)&(xg<=maxg-2) -> GREEN*factor_team1hg:(xg'=xg+2)&(xh'=xh-2)&(locteam1'=g)+(1-GREEN*factor_team1hg):(xh'=xh-2)&(locteam1'= fail);
+    [team1_h_g_3] (locteam1=h)&(xh>=3)&(xg<=maxg-3) -> GREEN*factor_team1hg:(xg'=xg+3)&(xh'=xh-3)&(locteam1'=g)+(1-GREEN*factor_team1hg):(xh'=xh-3)&(locteam1'= fail);
+
+    [team1_g_h_0] (locteam1=g)&(xg>=0)&(xh<=maxh-0) -> GREEN*factor_team1gh:(xh'=xh+0)&(xg'=xg-0)&(locteam1'=h)+(1-GREEN*factor_team1gh):(xg'=xg-0)&(locteam1'= fail);
+    [team1_g_h_1] (locteam1=g)&(xg>=1)&(xh<=maxh-1) -> GREEN*factor_team1gh:(xh'=xh+1)&(xg'=xg-1)&(locteam1'=h)+(1-GREEN*factor_team1gh):(xg'=xg-1)&(locteam1'= fail);
+    [team1_g_h_2] (locteam1=g)&(xg>=2)&(xh<=maxh-2) -> GREEN*factor_team1gh:(xh'=xh+2)&(xg'=xg-2)&(locteam1'=h)+(1-GREEN*factor_team1gh):(xg'=xg-2)&(locteam1'= fail);
+    [team1_g_h_3] (locteam1=g)&(xg>=3)&(xh<=maxh-3) -> GREEN*factor_team1gh:(xh'=xh+3)&(xg'=xg-3)&(locteam1'=h)+(1-GREEN*factor_team1gh):(xg'=xg-3)&(locteam1'= fail);
+
+    [team2_a_b_0] (locteam2=a)&(xa>=0)&(xb<=maxb-0) -> RED*factor_team2ab:(xb'=xb+0)&(xa'=xa-0)&(locteam2'=b)+(1-RED*factor_team2ab):(xa'=xa-0)&(locteam2'= fail);
+    [team2_a_b_1] (locteam2=a)&(xa>=1)&(xb<=maxb-1) -> RED*factor_team2ab:(xb'=xb+1)&(xa'=xa-1)&(locteam2'=b)+(1-RED*factor_team2ab):(xa'=xa-1)&(locteam2'= fail);
+    [team2_a_b_2] (locteam2=a)&(xa>=2)&(xb<=maxb-2) -> RED*factor_team2ab:(xb'=xb+2)&(xa'=xa-2)&(locteam2'=b)+(1-RED*factor_team2ab):(xa'=xa-2)&(locteam2'= fail);
+    [team2_a_b_3] (locteam2=a)&(xa>=3)&(xb<=maxb-3) -> RED*factor_team2ab:(xb'=xb+3)&(xa'=xa-3)&(locteam2'=b)+(1-RED*factor_team2ab):(xa'=xa-3)&(locteam2'= fail);
+
+    [team2_b_a_0] (locteam2=b)&(xb>=0)&(xa<=maxa-0) -> RED*factor_team2ba:(xa'=xa+0)&(xb'=xb-0)&(locteam2'=a)+(1-RED*factor_team2ba):(xb'=xb-0)&(locteam2'= fail);
+    [team2_b_a_1] (locteam2=b)&(xb>=1)&(xa<=maxa-1) -> RED*factor_team2ba:(xa'=xa+1)&(xb'=xb-1)&(locteam2'=a)+(1-RED*factor_team2ba):(xb'=xb-1)&(locteam2'= fail);
+    [team2_b_a_2] (locteam2=b)&(xb>=2)&(xa<=maxa-2) -> RED*factor_team2ba:(xa'=xa+2)&(xb'=xb-2)&(locteam2'=a)+(1-RED*factor_team2ba):(xb'=xb-2)&(locteam2'= fail);
+    [team2_b_a_3] (locteam2=b)&(xb>=3)&(xa<=maxa-3) -> RED*factor_team2ba:(xa'=xa+3)&(xb'=xb-3)&(locteam2'=a)+(1-RED*factor_team2ba):(xb'=xb-3)&(locteam2'= fail);
+
+    [team2_a_c_0] (locteam2=a)&(xa>=0)&(xc<=maxc-0) -> YELLOW*factor_team2ac:(xc'=xc+0)&(xa'=xa-0)&(locteam2'=c)+(1-YELLOW*factor_team2ac):(xa'=xa-0)&(locteam2'= fail);
+    [team2_a_c_1] (locteam2=a)&(xa>=1)&(xc<=maxc-1) -> YELLOW*factor_team2ac:(xc'=xc+1)&(xa'=xa-1)&(locteam2'=c)+(1-YELLOW*factor_team2ac):(xa'=xa-1)&(locteam2'= fail);
+    [team2_a_c_2] (locteam2=a)&(xa>=2)&(xc<=maxc-2) -> YELLOW*factor_team2ac:(xc'=xc+2)&(xa'=xa-2)&(locteam2'=c)+(1-YELLOW*factor_team2ac):(xa'=xa-2)&(locteam2'= fail);
+    [team2_a_c_3] (locteam2=a)&(xa>=3)&(xc<=maxc-3) -> YELLOW*factor_team2ac:(xc'=xc+3)&(xa'=xa-3)&(locteam2'=c)+(1-YELLOW*factor_team2ac):(xa'=xa-3)&(locteam2'= fail);
+
+    [team2_c_a_0] (locteam2=c)&(xc>=0)&(xa<=maxa-0) -> YELLOW*factor_team2ca:(xa'=xa+0)&(xc'=xc-0)&(locteam2'=a)+(1-YELLOW*factor_team2ca):(xc'=xc-0)&(locteam2'= fail);
+    [team2_c_a_1] (locteam2=c)&(xc>=1)&(xa<=maxa-1) -> YELLOW*factor_team2ca:(xa'=xa+1)&(xc'=xc-1)&(locteam2'=a)+(1-YELLOW*factor_team2ca):(xc'=xc-1)&(locteam2'= fail);
+    [team2_c_a_2] (locteam2=c)&(xc>=2)&(xa<=maxa-2) -> YELLOW*factor_team2ca:(xa'=xa+2)&(xc'=xc-2)&(locteam2'=a)+(1-YELLOW*factor_team2ca):(xc'=xc-2)&(locteam2'= fail);
+    [team2_c_a_3] (locteam2=c)&(xc>=3)&(xa<=maxa-3) -> YELLOW*factor_team2ca:(xa'=xa+3)&(xc'=xc-3)&(locteam2'=a)+(1-YELLOW*factor_team2ca):(xc'=xc-3)&(locteam2'= fail);
+
+    [team2_a_d_0] (locteam2=a)&(xa>=0)&(xd<=maxd-0) -> GREEN*factor_team2ad:(xd'=xd+0)&(xa'=xa-0)&(locteam2'=d)+(1-GREEN*factor_team2ad):(xa'=xa-0)&(locteam2'= fail);
+    [team2_a_d_1] (locteam2=a)&(xa>=1)&(xd<=maxd-1) -> GREEN*factor_team2ad:(xd'=xd+1)&(xa'=xa-1)&(locteam2'=d)+(1-GREEN*factor_team2ad):(xa'=xa-1)&(locteam2'= fail);
+    [team2_a_d_2] (locteam2=a)&(xa>=2)&(xd<=maxd-2) -> GREEN*factor_team2ad:(xd'=xd+2)&(xa'=xa-2)&(locteam2'=d)+(1-GREEN*factor_team2ad):(xa'=xa-2)&(locteam2'= fail);
+    [team2_a_d_3] (locteam2=a)&(xa>=3)&(xd<=maxd-3) -> GREEN*factor_team2ad:(xd'=xd+3)&(xa'=xa-3)&(locteam2'=d)+(1-GREEN*factor_team2ad):(xa'=xa-3)&(locteam2'= fail);
+
+    [team2_d_a_0] (locteam2=d)&(xd>=0)&(xa<=maxa-0) -> GREEN*factor_team2da:(xa'=xa+0)&(xd'=xd-0)&(locteam2'=a)+(1-GREEN*factor_team2da):(xd'=xd-0)&(locteam2'= fail);
+    [team2_d_a_1] (locteam2=d)&(xd>=1)&(xa<=maxa-1) -> GREEN*factor_team2da:(xa'=xa+1)&(xd'=xd-1)&(locteam2'=a)+(1-GREEN*factor_team2da):(xd'=xd-1)&(locteam2'= fail);
+    [team2_d_a_2] (locteam2=d)&(xd>=2)&(xa<=maxa-2) -> GREEN*factor_team2da:(xa'=xa+2)&(xd'=xd-2)&(locteam2'=a)+(1-GREEN*factor_team2da):(xd'=xd-2)&(locteam2'= fail);
+    [team2_d_a_3] (locteam2=d)&(xd>=3)&(xa<=maxa-3) -> GREEN*factor_team2da:(xa'=xa+3)&(xd'=xd-3)&(locteam2'=a)+(1-GREEN*factor_team2da):(xd'=xd-3)&(locteam2'= fail);
+
+    [team2_b_c_0] (locteam2=b)&(xb>=0)&(xc<=maxc-0) -> GREEN*factor_team2bc:(xc'=xc+0)&(xb'=xb-0)&(locteam2'=c)+(1-GREEN*factor_team2bc):(xb'=xb-0)&(locteam2'= fail);
+    [team2_b_c_1] (locteam2=b)&(xb>=1)&(xc<=maxc-1) -> GREEN*factor_team2bc:(xc'=xc+1)&(xb'=xb-1)&(locteam2'=c)+(1-GREEN*factor_team2bc):(xb'=xb-1)&(locteam2'= fail);
+    [team2_b_c_2] (locteam2=b)&(xb>=2)&(xc<=maxc-2) -> GREEN*factor_team2bc:(xc'=xc+2)&(xb'=xb-2)&(locteam2'=c)+(1-GREEN*factor_team2bc):(xb'=xb-2)&(locteam2'= fail);
+    [team2_b_c_3] (locteam2=b)&(xb>=3)&(xc<=maxc-3) -> GREEN*factor_team2bc:(xc'=xc+3)&(xb'=xb-3)&(locteam2'=c)+(1-GREEN*factor_team2bc):(xb'=xb-3)&(locteam2'= fail);
+
+    [team2_c_b_0] (locteam2=c)&(xc>=0)&(xb<=maxb-0) -> GREEN*factor_team2cb:(xb'=xb+0)&(xc'=xc-0)&(locteam2'=b)+(1-GREEN*factor_team2cb):(xc'=xc-0)&(locteam2'= fail);
+    [team2_c_b_1] (locteam2=c)&(xc>=1)&(xb<=maxb-1) -> GREEN*factor_team2cb:(xb'=xb+1)&(xc'=xc-1)&(locteam2'=b)+(1-GREEN*factor_team2cb):(xc'=xc-1)&(locteam2'= fail);
+    [team2_c_b_2] (locteam2=c)&(xc>=2)&(xb<=maxb-2) -> GREEN*factor_team2cb:(xb'=xb+2)&(xc'=xc-2)&(locteam2'=b)+(1-GREEN*factor_team2cb):(xc'=xc-2)&(locteam2'= fail);
+    [team2_c_b_3] (locteam2=c)&(xc>=3)&(xb<=maxb-3) -> GREEN*factor_team2cb:(xb'=xb+3)&(xc'=xc-3)&(locteam2'=b)+(1-GREEN*factor_team2cb):(xc'=xc-3)&(locteam2'= fail);
+
+    [team2_c_e_0] (locteam2=c)&(xc>=0)&(xe<=maxe-0) -> RED*factor_team2ce:(xe'=xe+0)&(xc'=xc-0)&(locteam2'=e)+(1-RED*factor_team2ce):(xc'=xc-0)&(locteam2'= fail);
+    [team2_c_e_1] (locteam2=c)&(xc>=1)&(xe<=maxe-1) -> RED*factor_team2ce:(xe'=xe+1)&(xc'=xc-1)&(locteam2'=e)+(1-RED*factor_team2ce):(xc'=xc-1)&(locteam2'= fail);
+    [team2_c_e_2] (locteam2=c)&(xc>=2)&(xe<=maxe-2) -> RED*factor_team2ce:(xe'=xe+2)&(xc'=xc-2)&(locteam2'=e)+(1-RED*factor_team2ce):(xc'=xc-2)&(locteam2'= fail);
+    [team2_c_e_3] (locteam2=c)&(xc>=3)&(xe<=maxe-3) -> RED*factor_team2ce:(xe'=xe+3)&(xc'=xc-3)&(locteam2'=e)+(1-RED*factor_team2ce):(xc'=xc-3)&(locteam2'= fail);
+
+    [team2_e_c_0] (locteam2=e)&(xe>=0)&(xc<=maxc-0) -> RED*factor_team2ec:(xc'=xc+0)&(xe'=xe-0)&(locteam2'=c)+(1-RED*factor_team2ec):(xe'=xe-0)&(locteam2'= fail);
+    [team2_e_c_1] (locteam2=e)&(xe>=1)&(xc<=maxc-1) -> RED*factor_team2ec:(xc'=xc+1)&(xe'=xe-1)&(locteam2'=c)+(1-RED*factor_team2ec):(xe'=xe-1)&(locteam2'= fail);
+    [team2_e_c_2] (locteam2=e)&(xe>=2)&(xc<=maxc-2) -> RED*factor_team2ec:(xc'=xc+2)&(xe'=xe-2)&(locteam2'=c)+(1-RED*factor_team2ec):(xe'=xe-2)&(locteam2'= fail);
+    [team2_e_c_3] (locteam2=e)&(xe>=3)&(xc<=maxc-3) -> RED*factor_team2ec:(xc'=xc+3)&(xe'=xe-3)&(locteam2'=c)+(1-RED*factor_team2ec):(xe'=xe-3)&(locteam2'= fail);
+
+    [team2_c_d_0] (locteam2=c)&(xc>=0)&(xd<=maxd-0) -> RED*factor_team2cd:(xd'=xd+0)&(xc'=xc-0)&(locteam2'=d)+(1-RED*factor_team2cd):(xc'=xc-0)&(locteam2'= fail);
+    [team2_c_d_1] (locteam2=c)&(xc>=1)&(xd<=maxd-1) -> RED*factor_team2cd:(xd'=xd+1)&(xc'=xc-1)&(locteam2'=d)+(1-RED*factor_team2cd):(xc'=xc-1)&(locteam2'= fail);
+    [team2_c_d_2] (locteam2=c)&(xc>=2)&(xd<=maxd-2) -> RED*factor_team2cd:(xd'=xd+2)&(xc'=xc-2)&(locteam2'=d)+(1-RED*factor_team2cd):(xc'=xc-2)&(locteam2'= fail);
+    [team2_c_d_3] (locteam2=c)&(xc>=3)&(xd<=maxd-3) -> RED*factor_team2cd:(xd'=xd+3)&(xc'=xc-3)&(locteam2'=d)+(1-RED*factor_team2cd):(xc'=xc-3)&(locteam2'= fail);
+
+    [team2_d_c_0] (locteam2=d)&(xd>=0)&(xc<=maxc-0) -> RED*factor_team2dc:(xc'=xc+0)&(xd'=xd-0)&(locteam2'=c)+(1-RED*factor_team2dc):(xd'=xd-0)&(locteam2'= fail);
+    [team2_d_c_1] (locteam2=d)&(xd>=1)&(xc<=maxc-1) -> RED*factor_team2dc:(xc'=xc+1)&(xd'=xd-1)&(locteam2'=c)+(1-RED*factor_team2dc):(xd'=xd-1)&(locteam2'= fail);
+    [team2_d_c_2] (locteam2=d)&(xd>=2)&(xc<=maxc-2) -> RED*factor_team2dc:(xc'=xc+2)&(xd'=xd-2)&(locteam2'=c)+(1-RED*factor_team2dc):(xd'=xd-2)&(locteam2'= fail);
+    [team2_d_c_3] (locteam2=d)&(xd>=3)&(xc<=maxc-3) -> RED*factor_team2dc:(xc'=xc+3)&(xd'=xd-3)&(locteam2'=c)+(1-RED*factor_team2dc):(xd'=xd-3)&(locteam2'= fail);
+
+    [team2_d_g_0] (locteam2=d)&(xd>=0)&(xg<=maxg-0) -> GREEN*factor_team2dg:(xg'=xg+0)&(xd'=xd-0)&(locteam2'=g)+(1-GREEN*factor_team2dg):(xd'=xd-0)&(locteam2'= fail);
+    [team2_d_g_1] (locteam2=d)&(xd>=1)&(xg<=maxg-1) -> GREEN*factor_team2dg:(xg'=xg+1)&(xd'=xd-1)&(locteam2'=g)+(1-GREEN*factor_team2dg):(xd'=xd-1)&(locteam2'= fail);
+    [team2_d_g_2] (locteam2=d)&(xd>=2)&(xg<=maxg-2) -> GREEN*factor_team2dg:(xg'=xg+2)&(xd'=xd-2)&(locteam2'=g)+(1-GREEN*factor_team2dg):(xd'=xd-2)&(locteam2'= fail);
+    [team2_d_g_3] (locteam2=d)&(xd>=3)&(xg<=maxg-3) -> GREEN*factor_team2dg:(xg'=xg+3)&(xd'=xd-3)&(locteam2'=g)+(1-GREEN*factor_team2dg):(xd'=xd-3)&(locteam2'= fail);
+
+    [team2_g_d_0] (locteam2=g)&(xg>=0)&(xd<=maxd-0) -> GREEN*factor_team2gd:(xd'=xd+0)&(xg'=xg-0)&(locteam2'=d)+(1-GREEN*factor_team2gd):(xg'=xg-0)&(locteam2'= fail);
+    [team2_g_d_1] (locteam2=g)&(xg>=1)&(xd<=maxd-1) -> GREEN*factor_team2gd:(xd'=xd+1)&(xg'=xg-1)&(locteam2'=d)+(1-GREEN*factor_team2gd):(xg'=xg-1)&(locteam2'= fail);
+    [team2_g_d_2] (locteam2=g)&(xg>=2)&(xd<=maxd-2) -> GREEN*factor_team2gd:(xd'=xd+2)&(xg'=xg-2)&(locteam2'=d)+(1-GREEN*factor_team2gd):(xg'=xg-2)&(locteam2'= fail);
+    [team2_g_d_3] (locteam2=g)&(xg>=3)&(xd<=maxd-3) -> GREEN*factor_team2gd:(xd'=xd+3)&(xg'=xg-3)&(locteam2'=d)+(1-GREEN*factor_team2gd):(xg'=xg-3)&(locteam2'= fail);
+
+    [team2_d_h_0] (locteam2=d)&(xd>=0)&(xh<=maxh-0) -> RED*factor_team2dh:(xh'=xh+0)&(xd'=xd-0)&(locteam2'=h)+(1-RED*factor_team2dh):(xd'=xd-0)&(locteam2'= fail);
+    [team2_d_h_1] (locteam2=d)&(xd>=1)&(xh<=maxh-1) -> RED*factor_team2dh:(xh'=xh+1)&(xd'=xd-1)&(locteam2'=h)+(1-RED*factor_team2dh):(xd'=xd-1)&(locteam2'= fail);
+    [team2_d_h_2] (locteam2=d)&(xd>=2)&(xh<=maxh-2) -> RED*factor_team2dh:(xh'=xh+2)&(xd'=xd-2)&(locteam2'=h)+(1-RED*factor_team2dh):(xd'=xd-2)&(locteam2'= fail);
+    [team2_d_h_3] (locteam2=d)&(xd>=3)&(xh<=maxh-3) -> RED*factor_team2dh:(xh'=xh+3)&(xd'=xd-3)&(locteam2'=h)+(1-RED*factor_team2dh):(xd'=xd-3)&(locteam2'= fail);
+
+    [team2_h_d_0] (locteam2=h)&(xh>=0)&(xd<=maxd-0) -> RED*factor_team2hd:(xd'=xd+0)&(xh'=xh-0)&(locteam2'=d)+(1-RED*factor_team2hd):(xh'=xh-0)&(locteam2'= fail);
+    [team2_h_d_1] (locteam2=h)&(xh>=1)&(xd<=maxd-1) -> RED*factor_team2hd:(xd'=xd+1)&(xh'=xh-1)&(locteam2'=d)+(1-RED*factor_team2hd):(xh'=xh-1)&(locteam2'= fail);
+    [team2_h_d_2] (locteam2=h)&(xh>=2)&(xd<=maxd-2) -> RED*factor_team2hd:(xd'=xd+2)&(xh'=xh-2)&(locteam2'=d)+(1-RED*factor_team2hd):(xh'=xh-2)&(locteam2'= fail);
+    [team2_h_d_3] (locteam2=h)&(xh>=3)&(xd<=maxd-3) -> RED*factor_team2hd:(xd'=xd+3)&(xh'=xh-3)&(locteam2'=d)+(1-RED*factor_team2hd):(xh'=xh-3)&(locteam2'= fail);
+
+    [team2_e_f_0] (locteam2=e)&(xe>=0)&(xf<=maxf-0) -> YELLOW*factor_team2ef:(xf'=xf+0)&(xe'=xe-0)&(locteam2'=f)+(1-YELLOW*factor_team2ef):(xe'=xe-0)&(locteam2'= fail);
+    [team2_e_f_1] (locteam2=e)&(xe>=1)&(xf<=maxf-1) -> YELLOW*factor_team2ef:(xf'=xf+1)&(xe'=xe-1)&(locteam2'=f)+(1-YELLOW*factor_team2ef):(xe'=xe-1)&(locteam2'= fail);
+    [team2_e_f_2] (locteam2=e)&(xe>=2)&(xf<=maxf-2) -> YELLOW*factor_team2ef:(xf'=xf+2)&(xe'=xe-2)&(locteam2'=f)+(1-YELLOW*factor_team2ef):(xe'=xe-2)&(locteam2'= fail);
+    [team2_e_f_3] (locteam2=e)&(xe>=3)&(xf<=maxf-3) -> YELLOW*factor_team2ef:(xf'=xf+3)&(xe'=xe-3)&(locteam2'=f)+(1-YELLOW*factor_team2ef):(xe'=xe-3)&(locteam2'= fail);
+
+    [team2_f_e_0] (locteam2=f)&(xf>=0)&(xe<=maxe-0) -> YELLOW*factor_team2fe:(xe'=xe+0)&(xf'=xf-0)&(locteam2'=e)+(1-YELLOW*factor_team2fe):(xf'=xf-0)&(locteam2'= fail);
+    [team2_f_e_1] (locteam2=f)&(xf>=1)&(xe<=maxe-1) -> YELLOW*factor_team2fe:(xe'=xe+1)&(xf'=xf-1)&(locteam2'=e)+(1-YELLOW*factor_team2fe):(xf'=xf-1)&(locteam2'= fail);
+    [team2_f_e_2] (locteam2=f)&(xf>=2)&(xe<=maxe-2) -> YELLOW*factor_team2fe:(xe'=xe+2)&(xf'=xf-2)&(locteam2'=e)+(1-YELLOW*factor_team2fe):(xf'=xf-2)&(locteam2'= fail);
+    [team2_f_e_3] (locteam2=f)&(xf>=3)&(xe<=maxe-3) -> YELLOW*factor_team2fe:(xe'=xe+3)&(xf'=xf-3)&(locteam2'=e)+(1-YELLOW*factor_team2fe):(xf'=xf-3)&(locteam2'= fail);
+
+    [team2_e_g_0] (locteam2=e)&(xe>=0)&(xg<=maxg-0) -> RED*factor_team2eg:(xg'=xg+0)&(xe'=xe-0)&(locteam2'=g)+(1-RED*factor_team2eg):(xe'=xe-0)&(locteam2'= fail);
+    [team2_e_g_1] (locteam2=e)&(xe>=1)&(xg<=maxg-1) -> RED*factor_team2eg:(xg'=xg+1)&(xe'=xe-1)&(locteam2'=g)+(1-RED*factor_team2eg):(xe'=xe-1)&(locteam2'= fail);
+    [team2_e_g_2] (locteam2=e)&(xe>=2)&(xg<=maxg-2) -> RED*factor_team2eg:(xg'=xg+2)&(xe'=xe-2)&(locteam2'=g)+(1-RED*factor_team2eg):(xe'=xe-2)&(locteam2'= fail);
+    [team2_e_g_3] (locteam2=e)&(xe>=3)&(xg<=maxg-3) -> RED*factor_team2eg:(xg'=xg+3)&(xe'=xe-3)&(locteam2'=g)+(1-RED*factor_team2eg):(xe'=xe-3)&(locteam2'= fail);
+
+    [team2_g_e_0] (locteam2=g)&(xg>=0)&(xe<=maxe-0) -> RED*factor_team2ge:(xe'=xe+0)&(xg'=xg-0)&(locteam2'=e)+(1-RED*factor_team2ge):(xg'=xg-0)&(locteam2'= fail);
+    [team2_g_e_1] (locteam2=g)&(xg>=1)&(xe<=maxe-1) -> RED*factor_team2ge:(xe'=xe+1)&(xg'=xg-1)&(locteam2'=e)+(1-RED*factor_team2ge):(xg'=xg-1)&(locteam2'= fail);
+    [team2_g_e_2] (locteam2=g)&(xg>=2)&(xe<=maxe-2) -> RED*factor_team2ge:(xe'=xe+2)&(xg'=xg-2)&(locteam2'=e)+(1-RED*factor_team2ge):(xg'=xg-2)&(locteam2'= fail);
+    [team2_g_e_3] (locteam2=g)&(xg>=3)&(xe<=maxe-3) -> RED*factor_team2ge:(xe'=xe+3)&(xg'=xg-3)&(locteam2'=e)+(1-RED*factor_team2ge):(xg'=xg-3)&(locteam2'= fail);
+
+    [team2_f_g_0] (locteam2=f)&(xf>=0)&(xg<=maxg-0) -> YELLOW*factor_team2fg:(xg'=xg+0)&(xf'=xf-0)&(locteam2'=g)+(1-YELLOW*factor_team2fg):(xf'=xf-0)&(locteam2'= fail);
+    [team2_f_g_1] (locteam2=f)&(xf>=1)&(xg<=maxg-1) -> YELLOW*factor_team2fg:(xg'=xg+1)&(xf'=xf-1)&(locteam2'=g)+(1-YELLOW*factor_team2fg):(xf'=xf-1)&(locteam2'= fail);
+    [team2_f_g_2] (locteam2=f)&(xf>=2)&(xg<=maxg-2) -> YELLOW*factor_team2fg:(xg'=xg+2)&(xf'=xf-2)&(locteam2'=g)+(1-YELLOW*factor_team2fg):(xf'=xf-2)&(locteam2'= fail);
+    [team2_f_g_3] (locteam2=f)&(xf>=3)&(xg<=maxg-3) -> YELLOW*factor_team2fg:(xg'=xg+3)&(xf'=xf-3)&(locteam2'=g)+(1-YELLOW*factor_team2fg):(xf'=xf-3)&(locteam2'= fail);
+
+    [team2_g_f_0] (locteam2=g)&(xg>=0)&(xf<=maxf-0) -> YELLOW*factor_team2gf:(xf'=xf+0)&(xg'=xg-0)&(locteam2'=f)+(1-YELLOW*factor_team2gf):(xg'=xg-0)&(locteam2'= fail);
+    [team2_g_f_1] (locteam2=g)&(xg>=1)&(xf<=maxf-1) -> YELLOW*factor_team2gf:(xf'=xf+1)&(xg'=xg-1)&(locteam2'=f)+(1-YELLOW*factor_team2gf):(xg'=xg-1)&(locteam2'= fail);
+    [team2_g_f_2] (locteam2=g)&(xg>=2)&(xf<=maxf-2) -> YELLOW*factor_team2gf:(xf'=xf+2)&(xg'=xg-2)&(locteam2'=f)+(1-YELLOW*factor_team2gf):(xg'=xg-2)&(locteam2'= fail);
+    [team2_g_f_3] (locteam2=g)&(xg>=3)&(xf<=maxf-3) -> YELLOW*factor_team2gf:(xf'=xf+3)&(xg'=xg-3)&(locteam2'=f)+(1-YELLOW*factor_team2gf):(xg'=xg-3)&(locteam2'= fail);
+
+    [team2_h_g_0] (locteam2=h)&(xh>=0)&(xg<=maxg-0) -> GREEN*factor_team2hg:(xg'=xg+0)&(xh'=xh-0)&(locteam2'=g)+(1-GREEN*factor_team2hg):(xh'=xh-0)&(locteam2'= fail);
+    [team2_h_g_1] (locteam2=h)&(xh>=1)&(xg<=maxg-1) -> GREEN*factor_team2hg:(xg'=xg+1)&(xh'=xh-1)&(locteam2'=g)+(1-GREEN*factor_team2hg):(xh'=xh-1)&(locteam2'= fail);
+    [team2_h_g_2] (locteam2=h)&(xh>=2)&(xg<=maxg-2) -> GREEN*factor_team2hg:(xg'=xg+2)&(xh'=xh-2)&(locteam2'=g)+(1-GREEN*factor_team2hg):(xh'=xh-2)&(locteam2'= fail);
+    [team2_h_g_3] (locteam2=h)&(xh>=3)&(xg<=maxg-3) -> GREEN*factor_team2hg:(xg'=xg+3)&(xh'=xh-3)&(locteam2'=g)+(1-GREEN*factor_team2hg):(xh'=xh-3)&(locteam2'= fail);
+
+    [team2_g_h_0] (locteam2=g)&(xg>=0)&(xh<=maxh-0) -> GREEN*factor_team2gh:(xh'=xh+0)&(xg'=xg-0)&(locteam2'=h)+(1-GREEN*factor_team2gh):(xg'=xg-0)&(locteam2'= fail);
+    [team2_g_h_1] (locteam2=g)&(xg>=1)&(xh<=maxh-1) -> GREEN*factor_team2gh:(xh'=xh+1)&(xg'=xg-1)&(locteam2'=h)+(1-GREEN*factor_team2gh):(xg'=xg-1)&(locteam2'= fail);
+    [team2_g_h_2] (locteam2=g)&(xg>=2)&(xh<=maxh-2) -> GREEN*factor_team2gh:(xh'=xh+2)&(xg'=xg-2)&(locteam2'=h)+(1-GREEN*factor_team2gh):(xg'=xg-2)&(locteam2'= fail);
+    [team2_g_h_3] (locteam2=g)&(xg>=3)&(xh<=maxh-3) -> GREEN*factor_team2gh:(xh'=xh+3)&(xg'=xg-3)&(locteam2'=h)+(1-GREEN*factor_team2gh):(xg'=xg-3)&(locteam2'= fail);
+
+endmodule
+
+rewards "distance_team1"
+    [team1_a_b_0] true : 1.0;
+    [team1_a_b_1] true : 1.0;
+    [team1_a_b_2] true : 1.0;
+    [team1_a_b_3] true : 1.0;
+
+    [team1_b_a_0] true : 1.0;
+    [team1_b_a_1] true : 1.0;
+    [team1_b_a_2] true : 1.0;
+    [team1_b_a_3] true : 1.0;
+
+    [team1_a_c_0] true : 2.0;
+    [team1_a_c_1] true : 2.0;
+    [team1_a_c_2] true : 2.0;
+    [team1_a_c_3] true : 2.0;
+
+    [team1_c_a_0] true : 2.0;
+    [team1_c_a_1] true : 2.0;
+    [team1_c_a_2] true : 2.0;
+    [team1_c_a_3] true : 2.0;
+
+    [team1_a_d_0] true : 9.0;
+    [team1_a_d_1] true : 9.0;
+    [team1_a_d_2] true : 9.0;
+    [team1_a_d_3] true : 9.0;
+
+    [team1_d_a_0] true : 9.0;
+    [team1_d_a_1] true : 9.0;
+    [team1_d_a_2] true : 9.0;
+    [team1_d_a_3] true : 9.0;
+
+    [team1_b_c_0] true : 5.0;
+    [team1_b_c_1] true : 5.0;
+    [team1_b_c_2] true : 5.0;
+    [team1_b_c_3] true : 5.0;
+
+    [team1_c_b_0] true : 5.0;
+    [team1_c_b_1] true : 5.0;
+    [team1_c_b_2] true : 5.0;
+    [team1_c_b_3] true : 5.0;
+
+    [team1_c_e_0] true : 2.0;
+    [team1_c_e_1] true : 2.0;
+    [team1_c_e_2] true : 2.0;
+    [team1_c_e_3] true : 2.0;
+
+    [team1_e_c_0] true : 2.0;
+    [team1_e_c_1] true : 2.0;
+    [team1_e_c_2] true : 2.0;
+    [team1_e_c_3] true : 2.0;
+
+    [team1_c_d_0] true : 3.0;
+    [team1_c_d_1] true : 3.0;
+    [team1_c_d_2] true : 3.0;
+    [team1_c_d_3] true : 3.0;
+
+    [team1_d_c_0] true : 3.0;
+    [team1_d_c_1] true : 3.0;
+    [team1_d_c_2] true : 3.0;
+    [team1_d_c_3] true : 3.0;
+
+    [team1_d_g_0] true : 5.0;
+    [team1_d_g_1] true : 5.0;
+    [team1_d_g_2] true : 5.0;
+    [team1_d_g_3] true : 5.0;
+
+    [team1_g_d_0] true : 5.0;
+    [team1_g_d_1] true : 5.0;
+    [team1_g_d_2] true : 5.0;
+    [team1_g_d_3] true : 5.0;
+
+    [team1_d_h_0] true : 1.0;
+    [team1_d_h_1] true : 1.0;
+    [team1_d_h_2] true : 1.0;
+    [team1_d_h_3] true : 1.0;
+
+    [team1_h_d_0] true : 1.0;
+    [team1_h_d_1] true : 1.0;
+    [team1_h_d_2] true : 1.0;
+    [team1_h_d_3] true : 1.0;
+
+    [team1_e_f_0] true : 3.0;
+    [team1_e_f_1] true : 3.0;
+    [team1_e_f_2] true : 3.0;
+    [team1_e_f_3] true : 3.0;
+
+    [team1_f_e_0] true : 3.0;
+    [team1_f_e_1] true : 3.0;
+    [team1_f_e_2] true : 3.0;
+    [team1_f_e_3] true : 3.0;
+
+    [team1_e_g_0] true : 4.0;
+    [team1_e_g_1] true : 4.0;
+    [team1_e_g_2] true : 4.0;
+    [team1_e_g_3] true : 4.0;
+
+    [team1_g_e_0] true : 4.0;
+    [team1_g_e_1] true : 4.0;
+    [team1_g_e_2] true : 4.0;
+    [team1_g_e_3] true : 4.0;
+
+    [team1_f_g_0] true : 2.0;
+    [team1_f_g_1] true : 2.0;
+    [team1_f_g_2] true : 2.0;
+    [team1_f_g_3] true : 2.0;
+
+    [team1_g_f_0] true : 2.0;
+    [team1_g_f_1] true : 2.0;
+    [team1_g_f_2] true : 2.0;
+    [team1_g_f_3] true : 2.0;
+
+    [team1_h_g_0] true : 3.0;
+    [team1_h_g_1] true : 3.0;
+    [team1_h_g_2] true : 3.0;
+    [team1_h_g_3] true : 3.0;
+
+    [team1_g_h_0] true : 3.0;
+    [team1_g_h_1] true : 3.0;
+    [team1_g_h_2] true : 3.0;
+    [team1_g_h_3] true : 3.0;
+
+endrewards
+
+
+rewards "resource_team1"
+    [team1_a_b_0] true : 0;
+    [team1_a_b_1] true : 1;
+    [team1_a_b_2] true : 2;
+    [team1_a_b_3] true : 3;
+    [team1_b_a_0] true : 0;
+    [team1_b_a_1] true : 1;
+    [team1_b_a_2] true : 2;
+    [team1_b_a_3] true : 3;
+    [team1_a_c_0] true : 0;
+    [team1_a_c_1] true : 1;
+    [team1_a_c_2] true : 2;
+    [team1_a_c_3] true : 3;
+    [team1_c_a_0] true : 0;
+    [team1_c_a_1] true : 1;
+    [team1_c_a_2] true : 2;
+    [team1_c_a_3] true : 3;
+    [team1_a_d_0] true : 0;
+    [team1_a_d_1] true : 1;
+    [team1_a_d_2] true : 2;
+    [team1_a_d_3] true : 3;
+    [team1_d_a_0] true : 0;
+    [team1_d_a_1] true : 1;
+    [team1_d_a_2] true : 2;
+    [team1_d_a_3] true : 3;
+    [team1_b_c_0] true : 0;
+    [team1_b_c_1] true : 1;
+    [team1_b_c_2] true : 2;
+    [team1_b_c_3] true : 3;
+    [team1_c_b_0] true : 0;
+    [team1_c_b_1] true : 1;
+    [team1_c_b_2] true : 2;
+    [team1_c_b_3] true : 3;
+    [team1_c_e_0] true : 0;
+    [team1_c_e_1] true : 1;
+    [team1_c_e_2] true : 2;
+    [team1_c_e_3] true : 3;
+    [team1_e_c_0] true : 0;
+    [team1_e_c_1] true : 1;
+    [team1_e_c_2] true : 2;
+    [team1_e_c_3] true : 3;
+    [team1_c_d_0] true : 0;
+    [team1_c_d_1] true : 1;
+    [team1_c_d_2] true : 2;
+    [team1_c_d_3] true : 3;
+    [team1_d_c_0] true : 0;
+    [team1_d_c_1] true : 1;
+    [team1_d_c_2] true : 2;
+    [team1_d_c_3] true : 3;
+    [team1_d_g_0] true : 0;
+    [team1_d_g_1] true : 1;
+    [team1_d_g_2] true : 2;
+    [team1_d_g_3] true : 3;
+    [team1_g_d_0] true : 0;
+    [team1_g_d_1] true : 1;
+    [team1_g_d_2] true : 2;
+    [team1_g_d_3] true : 3;
+    [team1_d_h_0] true : 0;
+    [team1_d_h_1] true : 1;
+    [team1_d_h_2] true : 2;
+    [team1_d_h_3] true : 3;
+    [team1_h_d_0] true : 0;
+    [team1_h_d_1] true : 1;
+    [team1_h_d_2] true : 2;
+    [team1_h_d_3] true : 3;
+    [team1_e_f_0] true : 0;
+    [team1_e_f_1] true : 1;
+    [team1_e_f_2] true : 2;
+    [team1_e_f_3] true : 3;
+    [team1_f_e_0] true : 0;
+    [team1_f_e_1] true : 1;
+    [team1_f_e_2] true : 2;
+    [team1_f_e_3] true : 3;
+    [team1_e_g_0] true : 0;
+    [team1_e_g_1] true : 1;
+    [team1_e_g_2] true : 2;
+    [team1_e_g_3] true : 3;
+    [team1_g_e_0] true : 0;
+    [team1_g_e_1] true : 1;
+    [team1_g_e_2] true : 2;
+    [team1_g_e_3] true : 3;
+    [team1_f_g_0] true : 0;
+    [team1_f_g_1] true : 1;
+    [team1_f_g_2] true : 2;
+    [team1_f_g_3] true : 3;
+    [team1_g_f_0] true : 0;
+    [team1_g_f_1] true : 1;
+    [team1_g_f_2] true : 2;
+    [team1_g_f_3] true : 3;
+    [team1_h_g_0] true : 0;
+    [team1_h_g_1] true : 1;
+    [team1_h_g_2] true : 2;
+    [team1_h_g_3] true : 3;
+    [team1_g_h_0] true : 0;
+    [team1_g_h_1] true : 1;
+    [team1_g_h_2] true : 2;
+    [team1_g_h_3] true : 3;
+endrewards
+
+
+rewards "distance_team2"
+    [team2_a_b_0] true : 1.0;
+    [team2_a_b_1] true : 1.0;
+    [team2_a_b_2] true : 1.0;
+    [team2_a_b_3] true : 1.0;
+
+    [team2_b_a_0] true : 1.0;
+    [team2_b_a_1] true : 1.0;
+    [team2_b_a_2] true : 1.0;
+    [team2_b_a_3] true : 1.0;
+
+    [team2_a_c_0] true : 2.0;
+    [team2_a_c_1] true : 2.0;
+    [team2_a_c_2] true : 2.0;
+    [team2_a_c_3] true : 2.0;
+
+    [team2_c_a_0] true : 2.0;
+    [team2_c_a_1] true : 2.0;
+    [team2_c_a_2] true : 2.0;
+    [team2_c_a_3] true : 2.0;
+
+    [team2_a_d_0] true : 9.0;
+    [team2_a_d_1] true : 9.0;
+    [team2_a_d_2] true : 9.0;
+    [team2_a_d_3] true : 9.0;
+
+    [team2_d_a_0] true : 9.0;
+    [team2_d_a_1] true : 9.0;
+    [team2_d_a_2] true : 9.0;
+    [team2_d_a_3] true : 9.0;
+
+    [team2_b_c_0] true : 5.0;
+    [team2_b_c_1] true : 5.0;
+    [team2_b_c_2] true : 5.0;
+    [team2_b_c_3] true : 5.0;
+
+    [team2_c_b_0] true : 5.0;
+    [team2_c_b_1] true : 5.0;
+    [team2_c_b_2] true : 5.0;
+    [team2_c_b_3] true : 5.0;
+
+    [team2_c_e_0] true : 2.0;
+    [team2_c_e_1] true : 2.0;
+    [team2_c_e_2] true : 2.0;
+    [team2_c_e_3] true : 2.0;
+
+    [team2_e_c_0] true : 2.0;
+    [team2_e_c_1] true : 2.0;
+    [team2_e_c_2] true : 2.0;
+    [team2_e_c_3] true : 2.0;
+
+    [team2_c_d_0] true : 3.0;
+    [team2_c_d_1] true : 3.0;
+    [team2_c_d_2] true : 3.0;
+    [team2_c_d_3] true : 3.0;
+
+    [team2_d_c_0] true : 3.0;
+    [team2_d_c_1] true : 3.0;
+    [team2_d_c_2] true : 3.0;
+    [team2_d_c_3] true : 3.0;
+
+    [team2_d_g_0] true : 5.0;
+    [team2_d_g_1] true : 5.0;
+    [team2_d_g_2] true : 5.0;
+    [team2_d_g_3] true : 5.0;
+
+    [team2_g_d_0] true : 5.0;
+    [team2_g_d_1] true : 5.0;
+    [team2_g_d_2] true : 5.0;
+    [team2_g_d_3] true : 5.0;
+
+    [team2_d_h_0] true : 1.0;
+    [team2_d_h_1] true : 1.0;
+    [team2_d_h_2] true : 1.0;
+    [team2_d_h_3] true : 1.0;
+
+    [team2_h_d_0] true : 1.0;
+    [team2_h_d_1] true : 1.0;
+    [team2_h_d_2] true : 1.0;
+    [team2_h_d_3] true : 1.0;
+
+    [team2_e_f_0] true : 3.0;
+    [team2_e_f_1] true : 3.0;
+    [team2_e_f_2] true : 3.0;
+    [team2_e_f_3] true : 3.0;
+
+    [team2_f_e_0] true : 3.0;
+    [team2_f_e_1] true : 3.0;
+    [team2_f_e_2] true : 3.0;
+    [team2_f_e_3] true : 3.0;
+
+    [team2_e_g_0] true : 4.0;
+    [team2_e_g_1] true : 4.0;
+    [team2_e_g_2] true : 4.0;
+    [team2_e_g_3] true : 4.0;
+
+    [team2_g_e_0] true : 4.0;
+    [team2_g_e_1] true : 4.0;
+    [team2_g_e_2] true : 4.0;
+    [team2_g_e_3] true : 4.0;
+
+    [team2_f_g_0] true : 2.0;
+    [team2_f_g_1] true : 2.0;
+    [team2_f_g_2] true : 2.0;
+    [team2_f_g_3] true : 2.0;
+
+    [team2_g_f_0] true : 2.0;
+    [team2_g_f_1] true : 2.0;
+    [team2_g_f_2] true : 2.0;
+    [team2_g_f_3] true : 2.0;
+
+    [team2_h_g_0] true : 3.0;
+    [team2_h_g_1] true : 3.0;
+    [team2_h_g_2] true : 3.0;
+    [team2_h_g_3] true : 3.0;
+
+    [team2_g_h_0] true : 3.0;
+    [team2_g_h_1] true : 3.0;
+    [team2_g_h_2] true : 3.0;
+    [team2_g_h_3] true : 3.0;
+
+endrewards
+
+
+rewards "resource_team2"
+    [team2_a_b_0] true : 0;
+    [team2_a_b_1] true : 1;
+    [team2_a_b_2] true : 2;
+    [team2_a_b_3] true : 3;
+    [team2_b_a_0] true : 0;
+    [team2_b_a_1] true : 1;
+    [team2_b_a_2] true : 2;
+    [team2_b_a_3] true : 3;
+    [team2_a_c_0] true : 0;
+    [team2_a_c_1] true : 1;
+    [team2_a_c_2] true : 2;
+    [team2_a_c_3] true : 3;
+    [team2_c_a_0] true : 0;
+    [team2_c_a_1] true : 1;
+    [team2_c_a_2] true : 2;
+    [team2_c_a_3] true : 3;
+    [team2_a_d_0] true : 0;
+    [team2_a_d_1] true : 1;
+    [team2_a_d_2] true : 2;
+    [team2_a_d_3] true : 3;
+    [team2_d_a_0] true : 0;
+    [team2_d_a_1] true : 1;
+    [team2_d_a_2] true : 2;
+    [team2_d_a_3] true : 3;
+    [team2_b_c_0] true : 0;
+    [team2_b_c_1] true : 1;
+    [team2_b_c_2] true : 2;
+    [team2_b_c_3] true : 3;
+    [team2_c_b_0] true : 0;
+    [team2_c_b_1] true : 1;
+    [team2_c_b_2] true : 2;
+    [team2_c_b_3] true : 3;
+    [team2_c_e_0] true : 0;
+    [team2_c_e_1] true : 1;
+    [team2_c_e_2] true : 2;
+    [team2_c_e_3] true : 3;
+    [team2_e_c_0] true : 0;
+    [team2_e_c_1] true : 1;
+    [team2_e_c_2] true : 2;
+    [team2_e_c_3] true : 3;
+    [team2_c_d_0] true : 0;
+    [team2_c_d_1] true : 1;
+    [team2_c_d_2] true : 2;
+    [team2_c_d_3] true : 3;
+    [team2_d_c_0] true : 0;
+    [team2_d_c_1] true : 1;
+    [team2_d_c_2] true : 2;
+    [team2_d_c_3] true : 3;
+    [team2_d_g_0] true : 0;
+    [team2_d_g_1] true : 1;
+    [team2_d_g_2] true : 2;
+    [team2_d_g_3] true : 3;
+    [team2_g_d_0] true : 0;
+    [team2_g_d_1] true : 1;
+    [team2_g_d_2] true : 2;
+    [team2_g_d_3] true : 3;
+    [team2_d_h_0] true : 0;
+    [team2_d_h_1] true : 1;
+    [team2_d_h_2] true : 2;
+    [team2_d_h_3] true : 3;
+    [team2_h_d_0] true : 0;
+    [team2_h_d_1] true : 1;
+    [team2_h_d_2] true : 2;
+    [team2_h_d_3] true : 3;
+    [team2_e_f_0] true : 0;
+    [team2_e_f_1] true : 1;
+    [team2_e_f_2] true : 2;
+    [team2_e_f_3] true : 3;
+    [team2_f_e_0] true : 0;
+    [team2_f_e_1] true : 1;
+    [team2_f_e_2] true : 2;
+    [team2_f_e_3] true : 3;
+    [team2_e_g_0] true : 0;
+    [team2_e_g_1] true : 1;
+    [team2_e_g_2] true : 2;
+    [team2_e_g_3] true : 3;
+    [team2_g_e_0] true : 0;
+    [team2_g_e_1] true : 1;
+    [team2_g_e_2] true : 2;
+    [team2_g_e_3] true : 3;
+    [team2_f_g_0] true : 0;
+    [team2_f_g_1] true : 1;
+    [team2_f_g_2] true : 2;
+    [team2_f_g_3] true : 3;
+    [team2_g_f_0] true : 0;
+    [team2_g_f_1] true : 1;
+    [team2_g_f_2] true : 2;
+    [team2_g_f_3] true : 3;
+    [team2_h_g_0] true : 0;
+    [team2_h_g_1] true : 1;
+    [team2_h_g_2] true : 2;
+    [team2_h_g_3] true : 3;
+    [team2_g_h_0] true : 0;
+    [team2_g_h_1] true : 1;
+    [team2_g_h_2] true : 2;
+    [team2_g_h_3] true : 3;
+endrewards
+
+rewards "distance"
+    [team1_a_b_0] true : 1.0;
+    [team1_a_b_1] true : 1.0;
+    [team1_a_b_2] true : 1.0;
+    [team1_a_b_3] true : 1.0;
+
+    [team1_b_a_0] true : 1.0;
+    [team1_b_a_1] true : 1.0;
+    [team1_b_a_2] true : 1.0;
+    [team1_b_a_3] true : 1.0;
+
+    [team1_a_c_0] true : 2.0;
+    [team1_a_c_1] true : 2.0;
+    [team1_a_c_2] true : 2.0;
+    [team1_a_c_3] true : 2.0;
+
+    [team1_c_a_0] true : 2.0;
+    [team1_c_a_1] true : 2.0;
+    [team1_c_a_2] true : 2.0;
+    [team1_c_a_3] true : 2.0;
+
+    [team1_a_d_0] true : 9.0;
+    [team1_a_d_1] true : 9.0;
+    [team1_a_d_2] true : 9.0;
+    [team1_a_d_3] true : 9.0;
+
+    [team1_d_a_0] true : 9.0;
+    [team1_d_a_1] true : 9.0;
+    [team1_d_a_2] true : 9.0;
+    [team1_d_a_3] true : 9.0;
+
+    [team1_b_c_0] true : 5.0;
+    [team1_b_c_1] true : 5.0;
+    [team1_b_c_2] true : 5.0;
+    [team1_b_c_3] true : 5.0;
+
+    [team1_c_b_0] true : 5.0;
+    [team1_c_b_1] true : 5.0;
+    [team1_c_b_2] true : 5.0;
+    [team1_c_b_3] true : 5.0;
+
+    [team1_c_e_0] true : 2.0;
+    [team1_c_e_1] true : 2.0;
+    [team1_c_e_2] true : 2.0;
+    [team1_c_e_3] true : 2.0;
+
+    [team1_e_c_0] true : 2.0;
+    [team1_e_c_1] true : 2.0;
+    [team1_e_c_2] true : 2.0;
+    [team1_e_c_3] true : 2.0;
+
+    [team1_c_d_0] true : 3.0;
+    [team1_c_d_1] true : 3.0;
+    [team1_c_d_2] true : 3.0;
+    [team1_c_d_3] true : 3.0;
+
+    [team1_d_c_0] true : 3.0;
+    [team1_d_c_1] true : 3.0;
+    [team1_d_c_2] true : 3.0;
+    [team1_d_c_3] true : 3.0;
+
+    [team1_d_g_0] true : 5.0;
+    [team1_d_g_1] true : 5.0;
+    [team1_d_g_2] true : 5.0;
+    [team1_d_g_3] true : 5.0;
+
+    [team1_g_d_0] true : 5.0;
+    [team1_g_d_1] true : 5.0;
+    [team1_g_d_2] true : 5.0;
+    [team1_g_d_3] true : 5.0;
+
+    [team1_d_h_0] true : 1.0;
+    [team1_d_h_1] true : 1.0;
+    [team1_d_h_2] true : 1.0;
+    [team1_d_h_3] true : 1.0;
+
+    [team1_h_d_0] true : 1.0;
+    [team1_h_d_1] true : 1.0;
+    [team1_h_d_2] true : 1.0;
+    [team1_h_d_3] true : 1.0;
+
+    [team1_e_f_0] true : 3.0;
+    [team1_e_f_1] true : 3.0;
+    [team1_e_f_2] true : 3.0;
+    [team1_e_f_3] true : 3.0;
+
+    [team1_f_e_0] true : 3.0;
+    [team1_f_e_1] true : 3.0;
+    [team1_f_e_2] true : 3.0;
+    [team1_f_e_3] true : 3.0;
+
+    [team1_e_g_0] true : 4.0;
+    [team1_e_g_1] true : 4.0;
+    [team1_e_g_2] true : 4.0;
+    [team1_e_g_3] true : 4.0;
+
+    [team1_g_e_0] true : 4.0;
+    [team1_g_e_1] true : 4.0;
+    [team1_g_e_2] true : 4.0;
+    [team1_g_e_3] true : 4.0;
+
+    [team1_f_g_0] true : 2.0;
+    [team1_f_g_1] true : 2.0;
+    [team1_f_g_2] true : 2.0;
+    [team1_f_g_3] true : 2.0;
+
+    [team1_g_f_0] true : 2.0;
+    [team1_g_f_1] true : 2.0;
+    [team1_g_f_2] true : 2.0;
+    [team1_g_f_3] true : 2.0;
+
+    [team1_h_g_0] true : 3.0;
+    [team1_h_g_1] true : 3.0;
+    [team1_h_g_2] true : 3.0;
+    [team1_h_g_3] true : 3.0;
+
+    [team1_g_h_0] true : 3.0;
+    [team1_g_h_1] true : 3.0;
+    [team1_g_h_2] true : 3.0;
+    [team1_g_h_3] true : 3.0;
+
+    [team2_a_b_0] true : 1.0;
+    [team2_a_b_1] true : 1.0;
+    [team2_a_b_2] true : 1.0;
+    [team2_a_b_3] true : 1.0;
+
+    [team2_b_a_0] true : 1.0;
+    [team2_b_a_1] true : 1.0;
+    [team2_b_a_2] true : 1.0;
+    [team2_b_a_3] true : 1.0;
+
+    [team2_a_c_0] true : 2.0;
+    [team2_a_c_1] true : 2.0;
+    [team2_a_c_2] true : 2.0;
+    [team2_a_c_3] true : 2.0;
+
+    [team2_c_a_0] true : 2.0;
+    [team2_c_a_1] true : 2.0;
+    [team2_c_a_2] true : 2.0;
+    [team2_c_a_3] true : 2.0;
+
+    [team2_a_d_0] true : 9.0;
+    [team2_a_d_1] true : 9.0;
+    [team2_a_d_2] true : 9.0;
+    [team2_a_d_3] true : 9.0;
+
+    [team2_d_a_0] true : 9.0;
+    [team2_d_a_1] true : 9.0;
+    [team2_d_a_2] true : 9.0;
+    [team2_d_a_3] true : 9.0;
+
+    [team2_b_c_0] true : 5.0;
+    [team2_b_c_1] true : 5.0;
+    [team2_b_c_2] true : 5.0;
+    [team2_b_c_3] true : 5.0;
+
+    [team2_c_b_0] true : 5.0;
+    [team2_c_b_1] true : 5.0;
+    [team2_c_b_2] true : 5.0;
+    [team2_c_b_3] true : 5.0;
+
+    [team2_c_e_0] true : 2.0;
+    [team2_c_e_1] true : 2.0;
+    [team2_c_e_2] true : 2.0;
+    [team2_c_e_3] true : 2.0;
+
+    [team2_e_c_0] true : 2.0;
+    [team2_e_c_1] true : 2.0;
+    [team2_e_c_2] true : 2.0;
+    [team2_e_c_3] true : 2.0;
+
+    [team2_c_d_0] true : 3.0;
+    [team2_c_d_1] true : 3.0;
+    [team2_c_d_2] true : 3.0;
+    [team2_c_d_3] true : 3.0;
+
+    [team2_d_c_0] true : 3.0;
+    [team2_d_c_1] true : 3.0;
+    [team2_d_c_2] true : 3.0;
+    [team2_d_c_3] true : 3.0;
+
+    [team2_d_g_0] true : 5.0;
+    [team2_d_g_1] true : 5.0;
+    [team2_d_g_2] true : 5.0;
+    [team2_d_g_3] true : 5.0;
+
+    [team2_g_d_0] true : 5.0;
+    [team2_g_d_1] true : 5.0;
+    [team2_g_d_2] true : 5.0;
+    [team2_g_d_3] true : 5.0;
+
+    [team2_d_h_0] true : 1.0;
+    [team2_d_h_1] true : 1.0;
+    [team2_d_h_2] true : 1.0;
+    [team2_d_h_3] true : 1.0;
+
+    [team2_h_d_0] true : 1.0;
+    [team2_h_d_1] true : 1.0;
+    [team2_h_d_2] true : 1.0;
+    [team2_h_d_3] true : 1.0;
+
+    [team2_e_f_0] true : 3.0;
+    [team2_e_f_1] true : 3.0;
+    [team2_e_f_2] true : 3.0;
+    [team2_e_f_3] true : 3.0;
+
+    [team2_f_e_0] true : 3.0;
+    [team2_f_e_1] true : 3.0;
+    [team2_f_e_2] true : 3.0;
+    [team2_f_e_3] true : 3.0;
+
+    [team2_e_g_0] true : 4.0;
+    [team2_e_g_1] true : 4.0;
+    [team2_e_g_2] true : 4.0;
+    [team2_e_g_3] true : 4.0;
+
+    [team2_g_e_0] true : 4.0;
+    [team2_g_e_1] true : 4.0;
+    [team2_g_e_2] true : 4.0;
+    [team2_g_e_3] true : 4.0;
+
+    [team2_f_g_0] true : 2.0;
+    [team2_f_g_1] true : 2.0;
+    [team2_f_g_2] true : 2.0;
+    [team2_f_g_3] true : 2.0;
+
+    [team2_g_f_0] true : 2.0;
+    [team2_g_f_1] true : 2.0;
+    [team2_g_f_2] true : 2.0;
+    [team2_g_f_3] true : 2.0;
+
+    [team2_h_g_0] true : 3.0;
+    [team2_h_g_1] true : 3.0;
+    [team2_h_g_2] true : 3.0;
+    [team2_h_g_3] true : 3.0;
+
+    [team2_g_h_0] true : 3.0;
+    [team2_g_h_1] true : 3.0;
+    [team2_g_h_2] true : 3.0;
+    [team2_g_h_3] true : 3.0;
+
+endrewards
+
+rewards "resource"
+    [team1_a_b_0] true : 0;
+    [team1_a_b_1] true : 1;
+    [team1_a_b_2] true : 2;
+    [team1_a_b_3] true : 3;
+    [team1_b_a_0] true : 0;
+    [team1_b_a_1] true : 1;
+    [team1_b_a_2] true : 2;
+    [team1_b_a_3] true : 3;
+    [team1_a_c_0] true : 0;
+    [team1_a_c_1] true : 1;
+    [team1_a_c_2] true : 2;
+    [team1_a_c_3] true : 3;
+    [team1_c_a_0] true : 0;
+    [team1_c_a_1] true : 1;
+    [team1_c_a_2] true : 2;
+    [team1_c_a_3] true : 3;
+    [team1_a_d_0] true : 0;
+    [team1_a_d_1] true : 1;
+    [team1_a_d_2] true : 2;
+    [team1_a_d_3] true : 3;
+    [team1_d_a_0] true : 0;
+    [team1_d_a_1] true : 1;
+    [team1_d_a_2] true : 2;
+    [team1_d_a_3] true : 3;
+    [team1_b_c_0] true : 0;
+    [team1_b_c_1] true : 1;
+    [team1_b_c_2] true : 2;
+    [team1_b_c_3] true : 3;
+    [team1_c_b_0] true : 0;
+    [team1_c_b_1] true : 1;
+    [team1_c_b_2] true : 2;
+    [team1_c_b_3] true : 3;
+    [team1_c_e_0] true : 0;
+    [team1_c_e_1] true : 1;
+    [team1_c_e_2] true : 2;
+    [team1_c_e_3] true : 3;
+    [team1_e_c_0] true : 0;
+    [team1_e_c_1] true : 1;
+    [team1_e_c_2] true : 2;
+    [team1_e_c_3] true : 3;
+    [team1_c_d_0] true : 0;
+    [team1_c_d_1] true : 1;
+    [team1_c_d_2] true : 2;
+    [team1_c_d_3] true : 3;
+    [team1_d_c_0] true : 0;
+    [team1_d_c_1] true : 1;
+    [team1_d_c_2] true : 2;
+    [team1_d_c_3] true : 3;
+    [team1_d_g_0] true : 0;
+    [team1_d_g_1] true : 1;
+    [team1_d_g_2] true : 2;
+    [team1_d_g_3] true : 3;
+    [team1_g_d_0] true : 0;
+    [team1_g_d_1] true : 1;
+    [team1_g_d_2] true : 2;
+    [team1_g_d_3] true : 3;
+    [team1_d_h_0] true : 0;
+    [team1_d_h_1] true : 1;
+    [team1_d_h_2] true : 2;
+    [team1_d_h_3] true : 3;
+    [team1_h_d_0] true : 0;
+    [team1_h_d_1] true : 1;
+    [team1_h_d_2] true : 2;
+    [team1_h_d_3] true : 3;
+    [team1_e_f_0] true : 0;
+    [team1_e_f_1] true : 1;
+    [team1_e_f_2] true : 2;
+    [team1_e_f_3] true : 3;
+    [team1_f_e_0] true : 0;
+    [team1_f_e_1] true : 1;
+    [team1_f_e_2] true : 2;
+    [team1_f_e_3] true : 3;
+    [team1_e_g_0] true : 0;
+    [team1_e_g_1] true : 1;
+    [team1_e_g_2] true : 2;
+    [team1_e_g_3] true : 3;
+    [team1_g_e_0] true : 0;
+    [team1_g_e_1] true : 1;
+    [team1_g_e_2] true : 2;
+    [team1_g_e_3] true : 3;
+    [team1_f_g_0] true : 0;
+    [team1_f_g_1] true : 1;
+    [team1_f_g_2] true : 2;
+    [team1_f_g_3] true : 3;
+    [team1_g_f_0] true : 0;
+    [team1_g_f_1] true : 1;
+    [team1_g_f_2] true : 2;
+    [team1_g_f_3] true : 3;
+    [team1_h_g_0] true : 0;
+    [team1_h_g_1] true : 1;
+    [team1_h_g_2] true : 2;
+    [team1_h_g_3] true : 3;
+    [team1_g_h_0] true : 0;
+    [team1_g_h_1] true : 1;
+    [team1_g_h_2] true : 2;
+    [team1_g_h_3] true : 3;
+    [team2_a_b_0] true : 0;
+    [team2_a_b_1] true : 1;
+    [team2_a_b_2] true : 2;
+    [team2_a_b_3] true : 3;
+    [team2_b_a_0] true : 0;
+    [team2_b_a_1] true : 1;
+    [team2_b_a_2] true : 2;
+    [team2_b_a_3] true : 3;
+    [team2_a_c_0] true : 0;
+    [team2_a_c_1] true : 1;
+    [team2_a_c_2] true : 2;
+    [team2_a_c_3] true : 3;
+    [team2_c_a_0] true : 0;
+    [team2_c_a_1] true : 1;
+    [team2_c_a_2] true : 2;
+    [team2_c_a_3] true : 3;
+    [team2_a_d_0] true : 0;
+    [team2_a_d_1] true : 1;
+    [team2_a_d_2] true : 2;
+    [team2_a_d_3] true : 3;
+    [team2_d_a_0] true : 0;
+    [team2_d_a_1] true : 1;
+    [team2_d_a_2] true : 2;
+    [team2_d_a_3] true : 3;
+    [team2_b_c_0] true : 0;
+    [team2_b_c_1] true : 1;
+    [team2_b_c_2] true : 2;
+    [team2_b_c_3] true : 3;
+    [team2_c_b_0] true : 0;
+    [team2_c_b_1] true : 1;
+    [team2_c_b_2] true : 2;
+    [team2_c_b_3] true : 3;
+    [team2_c_e_0] true : 0;
+    [team2_c_e_1] true : 1;
+    [team2_c_e_2] true : 2;
+    [team2_c_e_3] true : 3;
+    [team2_e_c_0] true : 0;
+    [team2_e_c_1] true : 1;
+    [team2_e_c_2] true : 2;
+    [team2_e_c_3] true : 3;
+    [team2_c_d_0] true : 0;
+    [team2_c_d_1] true : 1;
+    [team2_c_d_2] true : 2;
+    [team2_c_d_3] true : 3;
+    [team2_d_c_0] true : 0;
+    [team2_d_c_1] true : 1;
+    [team2_d_c_2] true : 2;
+    [team2_d_c_3] true : 3;
+    [team2_d_g_0] true : 0;
+    [team2_d_g_1] true : 1;
+    [team2_d_g_2] true : 2;
+    [team2_d_g_3] true : 3;
+    [team2_g_d_0] true : 0;
+    [team2_g_d_1] true : 1;
+    [team2_g_d_2] true : 2;
+    [team2_g_d_3] true : 3;
+    [team2_d_h_0] true : 0;
+    [team2_d_h_1] true : 1;
+    [team2_d_h_2] true : 2;
+    [team2_d_h_3] true : 3;
+    [team2_h_d_0] true : 0;
+    [team2_h_d_1] true : 1;
+    [team2_h_d_2] true : 2;
+    [team2_h_d_3] true : 3;
+    [team2_e_f_0] true : 0;
+    [team2_e_f_1] true : 1;
+    [team2_e_f_2] true : 2;
+    [team2_e_f_3] true : 3;
+    [team2_f_e_0] true : 0;
+    [team2_f_e_1] true : 1;
+    [team2_f_e_2] true : 2;
+    [team2_f_e_3] true : 3;
+    [team2_e_g_0] true : 0;
+    [team2_e_g_1] true : 1;
+    [team2_e_g_2] true : 2;
+    [team2_e_g_3] true : 3;
+    [team2_g_e_0] true : 0;
+    [team2_g_e_1] true : 1;
+    [team2_g_e_2] true : 2;
+    [team2_g_e_3] true : 3;
+    [team2_f_g_0] true : 0;
+    [team2_f_g_1] true : 1;
+    [team2_f_g_2] true : 2;
+    [team2_f_g_3] true : 3;
+    [team2_g_f_0] true : 0;
+    [team2_g_f_1] true : 1;
+    [team2_g_f_2] true : 2;
+    [team2_g_f_3] true : 3;
+    [team2_h_g_0] true : 0;
+    [team2_h_g_1] true : 1;
+    [team2_h_g_2] true : 2;
+    [team2_h_g_3] true : 3;
+    [team2_g_h_0] true : 0;
+    [team2_g_h_1] true : 1;
+    [team2_g_h_2] true : 2;
+    [team2_g_h_3] true : 3;
+endrewards

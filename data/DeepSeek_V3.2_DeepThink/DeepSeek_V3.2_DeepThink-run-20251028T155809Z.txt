@@ -1,0 +1,39 @@
+### Analysis of Feasibility and Optimal Plan
+
+#### 1. Feasibility Determination
+The total available resources are 8 (2 at point a, 4 at point c, and 2 at point d), which exceeds the demand of 7 resources at point g. Therefore, it is feasible to satisfy the demand at g from a supply perspective.
+
+#### 2. Routing and Allocation Plan
+To maximize the probability of successfully delivering at least 7 resources to g, both teams must reach g with their resources. Each team carries 4 resources, and if either team fails, at most 4 resources reach g, which is insufficient. The plan optimizes for reliability by selecting the safest paths for each team, considering the safety probabilities of the routes (green = 0.99, yellow = 0.85, red = 0.5).
+
+- **Team T1 (starting at a)**:
+  - Picks up 2 resources from a.
+  - Travels directly from a to d via the red route (probability 0.5) to pick up 2 resources from d, now carrying 4 resources.
+  - Travels from d to g via the path d-e-f-g:
+    - d to e (green, probability 0.99)
+    - e to f (green, probability 0.99)
+    - f to g (yellow, probability 0.85)
+  - The overall probability for T1 to reach g is \(0.5 \times 0.99 \times 0.99 \times 0.85 = 0.4165425\).
+
+- **Team T2 (starting at c)**:
+  - Picks up 4 resources from c.
+  - Travels directly from c to g via the red route (probability 0.5).
+  - The overall probability for T2 to reach g is 0.5.
+
+#### 3. Probability of Success
+The overall probability of success is the probability that both teams reach g safely, which is the product of their individual probabilities:
+\[
+P(\text{success}) = P(\text{T1 reaches g}) \times P(\text{T2 reaches g}) = 0.4165425 \times 0.5 = 0.20827125
+\]
+Thus, the probability of success is approximately 0.2083.
+
+#### 4. Step-by-Step Plan Description
+- **Step 1**: Team T1 at a picks up 2 resources from a.
+- **Step 2**: Team T1 travels from a to d via the direct red route (safety probability 0.5). If successful, it arrives at d and picks up 2 resources from d, now carrying 4 resources. If it fails, the plan fails.
+- **Step 3**: Team T1 travels from d to e via the green route (probability 0.99). If successful, it continues to e. If it fails, the plan fails.
+- **Step 4**: Team T1 travels from e to f via the green route (probability 0.99). If successful, it continues to f. If it fails, the plan fails.
+- **Step 5**: Team T1 travels from f to g via the yellow route (probability 0.85). If successful, it delivers 4 resources to g. If it fails, the plan fails.
+- **Step 6**: Team T2 at c picks up 4 resources from c.
+- **Step 7**: Team T2 travels directly from c to g via the red route (probability 0.5). If successful, it delivers 4 resources to g. If it fails, the plan fails.
+
+This plan ensures that if both teams succeed, 8 resources are delivered to g, satisfying the demand of 7. The paths chosen maximize the reliability for each team individually, leading to the highest possible overall probability of success.

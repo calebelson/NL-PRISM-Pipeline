@@ -1,0 +1,2 @@
+// Objective: maximize probability that demand at node "g" is satisfied (xg >= 7) // objective: max_reach_prob, demands[0].qty = 7
+Pmax=? [ F ( xg >= 7 ) ]

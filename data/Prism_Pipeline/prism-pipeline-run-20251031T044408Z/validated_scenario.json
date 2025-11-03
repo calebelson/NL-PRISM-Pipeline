@@ -1,0 +1,111 @@
+{
+  "graph": {
+    "nodes": [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g"
+    ],
+    "edges": [
+      {
+        "from_": "a",
+        "to": "b",
+        "distance": 9.0,
+        "safety": "R"
+      },
+      {
+        "from_": "a",
+        "to": "d",
+        "distance": 5.0,
+        "safety": "R"
+      },
+      {
+        "from_": "b",
+        "to": "c",
+        "distance": 4.0,
+        "safety": "R"
+      },
+      {
+        "from_": "b",
+        "to": "d",
+        "distance": 12.0,
+        "safety": "Y"
+      },
+      {
+        "from_": "c",
+        "to": "g",
+        "distance": 6.0,
+        "safety": "R"
+      },
+      {
+        "from_": "c",
+        "to": "f",
+        "distance": 12.0,
+        "safety": "R"
+      },
+      {
+        "from_": "d",
+        "to": "e",
+        "distance": 2.0,
+        "safety": "G"
+      },
+      {
+        "from_": "e",
+        "to": "f",
+        "distance": 4.0,
+        "safety": "G"
+      },
+      {
+        "from_": "f",
+        "to": "g",
+        "distance": 10.0,
+        "safety": "Y"
+      }
+    ],
+    "undirected": true
+  },
+  "teams": [
+    {
+      "id": "T1",
+      "start": "a",
+      "capacity": 4
+    },
+    {
+      "id": "T2",
+      "start": "c",
+      "capacity": 4
+    }
+  ],
+  "resources": [
+    {
+      "node": "c",
+      "qty": 4
+    },
+    {
+      "node": "a",
+      "qty": 2
+    },
+    {
+      "node": "d",
+      "qty": 2
+    }
+  ],
+  "demands": [
+    {
+      "node": "g",
+      "qty": 7
+    }
+  ],
+  "constraints": {
+    "safety_probs": {
+      "G": 0.99,
+      "Y": 0.85,
+      "R": 0.5
+    },
+    "node_capacity": null
+  },
+  "objective": "max_reach_prob"
+}

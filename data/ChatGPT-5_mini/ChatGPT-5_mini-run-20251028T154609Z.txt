@@ -1,0 +1,61 @@
+Summary answer
+- Feasibility: Yes — there are 8 resources total (a:2, c:4, d:2) and g needs 7, so supply-wise it is feasible.
+- Reliability-optimized plan (best tradeoff I can find): one single outbound trip by each team using the least-riskly end-to-end routes:
+  - Team 1 (T1), starting at a: pick up the 2 at a and the 2 at d (capacity 4) and go a → d → e → f → g.
+  - Team 2 (T2), starting at c: pick up the 4 at c and go c → g directly.
+- Rationale: this uses the routes that minimize exposure to red edges while delivering the needed total in only one outbound trip per team. Minimizing the number of trips and the number of red-edge traversals per delivered unit is the way to maximize the probability a required total of 7+ resources reaches g.
+- Probability of success (that g receives at least 7 resources): approximately 20.8%.
+
+Detailed justification and calculations
+
+1) Feasibility
+- Total supply = a(2) + c(4) + d(2) = 8 ≥ demand 7. So feasible in principle.
+
+2) Candidate routes and edge safety
+- Edge safety probabilities: red = 0.5, yellow = 0.85, green = 0.99.
+- Useful path segments:
+  - d → e → f → g uses only green/ yellow: 0.99 * 0.99 * 0.85 ≈ 0.833 (very reliable).
+  - a → d is red: probability 0.5 (unavoidable to reach d from a in this graph).
+  - c → g direct is a single red edge: probability 0.5 (this is better than c → f → g which would be 0.5*0.85 = 0.425).
+
+3) Chosen plan and why it is reliability-optimal
+- To reach 7 you need at least two successful deliveries (single-team capacity is 4). Minimizing overall exposure means:
+  - Make at most one outbound delivery trip by each team (every extra trip requires return legs that add extra risky traversals).
+  - Use the route for each team that maximizes the probability that that single trip succeeds.
+- For T1: the best available way for it to collect the supplies at a and d and deliver them to g in one outbound run is a → d → e → f → g. Its success probability is:
+  P(T1 success) = P(a→d is safe) * P(d→e) * P(e→f) * P(f→g)
+                  = 0.5 * 0.99 * 0.99 * 0.85 ≈ 0.4165.
+  In this plan T1 carries up to 4 units (2 from a + 2 from d).
+- For T2: the best single-hop delivery from c to g is the direct red edge:
+  P(T2 success) = P(c→g) = 0.5.
+  T2 carries up to 4 units (4 at c).
+
+4) Probability that the plan achieves ≥7 resources at g
+- The plan succeeds (delivers at least 7) only if both teams’ single outbound trips succeed (then 4 + 4 = 8 delivered).
+- Assuming independence of edge failures, joint probability:
+  P(success) = P(T1 success) * P(T2 success)
+             ≈ 0.4165425 * 0.5 ≈ 0.20827 ≈ 20.8%.
+
+(Comments about alternatives)
+- Any plan that tries to rely on a single team making multiple trips faces additional risky traversals (return legs and extra red edges) and therefore tends to have lower overall probability of delivering the required 7 units than the one-outbound-trip-per-team plan above. Likewise splitting deliveries into more, smaller trips tends to increase the number of risky traversals and reduce net reliability.
+- The d→g corridor is the most reliable link (≈0.833 for a trip d→g), so concentrating resources that traverse d→g (i.e., collecting d’s supply and routing through d→e→f→g) is desirable; but reaching d from a or c requires at least one red edge, which forces a ~0.5 factor into any strategy that goes to d first.
+- I inspected other route combinations (e.g., both teams using longer multi-edge routes, one team attempting multiple shuttles), and none produce a higher probability of reaching a cumulative 7 than the plan above, because any multi-trip strategy requires additional traversals over red edges or extra round trips (each increases exposure to failure).
+
+5) Step-by-step plan (operational)
+- Preliminaries: teams load only up to capacity (4). Keep exact pickup counts as follows to meet g’s 7 requirement if both succeed:
+  - T1 (at a): pick up 2 from a and 2 from d (total 4). Depart along a → d → e → f → g.
+  - T2 (at c): pick up 4 from c. Depart directly along c → g.
+- Execution:
+  1. T1 loads 2 units at a and departs toward d. (Edge a–d is red; survival probability 0.5.)
+  2. T1, upon arrival at d (if it survives), loads the 2 units at d (now carrying 4) and continues d → e → f → g (green, green, yellow — high survival on these segments).
+  3. Concurrently (or immediately after), T2 loads 4 units at c and departs directly c → g (red edge).
+  4. If both teams complete their outbound routes, g receives 8 units and requirement is met.
+  5. If either fails en route, that team is lost and its load is lost. (If one team survives and the other does not, delivered amount will be ≤4 or ≤something that is <7 and the plan fails to meet the goal.)
+- Note: Because the requirement is 7 and each trip capacity is 4, we must get at least two successful deliveries in total. The single-outbound trip per team minimizes the number of risky traversals to get those two deliveries, maximizing the probability that both succeed.
+
+6) Final numeric statement
+- Success probability (g receives ≥7 under the described reliability-focused plan) ≈ 20.8%.
+
+If you want, I can:
+- Evaluate alternative sequential contingency plans (e.g., send one team first and, depending on its success/failure, adapt who does subsequent pickups) and compute the full decision-tree probability for each contingency to see whether any conditional plan slightly improves on 20.8%; or
+- Run an exhaustive enumeration of small policies (both teams single trips, one team shuttles, mixed strategies) and return the numerically best policy.

@@ -1,0 +1,76 @@
+Looking at this logistics problem, I need to analyze the feasibility and find the optimal routing plan.
+
+## 1. Feasibility Check
+
+**Available resources:** 
+- Point a: 2 resources
+- Point c: 4 resources  
+- Point d: 2 resources
+- **Total: 8 resources**
+
+**Required:** 7 resources at point g
+**Carrying capacity:** 2 teams × 4 resources = 8 resources maximum per trip
+
+✅ **The demand is feasible** - we have 8 resources available and need 7.
+
+## 2. Route Analysis
+
+Let me identify the safest paths for each team:
+
+**From point a to g:**
+- a→d→e→f→g: red(0.5) × green(0.99) × green(0.99) × yellow(0.85) = **0.416**
+- a→b→c→g: red(0.5) × red(0.5) × red(0.5) = 0.125
+
+**From point c to g:**
+- c→g (direct): red(0.5) = **0.5**
+- c→f→g: red(0.5) × yellow(0.85) = 0.425
+- c→b→d→e→f→g: red(0.5) × yellow(0.85) × green(0.99) × green(0.99) × yellow(0.85) = 0.354
+
+**From point d to g:**
+- d→e→f→g: green(0.99) × green(0.99) × yellow(0.85) = **0.833**
+
+## 3. Optimal Allocation Plan
+
+Since we need 7 resources and each team can carry maximum 4, we need both teams to succeed. The optimal allocation is:
+
+**Team 1 (T1):** 
+- Carries 4 resources (2 from a + 2 from d)
+- Route: a→d→e→f→g
+- Probability: 0.416
+
+**Team 2 (T2):**
+- Carries 3 resources from c
+- Route: c→g (direct)
+- Probability: 0.5
+
+## 4. Why This Plan is Optimal
+
+- T1 leverages the safer green edges (d→e→f) after picking up resources at d
+- T2 takes the direct route from c to g, which surprisingly has better reliability (0.5) than the alternative through f (0.425)
+- Both teams MUST succeed to deliver the required 7 resources
+
+## 5. Probability of Success
+
+**P(success) = P(T1 succeeds) × P(T2 succeeds) = 0.416 × 0.5 = 0.208**
+
+The probability of successfully delivering 7 resources to point g is **20.8%**
+
+## 6. Step-by-Step Plan
+
+**Step 1:** Team 1 at point a loads 2 resources
+
+**Step 2:** Team 1 travels from a to d via the red edge (distance 5, probability 0.5)
+
+**Step 3:** Team 1 loads 2 additional resources at point d (now carrying 4 total)
+
+**Step 4:** Team 1 travels from d to e via the green edge (distance 2, probability 0.99)
+
+**Step 5:** Team 1 travels from e to f via the green edge (distance 4, probability 0.99)
+
+**Step 6:** Team 1 travels from f to g via the yellow edge (distance 10, probability 0.85), delivering 4 resources
+
+**Step 7:** Simultaneously, Team 2 at point c loads 3 resources
+
+**Step 8:** Team 2 travels directly from c to g via the red edge (distance 6, probability 0.5), delivering 3 resources
+
+**Result:** If both teams succeed, 7 resources are delivered to point g, meeting the exact requirement.

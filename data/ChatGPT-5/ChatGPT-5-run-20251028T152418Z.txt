@@ -1,0 +1,83 @@
+Short answer
+1) Yes. Total available = 8 units (a:2, c:4, d:2) > demand 7. Feasible.
+2) Best plan (maximize reliability): Have T1 move 1 from a and 2 from d together to g via the safest corridor; have T2 move the 4 from c directly to g; include two targeted contingency legs if one main leg fails. Details below.
+3) Optimization is purely for reliability (probabilities shown).
+5) Overall probability of success for this plan ≈ 0.290 (29.0%).
+6) Step-by-step policy and probability breakdown provided below.
+
+Key route reliabilities (per traversal)
+- Red: 0.50
+- Yellow: 0.85
+- Green: 0.99
+- D→E→F→G “green corridor” (two greens + one yellow): p_corr = 0.99×0.99×0.85 = 0.833085
+- C↔G single red edge: 0.50 per direction
+- A↔D single red edge: 0.50 per direction
+- G→D→G round trip (corridor both ways): p_corr^2 = 0.833085^2 = 0.6940306
+- G→D→A→D→G to move 1 unit from a (two corridors and two red a–d traversals): p = p_corr^2 × 0.25 = 0.1735077
+
+Why this plan is best for reliability
+- You must use at least one red edge to move c’s 4 (best is the direct c–g with p=0.5).
+- Moving any d supplies to g should use the green corridor (p=0.8331).
+- The risky choke point is a–d (red, p=0.5). If you carry both a-units at once and fail, you lose 2 units and can no longer reach 7. The plan below intentionally carries only 1 unit from a on the first a–d crossing so an early failure does not make the mission impossible, and it keeps the number of risky traversals minimal.
+
+Routing and allocation plan (policy)
+Main legs
+1) Team 1 (T1) at a:
+   - Load 1 unit at a.
+   - Move a→d (red, p=0.5).
+   - At d, load 2 units (now carrying 3 total).
+   - Move d→e→f→g (green, green, yellow; p=0.833085).
+   - Probability T1 main leg succeeds: 0.5 × 0.833085 = 0.4165425.
+2) Team 2 (T2) at c:
+   - Load 4 units at c.
+   - Move c→g (red; p=0.5).
+
+Stop conditions and contingencies
+A) If both main legs succeed: you have delivered 3 + 4 = 7 (actually 7 exactly if T1 took 1 from a and 2 from d). Stop.
+
+B) If T1 main succeeds but T2 fails: T1 is at g. T1 executes a single round trip g→c→g (two red traversals) to fetch from c. Probability of this salvage = 0.5^2 = 0.25. One round trip delivers up to 4 (≥ the 3 still needed). Stop.
+
+C) If T1 fails on the first edge a→d (early), losing only 1 from a: T2 continues:
+   - Deliver c→g (red; p=0.5).
+   - Shuttle g→d→g to bring the 2 at d (p = 0.6940306).
+   - Then fetch the remaining 1 from a via g→d→a→d→g (p = 0.1735077).
+   - All three must succeed to reach 7; if any of these legs fail, it’s no longer possible to reach 7.
+   - Note: If T1 fails later (after picking up d’s 2), too many resources are lost and the mission becomes infeasible; abort.
+
+Probability of success
+Let:
+- p_T1 = 0.4165425 (T1 main success)
+- p_T2 = 0.5 (T2 main success)
+- p_Csalv = 0.25 (T1’s g↔c salvage)
+- p_D2 = 0.6940306 (T2’s g↔d for 2 units)
+- p_A1 = 0.1735077 (T2’s g→d→a→d→g for 1 unit)
+
+Success occurs in three disjoint ways:
+1) Both main legs succeed: p_T1 × p_T2 = 0.4165425 × 0.5 = 0.2082713
+2) T1 main succeeds, T2 main fails, then T1 g↔c salvage succeeds:
+   p_T1 × (1 − p_T2) × p_Csalv = 0.4165425 × 0.5 × 0.25 = 0.0520678
+3) T1 fails early on a→d (prob 0.5), then T2 completes c→g and both shuttles:
+   0.5 × p_T2 × p_D2 × p_A1 = 0.5 × 0.5 × 0.6940306 × 0.1735077 = 0.0301049
+
+Total success probability ≈ 0.2082713 + 0.0520678 + 0.0301049 = 0.290444 ≈ 29.0%
+
+Step-by-step execution (concise)
+- Step 0: T1 loads 1 at a; T2 loads 4 at c.
+- Step 1: T1 goes a→d (red).
+   - If T1 fails here: go to Contingency C (T2-only sequence).
+- Step 2: T1 loads 2 at d and goes d→e→f→g (green, green, yellow).
+   - If T1 fails on this corridor: abort (infeasible).
+- Step 3: T2 goes c→g (red).
+   - If T2 succeeds: total delivered ≥7; stop.
+   - If T2 fails: T1 at g executes g→c→g once (two reds) carrying up to 4; stop.
+- Contingency C (if T1 failed on Step 1):
+   - T2 goes c→g (red). If fail: abort.
+   - T2 goes g→d→g to bring 2 from d (corridor round trip). If fail: abort.
+   - T2 goes g→d→a→d→g to bring 1 from a (corridor, red, red, corridor). If fail: abort.
+   - Stop.
+
+Notes
+- Distances are ignored per the “optimize exclusively for reliability” objective.
+- Loads never exceed per-team capacity (T1 carries 3; T2 carries 4).
+- This plan minimizes red-edge exposures that can make the mission infeasible and exploits the high-reliability d–e–f–g corridor.
+- Splitting c’s load or carrying both a-units together is strictly worse for reliability under these probabilities.

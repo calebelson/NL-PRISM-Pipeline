@@ -1,0 +1,88 @@
+The total available resources (8) exceed the demand at point g (7), so it is feasible to satisfy the goal with the current supplies .
+
+Maximizing Reliability
+In this scenario, optimizing exclusively for reliability means choosing routes that maximize the probability of every required resource reaching g. Since teams can fail independently, the optimal allocation must prioritize the safest paths for the most critical resources.
+
+Reliability of Paths to g
+
+The reliability of delivering a resource to g from each source node is as follows, calculated as the product of all edge probabilities along the most reliable path:
+
+a → g: 0.4165 (path a-d-e-f-g: probabilities 0.5 × 0.99 × 0.99 × 0.85)
+
+c → g: 0.5 (direct c-g: 0.5)
+
+d → g: 0.8331 (path d-e-f-g: probabilities 0.99 × 0.99 × 0.85)
+
+Team Allocation Strategy
+
+Team 1 (at a): Can collect resources from a (2) and d (2) – maximum 4 per trip.
+
+Team 2 (at c): Can collect resources from c (4) – maximum 4 per trip.
+
+Objective: Assign each resource to the safest possible route to g, using the team(s) available at the collection node.
+
+Optimal Routing and Assignment
+Resource Location	Best Path to g	Reliability	Number	Notes
+a	a → d → e → f → g	0.4165	2	Assigned to Team 1
+d	d → e → f → g	0.8331	2	Assign to Team 1 (can pick up at d)
+c	c → g	0.5	4	Assign to Team 2
+Team 1: Starts at a, picks up 2 at a, then moves to d (path a-d, 0.5), picks up 2 at d, then completes route d-e-f-g (prob. 0.99 × 0.99 × 0.85 = 0.8331).
+
+Team 2: Starts at c, picks up 4 at c, moves directly to g (path c-g, 0.5).
+
+Probability of Success
+The minimum reliability for each resource is 0.4165 for resources from a, 0.8331 from d, and 0.5 from c. However, the user wants to maximize the overall probability of delivering all 7 resources to g. This is the product of each resource’s probability of reaching g safely, assuming independent trials for each team and resource (which is conservative, since teams can fail with all their cargo):
+
+P
+all
+=
+(
+0.4165
+)
+2
+×
+(
+0.8331
+)
+2
+×
+(
+0.5
+)
+4
+≈
+0.0002
+P 
+all
+ =(0.4165) 
+2
+ ×(0.8331) 
+2
+ ×(0.5) 
+4
+ ≈0.0002
+This probability is extremely low, because several resources must traverse paths with low reliability.
+
+Step-by-Step Plan
+Team 1 moves from a to d, picking up 2 units from a and 2 from d, for a total of 4.
+
+Team 1 proceeds along the safest path: d → e → f → g (prob. 0.8331).
+
+Team 2 picks up 4 units at c.
+
+Team 2 proceeds directly from c to g (prob. 0.5).
+
+If any team fails, all resources it carries are lost and the plan fails if there are not enough resources left to deliver the 7 units required. Therefore, success requires both teams to survive their routes.
+
+Conclusion
+Feasible: Yes, total resources are sufficient.
+
+Optimal for reliability: Assign Team 1 to a and d, using the safest path to g (a-d-e-f-g), and assign Team 2 to c, using the direct path c-g.
+
+Probability of delivering all 7 resources: Approximately 0.02% (0.0002), due to the requirement that both teams must independently survive their low-reliability routes.
+
+If any team fails, the plan fails; the only way to achieve the goal is if both teams reach g safely.
+
+If reliability is the sole objective, no better plan exists—any alternative that uses different routes or allocations would decrease the overall reliability.
+
+If the requirement is to maximize the chance that at least 7 resources reach g, the answer is yes, but this chance (about 1 in 5,000) is extremely low. If the requirement is to maximize the chance that any amount of resources reaches g, we would use different probabilities for each team and resource. The current plan is optimal under the strictest interpretation of maximizing reliability for the full 7-resource demand.

@@ -1,0 +1,346 @@
+```prism
+// ASSUMPTION: node capacity is unbounded in JSON so we set per-node max to total resources (8) to keep finite state
+// ASSUMPTION: teams may move 0..capacity resources per move (allows repositioning without transfer)
+// JSON:/graph/nodes
+mdp
+
+const int fail = -1;
+const int a = 0; // JSON:/graph/nodes[0]
+const int b = 1; // JSON:/graph/nodes[1]
+const int c = 2; // JSON:/graph/nodes[2]
+const int d = 3; // JSON:/graph/nodes[3]
+const int e = 4; // JSON:/graph/nodes[4]
+const int f = 5; // JSON:/graph/nodes[5]
+const int g = 6; // JSON:/graph/nodes[6]
+
+// initial resources (JSON:/resources)
+const int inita = 2; // JSON:/resources[1] node "a" qty 2
+const int initb = 0;
+const int initc = 4; // JSON:/resources[0] node "c" qty 4
+const int initd = 2; // JSON:/resources[2] node "d" qty 2
+const int inite = 0;
+const int initf = 0;
+const int initg = 0; // demand target node
+
+// team starts (JSON:/teams)
+const int team1Start = a; // JSON:/teams[0] start "a"
+const int team2Start = c; // JSON:/teams[1] start "c"
+
+// capacities and bounds
+const int cap_team1 = 4; // JSON:/teams[0]/capacity
+const int cap_team2 = 4; // JSON:/teams[1]/capacity
+
+// conservative finite upper bound for node resources (ASSUMPTION)
+const int maxa = 8;
+const int maxb = 8;
+const int maxc = 8;
+const int maxd = 8;
+const int maxe = 8;
+const int maxf = 8;
+const int maxg = 8;
+
+// global factors (can be used to tune team-specific edge success modifiers)
+const double factor_team1 = 1.0;
+const double factor_team2 = 1.0;
+
+// safety probabilities (JSON:/constraints/safety_probs)
+const double GREEN = 0.99; // JSON:/constraints/safety_probs/G
+const double YELLOW = 0.85; // JSON:/constraints/safety_probs/Y
+const double RED = 0.5; // JSON:/constraints/safety_probs/R
+
+// per-edge factor aliases for teams (one per undirected edge from JSON:/graph/edges)
+const double factor_team1_ab = factor_team1; // JSON:/graph/edges[0] a-b
+const double factor_team1_ad = factor_team1; // JSON:/graph/edges[1] a-d
+const double factor_team1_bc = factor_team1; // JSON:/graph/edges[2] b-c
+const double factor_team1_bd = factor_team1; // JSON:/graph/edges[3] b-d
+const double factor_team1_cg = factor_team1; // JSON:/graph/edges[4] c-g
+const double factor_team1_cf = factor_team1; // JSON:/graph/edges[5] c-f
+const double factor_team1_de = factor_team1; // JSON:/graph/edges[6] d-e
+const double factor_team1_ef = factor_team1; // JSON:/graph/edges[7] e-f
+const double factor_team1_fg = factor_team1; // JSON:/graph/edges[8] f-g
+
+const double factor_team2_ab = factor_team2; // JSON:/graph/edges[0] a-b
+const double factor_team2_ad = factor_team2; // JSON:/graph/edges[1] a-d
+const double factor_team2_bc = factor_team2; // JSON:/graph/edges[2] b-c
+const double factor_team2_bd = factor_team2; // JSON:/graph/edges[3] b-d
+const double factor_team2_cg = factor_team2; // JSON:/graph/edges[4] c-g
+const double factor_team2_cf = factor_team2; // JSON:/graph/edges[5] c-f
+const double factor_team2_de = factor_team2; // JSON:/graph/edges[6] d-e
+const double factor_team2_ef = factor_team2; // JSON:/graph/edges[7] e-f
+const double factor_team2_fg = factor_team2; // JSON:/graph/edges[8] f-g
+
+module city_resourcing
+    xa : [0..maxa] init inita; // JSON:/resources where node "a"
+    xb : [0..maxb] init initb;
+    xc : [0..maxc] init initc;
+    xd : [0..maxd] init initd;
+    xe : [0..maxe] init inite;
+    xf : [0..maxf] init initf;
+    xg : [0..maxg] init initg; // demand node (JSON:/demands node "g" qty 7)
+
+    locteam1 : [-1..6] init team1Start; // JSON:/teams[0].id = "T1"
+    locteam2 : [-1..6] init team2Start; // JSON:/teams[1].id = "T2"
+
+    // EDGE: a <-> b  (graph.edges[0], safety R)
+    // Team1 moves a->b (JSON:/graph/edges[0], teams[0])
+    [t1_a_b_0] (locteam1=a)&(xa>=0)&(xb<=maxb-0) -> RED*factor_team1_ab:(xb'=xb+0)&(xa'=xa-0)&(locteam1'=b)+(1-RED*factor_team1_ab):(xa'=xa-0)&(locteam1'=fail);
+    [t1_a_b_1] (locteam1=a)&(xa>=1)&(xb<=maxb-1) -> RED*factor_team1_ab:(xb'=xb+1)&(xa'=xa-1)&(locteam1'=b)+(1-RED*factor_team1_ab):(xa'=xa-1)&(locteam1'=fail);
+    [t1_a_b_2] (locteam1=a)&(xa>=2)&(xb<=maxb-2) -> RED*factor_team1_ab:(xb'=xb+2)&(xa'=xa-2)&(locteam1'=b)+(1-RED*factor_team1_ab):(xa'=xa-2)&(locteam1'=fail);
+    [t1_a_b_3] (locteam1=a)&(xa>=3)&(xb<=maxb-3) -> RED*factor_team1_ab:(xb'=xb+3)&(xa'=xa-3)&(locteam1'=b)+(1-RED*factor_team1_ab):(xa'=xa-3)&(locteam1'=fail);
+    [t1_a_b_4] (locteam1=a)&(xa>=4)&(xb<=maxb-4) -> RED*factor_team1_ab:(xb'=xb+4)&(xa'=xa-4)&(locteam1'=b)+(1-RED*factor_team1_ab):(xa'=xa-4)&(locteam1'=fail);
+
+    // Team1 moves b->a (JSON:/graph/edges[0], teams[0])
+    [t1_b_a_0] (locteam1=b)&(xb>=0)&(xa<=maxa-0) -> RED*factor_team1_ab:(xa'=xa+0)&(xb'=xb-0)&(locteam1'=a)+(1-RED*factor_team1_ab):(xb'=xb-0)&(locteam1'=fail);
+    [t1_b_a_1] (locteam1=b)&(xb>=1)&(xa<=maxa-1) -> RED*factor_team1_ab:(xa'=xa+1)&(xb'=xb-1)&(locteam1'=a)+(1-RED*factor_team1_ab):(xb'=xb-1)&(locteam1'=fail);
+    [t1_b_a_2] (locteam1=b)&(xb>=2)&(xa<=maxa-2) -> RED*factor_team1_ab:(xa'=xa+2)&(xb'=xb-2)&(locteam1'=a)+(1-RED*factor_team1_ab):(xb'=xb-2)&(locteam1'=fail);
+    [t1_b_a_3] (locteam1=b)&(xb>=3)&(xa<=maxa-3) -> RED*factor_team1_ab:(xa'=xa+3)&(xb'=xb-3)&(locteam1'=a)+(1-RED*factor_team1_ab):(xb'=xb-3)&(locteam1'=fail);
+    [t1_b_a_4] (locteam1=b)&(xb>=4)&(xa<=maxa-4) -> RED*factor_team1_ab:(xa'=xa+4)&(xb'=xb-4)&(locteam1'=a)+(1-RED*factor_team1_ab):(xb'=xb-4)&(locteam1'=fail);
+
+    // Team2 moves a->b (JSON:/graph/edges[0], teams[1])
+    [t2_a_b_0] (locteam2=a)&(xa>=0)&(xb<=maxb-0) -> RED*factor_team2_ab:(xb'=xb+0)&(xa'=xa-0)&(locteam2'=b)+(1-RED*factor_team2_ab):(xa'=xa-0)&(locteam2'=fail);
+    [t2_a_b_1] (locteam2=a)&(xa>=1)&(xb<=maxb-1) -> RED*factor_team2_ab:(xb'=xb+1)&(xa'=xa-1)&(locteam2'=b)+(1-RED*factor_team2_ab):(xa'=xa-1)&(locteam2'=fail);
+    [t2_a_b_2] (locteam2=a)&(xa>=2)&(xb<=maxb-2) -> RED*factor_team2_ab:(xb'=xb+2)&(xa'=xa-2)&(locteam2'=b)+(1-RED*factor_team2_ab):(xa'=xa-2)&(locteam2'=fail);
+    [t2_a_b_3] (locteam2=a)&(xa>=3)&(xb<=maxb-3) -> RED*factor_team2_ab:(xb'=xb+3)&(xa'=xa-3)&(locteam2'=b)+(1-RED*factor_team2_ab):(xa'=xa-3)&(locteam2'=fail);
+    [t2_a_b_4] (locteam2=a)&(xa>=4)&(xb<=maxb-4) -> RED*factor_team2_ab:(xb'=xb+4)&(xa'=xa-4)&(locteam2'=b)+(1-RED*factor_team2_ab):(xa'=xa-4)&(locteam2'=fail);
+
+    // Team2 moves b->a (JSON:/graph/edges[0], teams[1])
+    [t2_b_a_0] (locteam2=b)&(xb>=0)&(xa<=maxa-0) -> RED*factor_team2_ab:(xa'=xa+0)&(xb'=xb-0)&(locteam2'=a)+(1-RED*factor_team2_ab):(xb'=xb-0)&(locteam2'=fail);
+    [t2_b_a_1] (locteam2=b)&(xb>=1)&(xa<=maxa-1) -> RED*factor_team2_ab:(xa'=xa+1)&(xb'=xb-1)&(locteam2'=a)+(1-RED*factor_team2_ab):(xb'=xb-1)&(locteam2'=fail);
+    [t2_b_a_2] (locteam2=b)&(xb>=2)&(xa<=maxa-2) -> RED*factor_team2_ab:(xa'=xa+2)&(xb'=xb-2)&(locteam2'=a)+(1-RED*factor_team2_ab):(xb'=xb-2)&(locteam2'=fail);
+    [t2_b_a_3] (locteam2=b)&(xb>=3)&(xa<=maxa-3) -> RED*factor_team2_ab:(xa'=xa+3)&(xb'=xb-3)&(locteam2'=a)+(1-RED*factor_team2_ab):(xb'=xb-3)&(locteam2'=fail);
+    [t2_b_a_4] (locteam2=b)&(xb>=4)&(xa<=maxa-4) -> RED*factor_team2_ab:(xa'=xa+4)&(xb'=xb-4)&(locteam2'=a)+(1-RED*factor_team2_ab):(xb'=xb-4)&(locteam2'=fail);
+
+    // EDGE: a <-> d  (graph.edges[1], safety R)
+    // Team1 a->d (JSON:/graph/edges[1])
+    [t1_a_d_0] (locteam1=a)&(xa>=0)&(xd<=maxd-0) -> RED*factor_team1_ad:(xd'=xd+0)&(xa'=xa-0)&(locteam1'=d)+(1-RED*factor_team1_ad):(xa'=xa-0)&(locteam1'=fail);
+    [t1_a_d_1] (locteam1=a)&(xa>=1)&(xd<=maxd-1) -> RED*factor_team1_ad:(xd'=xd+1)&(xa'=xa-1)&(locteam1'=d)+(1-RED*factor_team1_ad):(xa'=xa-1)&(locteam1'=fail);
+    [t1_a_d_2] (locteam1=a)&(xa>=2)&(xd<=maxd-2) -> RED*factor_team1_ad:(xd'=xd+2)&(xa'=xa-2)&(locteam1'=d)+(1-RED*factor_team1_ad):(xa'=xa-2)&(locteam1'=fail);
+    [t1_a_d_3] (locteam1=a)&(xa>=3)&(xd<=maxd-3) -> RED*factor_team1_ad:(xd'=xd+3)&(xa'=xa-3)&(locteam1'=d)+(1-RED*factor_team1_ad):(xa'=xa-3)&(locteam1'=fail);
+    [t1_a_d_4] (locteam1=a)&(xa>=4)&(xd<=maxd-4) -> RED*factor_team1_ad:(xd'=xd+4)&(xa'=xa-4)&(locteam1'=d)+(1-RED*factor_team1_ad):(xa'=xa-4)&(locteam1'=fail);
+
+    // Team1 d->a (JSON:/graph/edges[1])
+    [t1_d_a_0] (locteam1=d)&(xd>=0)&(xa<=maxa-0) -> RED*factor_team1_ad:(xa'=xa+0)&(xd'=xd-0)&(locteam1'=a)+(1-RED*factor_team1_ad):(xd'=xd-0)&(locteam1'=fail);
+    [t1_d_a_1] (locteam1=d)&(xd>=1)&(xa<=maxa-1) -> RED*factor_team1_ad:(xa'=xa+1)&(xd'=xd-1)&(locteam1'=a)+(1-RED*factor_team1_ad):(xd'=xd-1)&(locteam1'=fail);
+    [t1_d_a_2] (locteam1=d)&(xd>=2)&(xa<=maxa-2) -> RED*factor_team1_ad:(xa'=xa+2)&(xd'=xd-2)&(locteam1'=a)+(1-RED*factor_team1_ad):(xd'=xd-2)&(locteam1'=fail);
+    [t1_d_a_3] (locteam1=d)&(xd>=3)&(xa<=maxa-3) -> RED*factor_team1_ad:(xa'=xa+3)&(xd'=xd-3)&(locteam1'=a)+(1-RED*factor_team1_ad):(xd'=xd-3)&(locteam1'=fail);
+    [t1_d_a_4] (locteam1=d)&(xd>=4)&(xa<=maxa-4) -> RED*factor_team1_ad:(xa'=xa+4)&(xd'=xd-4)&(locteam1'=a)+(1-RED*factor_team1_ad):(xd'=xd-4)&(locteam1'=fail);
+
+    // Team2 a<->d (JSON:/graph/edges[1], teams[1])
+    [t2_a_d_0] (locteam2=a)&(xa>=0)&(xd<=maxd-0) -> RED*factor_team2_ad:(xd'=xd+0)&(xa'=xa-0)&(locteam2'=d)+(1-RED*factor_team2_ad):(xa'=xa-0)&(locteam2'=fail);
+    [t2_a_d_1] (locteam2=a)&(xa>=1)&(xd<=maxd-1) -> RED*factor_team2_ad:(xd'=xd+1)&(xa'=xa-1)&(locteam2'=d)+(1-RED*factor_team2_ad):(xa'=xa-1)&(locteam2'=fail);
+    [t2_a_d_2] (locteam2=a)&(xa>=2)&(xd<=maxd-2) -> RED*factor_team2_ad:(xd'=xd+2)&(xa'=xa-2)&(locteam2'=d)+(1-RED*factor_team2_ad):(xa'=xa-2)&(locteam2'=fail);
+    [t2_a_d_3] (locteam2=a)&(xa>=3)&(xd<=maxd-3) -> RED*factor_team2_ad:(xd'=xd+3)&(xa'=xa-3)&(locteam2'=d)+(1-RED*factor_team2_ad):(xa'=xa-3)&(locteam2'=fail);
+    [t2_a_d_4] (locteam2=a)&(xa>=4)&(xd<=maxd-4) -> RED*factor_team2_ad:(xd'=xd+4)&(xa'=xa-4)&(locteam2'=d)+(1-RED*factor_team2_ad):(xa'=xa-4)&(locteam2'=fail);
+
+    [t2_d_a_0] (locteam2=d)&(xd>=0)&(xa<=maxa-0) -> RED*factor_team2_ad:(xa'=xa+0)&(xd'=xd-0)&(locteam2'=a)+(1-RED*factor_team2_ad):(xd'=xd-0)&(locteam2'=fail);
+    [t2_d_a_1] (locteam2=d)&(xd>=1)&(xa<=maxa-1) -> RED*factor_team2_ad:(xa'=xa+1)&(xd'=xd-1)&(locteam2'=a)+(1-RED*factor_team2_ad):(xd'=xd-1)&(locteam2'=fail);
+    [t2_d_a_2] (locteam2=d)&(xd>=2)&(xa<=maxa-2) -> RED*factor_team2_ad:(xa'=xa+2)&(xd'=xd-2)&(locteam2'=a)+(1-RED*factor_team2_ad):(xd'=xd-2)&(locteam2'=fail);
+    [t2_d_a_3] (locteam2=d)&(xd>=3)&(xa<=maxa-3) -> RED*factor_team2_ad:(xa'=xa+3)&(xd'=xd-3)&(locteam2'=a)+(1-RED*factor_team2_ad):(xd'=xd-3)&(locteam2'=fail);
+    [t2_d_a_4] (locteam2=d)&(xd>=4)&(xa<=maxa-4) -> RED*factor_team2_ad:(xa'=xa+4)&(xd'=xd-4)&(locteam2'=a)+(1-RED*factor_team2_ad):(xd'=xd-4)&(locteam2'=fail);
+
+    // EDGE: b <-> c  (graph.edges[2], safety R)
+    // Team1 b->c (JSON:/graph/edges[2])
+    [t1_b_c_0] (locteam1=b)&(xb>=0)&(xc<=maxc-0) -> RED*factor_team1_bc:(xc'=xc+0)&(xb'=xb-0)&(locteam1'=c)+(1-RED*factor_team1_bc):(xb'=xb-0)&(locteam1'=fail);
+    [t1_b_c_1] (locteam1=b)&(xb>=1)&(xc<=maxc-1) -> RED*factor_team1_bc:(xc'=xc+1)&(xb'=xb-1)&(locteam1'=c)+(1-RED*factor_team1_bc):(xb'=xb-1)&(locteam1'=fail);
+    [t1_b_c_2] (locteam1=b)&(xb>=2)&(xc<=maxc-2) -> RED*factor_team1_bc:(xc'=xc+2)&(xb'=xb-2)&(locteam1'=c)+(1-RED*factor_team1_bc):(xb'=xb-2)&(locteam1'=fail);
+    [t1_b_c_3] (locteam1=b)&(xb>=3)&(xc<=maxc-3) -> RED*factor_team1_bc:(xc'=xc+3)&(xb'=xb-3)&(locteam1'=c)+(1-RED*factor_team1_bc):(xb'=xb-3)&(locteam1'=fail);
+    [t1_b_c_4] (locteam1=b)&(xb>=4)&(xc<=maxc-4) -> RED*factor_team1_bc:(xc'=xc+4)&(xb'=xb-4)&(locteam1'=c)+(1-RED*factor_team1_bc):(xb'=xb-4)&(locteam1'=fail);
+
+    // Team1 c->b (JSON:/graph/edges[2])
+    [t1_c_b_0] (locteam1=c)&(xc>=0)&(xb<=maxb-0) -> RED*factor_team1_bc:(xb'=xb+0)&(xc'=xc-0)&(locteam1'=b)+(1-RED*factor_team1_bc):(xc'=xc-0)&(locteam1'=fail);
+    [t1_c_b_1] (locteam1=c)&(xc>=1)&(xb<=maxb-1) -> RED*factor_team1_bc:(xb'=xb+1)&(xc'=xc-1)&(locteam1'=b)+(1-RED*factor_team1_bc):(xc'=xc-1)&(locteam1'=fail);
+    [t1_c_b_2] (locteam1=c)&(xc>=2)&(xb<=maxb-2) -> RED*factor_team1_bc:(xb'=xb+2)&(xc'=xc-2)&(locteam1'=b)+(1-RED*factor_team1_bc):(xc'=xc-2)&(locteam1'=fail);
+    [t1_c_b_3] (locteam1=c)&(xc>=3)&(xb<=maxb-3) -> RED*factor_team1_bc:(xb'=xb+3)&(xc'=xc-3)&(locteam1'=b)+(1-RED*factor_team1_bc):(xc'=xc-3)&(locteam1'=fail);
+    [t1_c_b_4] (locteam1=c)&(xc>=4)&(xb<=maxb-4) -> RED*factor_team1_bc:(xb'=xb+4)&(xc'=xc-4)&(locteam1'=b)+(1-RED*factor_team1_bc):(xc'=xc-4)&(locteam1'=fail);
+
+    // Team2 b<->c (JSON:/graph/edges[2], teams[1])
+    [t2_b_c_0] (locteam2=b)&(xb>=0)&(xc<=maxc-0) -> RED*factor_team2_bc:(xc'=xc+0)&(xb'=xb-0)&(locteam2'=c)+(1-RED*factor_team2_bc):(xb'=xb-0)&(locteam2'=fail);
+    [t2_b_c_1] (locteam2=b)&(xb>=1)&(xc<=maxc-1) -> RED*factor_team2_bc:(xc'=xc+1)&(xb'=xb-1)&(locteam2'=c)+(1-RED*factor_team2_bc):(xb'=xb-1)&(locteam2'=fail);
+    [t2_b_c_2] (locteam2=b)&(xb>=2)&(xc<=maxc-2) -> RED*factor_team2_bc:(xc'=xc+2)&(xb'=xb-2)&(locteam2'=c)+(1-RED*factor_team2_bc):(xb'=xb-2)&(locteam2'=fail);
+    [t2_b_c_3] (locteam2=b)&(xb>=3)&(xc<=maxc-3) -> RED*factor_team2_bc:(xc'=xc+3)&(xb'=xb-3)&(locteam2'=c)+(1-RED*factor_team2_bc):(xb'=xb-3)&(locteam2'=fail);
+    [t2_b_c_4] (locteam2=b)&(xb>=4)&(xc<=maxc-4) -> RED*factor_team2_bc:(xc'=xc+4)&(xb'=xb-4)&(locteam2'=c)+(1-RED*factor_team2_bc):(xb'=xb-4)&(locteam2'=fail);
+
+    [t2_c_b_0] (locteam2=c)&(xc>=0)&(xb<=maxb-0) -> RED*factor_team2_bc:(xb'=xb+0)&(xc'=xc-0)&(locteam2'=b)+(1-RED*factor_team2_bc):(xc'=xc-0)&(locteam2'=fail);
+    [t2_c_b_1] (locteam2=c)&(xc>=1)&(xb<=maxb-1) -> RED*factor_team2_bc:(xb'=xb+1)&(xc'=xc-1)&(locteam2'=b)+(1-RED*factor_team2_bc):(xc'=xc-1)&(locteam2'=fail);
+    [t2_c_b_2] (locteam2=c)&(xc>=2)&(xb<=maxb-2) -> RED*factor_team2_bc:(xb'=xb+2)&(xc'=xc-2)&(locteam2'=b)+(1-RED*factor_team2_bc):(xc'=xc-2)&(locteam2'=fail);
+    [t2_c_b_3] (locteam2=c)&(xc>=3)&(xb<=maxb-3) -> RED*factor_team2_bc:(xb'=xb+3)&(xc'=xc-3)&(locteam2'=b)+(1-RED*factor_team2_bc):(xc'=xc-3)&(locteam2'=fail);
+    [t2_c_b_4] (locteam2=c)&(xc>=4)&(xb<=maxb-4) -> RED*factor_team2_bc:(xb'=xb+4)&(xc'=xc-4)&(locteam2'=b)+(1-RED*factor_team2_bc):(xc'=xc-4)&(locteam2'=fail);
+
+    // EDGE: b <-> d  (graph.edges[3], safety Y)
+    // Team1 b->d (JSON:/graph/edges[3])
+    [t1_b_d_0] (locteam1=b)&(xb>=0)&(xd<=maxd-0) -> YELLOW*factor_team1_bd:(xd'=xd+0)&(xb'=xb-0)&(locteam1'=d)+(1-YELLOW*factor_team1_bd):(xb'=xb-0)&(locteam1'=fail);
+    [t1_b_d_1] (locteam1=b)&(xb>=1)&(xd<=maxd-1) -> YELLOW*factor_team1_bd:(xd'=xd+1)&(xb'=xb-1)&(locteam1'=d)+(1-YELLOW*factor_team1_bd):(xb'=xb-1)&(locteam1'=fail);
+    [t1_b_d_2] (locteam1=b)&(xb>=2)&(xd<=maxd-2) -> YELLOW*factor_team1_bd:(xd'=xd+2)&(xb'=xb-2)&(locteam1'=d)+(1-YELLOW*factor_team1_bd):(xb'=xb-2)&(locteam1'=fail);
+    [t1_b_d_3] (locteam1=b)&(xb>=3)&(xd<=maxd-3) -> YELLOW*factor_team1_bd:(xd'=xd+3)&(xb'=xb-3)&(locteam1'=d)+(1-YELLOW*factor_team1_bd):(xb'=xb-3)&(locteam1'=fail);
+    [t1_b_d_4] (locteam1=b)&(xb>=4)&(xd<=maxd-4) -> YELLOW*factor_team1_bd:(xd'=xd+4)&(xb'=xb-4)&(locteam1'=d)+(1-YELLOW*factor_team1_bd):(xb'=xb-4)&(locteam1'=fail);
+
+    // Team1 d->b
+    [t1_d_b_0] (locteam1=d)&(xd>=0)&(xb<=maxb-0) -> YELLOW*factor_team1_bd:(xb'=xb+0)&(xd'=xd-0)&(locteam1'=b)+(1-YELLOW*factor_team1_bd):(xd'=xd-0)&(locteam1'=fail);
+    [t1_d_b_1] (locteam1=d)&(xd>=1)&(xb<=maxb-1) -> YELLOW*factor_team1_bd:(xb'=xb+1)&(xd'=xd-1)&(locteam1'=b)+(1-YELLOW*factor_team1_bd):(xd'=xd-1)&(locteam1'=fail);
+    [t1_d_b_2] (locteam1=d)&(xd>=2)&(xb<=maxb-2) -> YELLOW*factor_team1_bd:(xb'=xb+2)&(xd'=xd-2)&(locteam1'=b)+(1-YELLOW*factor_team1_bd):(xd'=xd-2)&(locteam1'=fail);
+    [t1_d_b_3] (locteam1=d)&(xd>=3)&(xb<=maxb-3) -> YELLOW*factor_team1_bd:(xb'=xb+3)&(xd'=xd-3)&(locteam1'=b)+(1-YELLOW*factor_team1_bd):(xd'=xd-3)&(locteam1'=fail);
+    [t1_d_b_4] (locteam1=d)&(xd>=4)&(xb<=maxb-4) -> YELLOW*factor_team1_bd:(xb'=xb+4)&(xd'=xd-4)&(locteam1'=b)+(1-YELLOW*factor_team1_bd):(xd'=xd-4)&(locteam1'=fail);
+
+    // Team2 b<->d (JSON:/graph/edges[3], teams[1])
+    [t2_b_d_0] (locteam2=b)&(xb>=0)&(xd<=maxd-0) -> YELLOW*factor_team2_bd:(xd'=xd+0)&(xb'=xb-0)&(locteam2'=d)+(1-YELLOW*factor_team2_bd):(xb'=xb-0)&(locteam2'=fail);
+    [t2_b_d_1] (locteam2=b)&(xb>=1)&(xd<=maxd-1) -> YELLOW*factor_team2_bd:(xd'=xd+1)&(xb'=xb-1)&(locteam2'=d)+(1-YELLOW*factor_team2_bd):(xb'=xb-1)&(locteam2'=fail);
+    [t2_b_d_2] (locteam2=b)&(xb>=2)&(xd<=maxd-2) -> YELLOW*factor_team2_bd:(xd'=xd+2)&(xb'=xb-2)&(locteam2'=d)+(1-YELLOW*factor_team2_bd):(xb'=xb-2)&(locteam2'=fail);
+    [t2_b_d_3] (locteam2=b)&(xb>=3)&(xd<=maxd-3) -> YELLOW*factor_team2_bd:(xd'=xd+3)&(xb'=xb-3)&(locteam2'=d)+(1-YELLOW*factor_team2_bd):(xb'=xb-3)&(locteam2'=fail);
+    [t2_b_d_4] (locteam2=b)&(xb>=4)&(xd<=maxd-4) -> YELLOW*factor_team2_bd:(xd'=xd+4)&(xb'=xb-4)&(locteam2'=d)+(1-YELLOW*factor_team2_bd):(xb'=xb-4)&(locteam2'=fail);
+
+    [t2_d_b_0] (locteam2=d)&(xd>=0)&(xb<=maxb-0) -> YELLOW*factor_team2_bd:(xb'=xb+0)&(xd'=xd-0)&(locteam2'=b)+(1-YELLOW*factor_team2_bd):(xd'=xd-0)&(locteam2'=fail);
+    [t2_d_b_1] (locteam2=d)&(xd>=1)&(xb<=maxb-1) -> YELLOW*factor_team2_bd:(xb'=xb+1)&(xd'=xd-1)&(locteam2'=b)+(1-YELLOW*factor_team2_bd):(xd'=xd-1)&(locteam2'=fail);
+    [t2_d_b_2] (locteam2=d)&(xd>=2)&(xb<=maxb-2) -> YELLOW*factor_team2_bd:(xb'=xb+2)&(xd'=xd-2)&(locteam2'=b)+(1-YELLOW*factor_team2_bd):(xd'=xd-2)&(locteam2'=fail);
+    [t2_d_b_3] (locteam2=d)&(xd>=3)&(xb<=maxb-3) -> YELLOW*factor_team2_bd:(xb'=xb+3)&(xd'=xd-3)&(locteam2'=b)+(1-YELLOW*factor_team2_bd):(xd'=xd-3)&(locteam2'=fail);
+    [t2_d_b_4] (locteam2=d)&(xd>=4)&(xb<=maxb-4) -> YELLOW*factor_team2_bd:(xb'=xb+4)&(xd'=xd-4)&(locteam2'=b)+(1-YELLOW*factor_team2_bd):(xd'=xd-4)&(locteam2'=fail);
+
+    // EDGE: c <-> g  (graph.edges[4], safety R)
+    // Team1 c->g (JSON:/graph/edges[4])
+    [t1_c_g_0] (locteam1=c)&(xc>=0)&(xg<=maxg-0) -> RED*factor_team1_cg:(xg'=xg+0)&(xc'=xc-0)&(locteam1'=g)+(1-RED*factor_team1_cg):(xc'=xc-0)&(locteam1'=fail);
+    [t1_c_g_1] (locteam1=c)&(xc>=1)&(xg<=maxg-1) -> RED*factor_team1_cg:(xg'=xg+1)&(xc'=xc-1)&(locteam1'=g)+(1-RED*factor_team1_cg):(xc'=xc-1)&(locteam1'=fail);
+    [t1_c_g_2] (locteam1=c)&(xc>=2)&(xg<=maxg-2) -> RED*factor_team1_cg:(xg'=xg+2)&(xc'=xc-2)&(locteam1'=g)+(1-RED*factor_team1_cg):(xc'=xc-2)&(locteam1'=fail);
+    [t1_c_g_3] (locteam1=c)&(xc>=3)&(xg<=maxg-3) -> RED*factor_team1_cg:(xg'=xg+3)&(xc'=xc-3)&(locteam1'=g)+(1-RED*factor_team1_cg):(xc'=xc-3)&(locteam1'=fail);
+    [t1_c_g_4] (locteam1=c)&(xc>=4)&(xg<=maxg-4) -> RED*factor_team1_cg:(xg'=xg+4)&(xc'=xc-4)&(locteam1'=g)+(1-RED*factor_team1_cg):(xc'=xc-4)&(locteam1'=fail);
+
+    // Team1 g->c
+    [t1_g_c_0] (locteam1=g)&(xg>=0)&(xc<=maxc-0) -> RED*factor_team1_cg:(xc'=xc+0)&(xg'=xg-0)&(locteam1'=c)+(1-RED*factor_team1_cg):(xg'=xg-0)&(locteam1'=fail);
+    [t1_g_c_1] (locteam1=g)&(xg>=1)&(xc<=maxc-1) -> RED*factor_team1_cg:(xc'=xc+1)&(xg'=xg-1)&(locteam1'=c)+(1-RED*factor_team1_cg):(xg'=xg-1)&(locteam1'=fail);
+    [t1_g_c_2] (locteam1=g)&(xg>=2)&(xc<=maxc-2) -> RED*factor_team1_cg:(xc'=xc+2)&(xg'=xg-2)&(locteam1'=c)+(1-RED*factor_team1_cg):(xg'=xg-2)&(locteam1'=fail);
+    [t1_g_c_3] (locteam1=g)&(xg>=3)&(xc<=maxc-3) -> RED*factor_team1_cg:(xc'=xc+3)&(xg'=xg-3)&(locteam1'=c)+(1-RED*factor_team1_cg):(xg'=xg-3)&(locteam1'=fail);
+    [t1_g_c_4] (locteam1=g)&(xg>=4)&(xc<=maxc-4) -> RED*factor_team1_cg:(xc'=xc+4)&(xg'=xg-4)&(locteam1'=c)+(1-RED*factor_team1_cg):(xg'=xg-4)&(locteam1'=fail);
+
+    // Team2 c<->g (JSON:/graph/edges[4], teams[1])
+    [t2_c_g_0] (locteam2=c)&(xc>=0)&(xg<=maxg-0) -> RED*factor_team2_cg:(xg'=xg+0)&(xc'=xc-0)&(locteam2'=g)+(1-RED*factor_team2_cg):(xc'=xc-0)&(locteam2'=fail);
+    [t2_c_g_1] (locteam2=c)&(xc>=1)&(xg<=maxg-1) -> RED*factor_team2_cg:(xg'=xg+1)&(xc'=xc-1)&(locteam2'=g)+(1-RED*factor_team2_cg):(xc'=xc-1)&(locteam2'=fail);
+    [t2_c_g_2] (locteam2=c)&(xc>=2)&(xg<=maxg-2) -> RED*factor_team2_cg:(xg'=xg+2)&(xc'=xc-2)&(locteam2'=g)+(1-RED*factor_team2_cg):(xc'=xc-2)&(locteam2'=fail);
+    [t2_c_g_3] (locteam2=c)&(xc>=3)&(xg<=maxg-3) -> RED*factor_team2_cg:(xg'=xg+3)&(xc'=xc-3)&(locteam2'=g)+(1-RED*factor_team2_cg):(xc'=xc-3)&(locteam2'=fail);
+    [t2_c_g_4] (locteam2=c)&(xc>=4)&(xg<=maxg-4) -> RED*factor_team2_cg:(xg'=xg+4)&(xc'=xc-4)&(locteam2'=g)+(1-RED*factor_team2_cg):(xc'=xc-4)&(locteam2'=fail);
+
+    [t2_g_c_0] (locteam2=g)&(xg>=0)&(xc<=maxc-0) -> RED*factor_team2_cg:(xc'=xc+0)&(xg'=xg-0)&(locteam2'=c)+(1-RED*factor_team2_cg):(xg'=xg-0)&(locteam2'=fail);
+    [t2_g_c_1] (locteam2=g)&(xg>=1)&(xc<=maxc-1) -> RED*factor_team2_cg:(xc'=xc+1)&(xg'=xg-1)&(locteam2'=c)+(1-RED*factor_team2_cg):(xg'=xg-1)&(locteam2'=fail);
+    [t2_g_c_2] (locteam2=g)&(xg>=2)&(xc<=maxc-2) -> RED*factor_team2_cg:(xc'=xc+2)&(xg'=xg-2)&(locteam2'=c)+(1-RED*factor_team2_cg):(xg'=xg-2)&(locteam2'=fail);
+    [t2_g_c_3] (locteam2=g)&(xg>=3)&(xc<=maxc-3) -> RED*factor_team2_cg:(xc'=xc+3)&(xg'=xg-3)&(locteam2'=c)+(1-RED*factor_team2_cg):(xg'=xg-3)&(locteam2'=fail);
+    [t2_g_c_4] (locteam2=g)&(xg>=4)&(xc<=maxc-4) -> RED*factor_team2_cg:(xc'=xc+4)&(xg'=xg-4)&(locteam2'=c)+(1-RED*factor_team2_cg):(xg'=xg-4)&(locteam2'=fail);
+
+    // EDGE: c <-> f  (graph.edges[5], safety R)
+    // Team1 c->f (JSON:/graph/edges[5])
+    [t1_c_f_0] (locteam1=c)&(xc>=0)&(xf<=maxf-0) -> RED*factor_team1_cf:(xf'=xf+0)&(xc'=xc-0)&(locteam1'=f)+(1-RED*factor_team1_cf):(xc'=xc-0)&(locteam1'=fail);
+    [t1_c_f_1] (locteam1=c)&(xc>=1)&(xf<=maxf-1) -> RED*factor_team1_cf:(xf'=xf+1)&(xc'=xc-1)&(locteam1'=f)+(1-RED*factor_team1_cf):(xc'=xc-1)&(locteam1'=fail);
+    [t1_c_f_2] (locteam1=c)&(xc>=2)&(xf<=maxf-2) -> RED*factor_team1_cf:(xf'=xf+2)&(xc'=xc-2)&(locteam1'=f)+(1-RED*factor_team1_cf):(xc'=xc-2)&(locteam1'=fail);
+    [t1_c_f_3] (locteam1=c)&(xc>=3)&(xf<=maxf-3) -> RED*factor_team1_cf:(xf'=xf+3)&(xc'=xc-3)&(locteam1'=f)+(1-RED*factor_team1_cf):(xc'=xc-3)&(locteam1'=fail);
+    [t1_c_f_4] (locteam1=c)&(xc>=4)&(xf<=maxf-4) -> RED*factor_team1_cf:(xf'=xf+4)&(xc'=xc-4)&(locteam1'=f)+(1-RED*factor_team1_cf):(xc'=xc-4)&(locteam1'=fail);
+
+    // Team1 f->c
+    [t1_f_c_0] (locteam1=f)&(xf>=0)&(xc<=maxc-0) -> RED*factor_team1_cf:(xc'=xc+0)&(xf'=xf-0)&(locteam1'=c)+(1-RED*factor_team1_cf):(xf'=xf-0)&(locteam1'=fail);
+    [t1_f_c_1] (locteam1=f)&(xf>=1)&(xc<=maxc-1) -> RED*factor_team1_cf:(xc'=xc+1)&(xf'=xf-1)&(locteam1'=c)+(1-RED*factor_team1_cf):(xf'=xf-1)&(locteam1'=fail);
+    [t1_f_c_2] (locteam1=f)&(xf>=2)&(xc<=maxc-2) -> RED*factor_team1_cf:(xc'=xc+2)&(xf'=xf-2)&(locteam1'=c)+(1-RED*factor_team1_cf):(xf'=xf-2)&(locteam1'=fail);
+    [t1_f_c_3] (locteam1=f)&(xf>=3)&(xc<=maxc-3) -> RED*factor_team1_cf:(xc'=xc+3)&(xf'=xf-3)&(locteam1'=c)+(1-RED*factor_team1_cf):(xf'=xf-3)&(locteam1'=fail);
+    [t1_f_c_4] (locteam1=f)&(xf>=4)&(xc<=maxc-4) -> RED*factor_team1_cf:(xc'=xc+4)&(xf'=xf-4)&(locteam1'=c)+(1-RED*factor_team1_cf):(xf'=xf-4)&(locteam1'=fail);
+
+    // Team2 c<->f (JSON:/graph/edges[5], teams[1])
+    [t2_c_f_0] (locteam2=c)&(xc>=0)&(xf<=maxf-0) -> RED*factor_team2_cf:(xf'=xf+0)&(xc'=xc-0)&(locteam2'=f)+(1-RED*factor_team2_cf):(xc'=xc-0)&(locteam2'=fail);
+    [t2_c_f_1] (locteam2=c)&(xc>=1)&(xf<=maxf-1) -> RED*factor_team2_cf:(xf'=xf+1)&(xc'=xc-1)&(locteam2'=f)+(1-RED*factor_team2_cf):(xc'=xc-1)&(locteam2'=fail);
+    [t2_c_f_2] (locteam2=c)&(xc>=2)&(xf<=maxf-2) -> RED*factor_team2_cf:(xf'=xf+2)&(xc'=xc-2)&(locteam2'=f)+(1-RED*factor_team2_cf):(xc'=xc-2)&(locteam2'=fail);
+    [t2_c_f_3] (locteam2=c)&(xc>=3)&(xf<=maxf-3) -> RED*factor_team2_cf:(xf'=xf+3)&(xc'=xc-3)&(locteam2'=f)+(1-RED*factor_team2_cf):(xc'=xc-3)&(locteam2'=fail);
+    [t2_c_f_4] (locteam2=c)&(xc>=4)&(xf<=maxf-4) -> RED*factor_team2_cf:(xf'=xf+4)&(xc'=xc-4)&(locteam2'=f)+(1-RED*factor_team2_cf):(xc'=xc-4)&(locteam2'=fail);
+
+    [t2_f_c_0] (locteam2=f)&(xf>=0)&(xc<=maxc-0) -> RED*factor_team2_cf:(xc'=xc+0)&(xf'=xf-0)&(locteam2'=c)+(1-RED*factor_team2_cf):(xf'=xf-0)&(locteam2'=fail);
+    [t2_f_c_1] (locteam2=f)&(xf>=1)&(xc<=maxc-1) -> RED*factor_team2_cf:(xc'=xc+1)&(xf'=xf-1)&(locteam2'=c)+(1-RED*factor_team2_cf):(xf'=xf-1)&(locteam2'=fail);
+    [t2_f_c_2] (locteam2=f)&(xf>=2)&(xc<=maxc-2) -> RED*factor_team2_cf:(xc'=xc+2)&(xf'=xf-2)&(locteam2'=c)+(1-RED*factor_team2_cf):(xf'=xf-2)&(locteam2'=fail);
+    [t2_f_c_3] (locteam2=f)&(xf>=3)&(xc<=maxc-3) -> RED*factor_team2_cf:(xc'=xc+3)&(xf'=xf-3)&(locteam2'=c)+(1-RED*factor_team2_cf):(xf'=xf-3)&(locteam2'=fail);
+    [t2_f_c_4] (locteam2=f)&(xf>=4)&(xc<=maxc-4) -> RED*factor_team2_cf:(xc'=xc+4)&(xf'=xf-4)&(locteam2'=c)+(1-RED*factor_team2_cf):(xf'=xf-4)&(locteam2'=fail);
+
+    // EDGE: d <-> e  (graph.edges[6], safety G)
+    // Team1 d->e (JSON:/graph/edges[6])
+    [t1_d_e_0] (locteam1=d)&(xd>=0)&(xe<=maxe-0) -> GREEN*factor_team1_de:(xe'=xe+0)&(xd'=xd-0)&(locteam1'=e)+(1-GREEN*factor_team1_de):(xd'=xd-0)&(locteam1'=fail);
+    [t1_d_e_1] (locteam1=d)&(xd>=1)&(xe<=maxe-1) -> GREEN*factor_team1_de:(xe'=xe+1)&(xd'=xd-1)&(locteam1'=e)+(1-GREEN*factor_team1_de):(xd'=xd-1)&(locteam1'=fail);
+    [t1_d_e_2] (locteam1=d)&(xd>=2)&(xe<=maxe-2) -> GREEN*factor_team1_de:(xe'=xe+2)&(xd'=xd-2)&(locteam1'=e)+(1-GREEN*factor_team1_de):(xd'=xd-2)&(locteam1'=fail);
+    [t1_d_e_3] (locteam1=d)&(xd>=3)&(xe<=maxe-3) -> GREEN*factor_team1_de:(xe'=xe+3)&(xd'=xd-3)&(locteam1'=e)+(1-GREEN*factor_team1_de):(xd'=xd-3)&(locteam1'=fail);
+    [t1_d_e_4] (locteam1=d)&(xd>=4)&(xe<=maxe-4) -> GREEN*factor_team1_de:(xe'=xe+4)&(xd'=xd-4)&(locteam1'=e)+(1-GREEN*factor_team1_de):(xd'=xd-4)&(locteam1'=fail);
+
+    // Team1 e->d
+    [t1_e_d_0] (locteam1=e)&(xe>=0)&(xd<=maxd-0) -> GREEN*factor_team1_de:(xd'=xd+0)&(xe'=xe-0)&(locteam1'=d)+(1-GREEN*factor_team1_de):(xe'=xe-0)&(locteam1'=fail);
+    [t1_e_d_1] (locteam1=e)&(xe>=1)&(xd<=maxd-1) -> GREEN*factor_team1_de:(xd'=xd+1)&(xe'=xe-1)&(locteam1'=d)+(1-GREEN*factor_team1_de):(xe'=xe-1)&(locteam1'=fail);
+    [t1_e_d_2] (locteam1=e)&(xe>=2)&(xd<=maxd-2) -> GREEN*factor_team1_de:(xd'=xd+2)&(xe'=xe-2)&(locteam1'=d)+(1-GREEN*factor_team1_de):(xe'=xe-2)&(locteam1'=fail);
+    [t1_e_d_3] (locteam1=e)&(xe>=3)&(xd<=maxd-3) -> GREEN*factor_team1_de:(xd'=xd+3)&(xe'=xe-3)&(locteam1'=d)+(1-GREEN*factor_team1_de):(xe'=xe-3)&(locteam1'=fail);
+    [t1_e_d_4] (locteam1=e)&(xe>=4)&(xd<=maxd-4) -> GREEN*factor_team1_de:(xd'=xd+4)&(xe'=xe-4)&(locteam1'=d)+(1-GREEN*factor_team1_de):(xe'=xe-4)&(locteam1'=fail);
+
+    // Team2 d<->e (JSON:/graph/edges[6], teams[1])
+    [t2_d_e_0] (locteam2=d)&(xd>=0)&(xe<=maxe-0) -> GREEN*factor_team2_de:(xe'=xe+0)&(xd'=xd-0)&(locteam2'=e)+(1-GREEN*factor_team2_de):(xd'=xd-0)&(locteam2'=fail);
+    [t2_d_e_1] (locteam2=d)&(xd>=1)&(xe<=maxe-1) -> GREEN*factor_team2_de:(xe'=xe+1)&(xd'=xd-1)&(locteam2'=e)+(1-GREEN*factor_team2_de):(xd'=xd-1)&(locteam2'=fail);
+    [t2_d_e_2] (locteam2=d)&(xd>=2)&(xe<=maxe-2) -> GREEN*factor_team2_de:(xe'=xe+2)&(xd'=xd-2)&(locteam2'=e)+(1-GREEN*factor_team2_de):(xd'=xd-2)&(locteam2'=fail);
+    [t2_d_e_3] (locteam2=d)&(xd>=3)&(xe<=maxe-3) -> GREEN*factor_team2_de:(xe'=xe+3)&(xd'=xd-3)&(locteam2'=e)+(1-GREEN*factor_team2_de):(xd'=xd-3)&(locteam2'=fail);
+    [t2_d_e_4] (locteam2=d)&(xd>=4)&(xe<=maxe-4) -> GREEN*factor_team2_de:(xe'=xe+4)&(xd'=xd-4)&(locteam2'=e)+(1-GREEN*factor_team2_de):(xd'=xd-4)&(locteam2'=fail);
+
+    [t2_e_d_0] (locteam2=e)&(xe>=0)&(xd<=maxd-0) -> GREEN*factor_team2_de:(xd'=xd+0)&(xe'=xe-0)&(locteam2'=d)+(1-GREEN*factor_team2_de):(xe'=xe-0)&(locteam2'=fail);
+    [t2_e_d_1] (locteam2=e)&(xe>=1)&(xd<=maxd-1) -> GREEN*factor_team2_de:(xd'=xd+1)&(xe'=xe-1)&(locteam2'=d)+(1-GREEN*factor_team2_de):(xe'=xe-1)&(locteam2'=fail);
+    [t2_e_d_2] (locteam2=e)&(xe>=2)&(xd<=maxd-2) -> GREEN*factor_team2_de:(xd'=xd+2)&(xe'=xe-2)&(locteam2'=d)+(1-GREEN*factor_team2_de):(xe'=xe-2)&(locteam2'=fail);
+    [t2_e_d_3] (locteam2=e)&(xe>=3)&(xd<=maxd-3) -> GREEN*factor_team2_de:(xd'=xd+3)&(xe'=xe-3)&(locteam2'=d)+(1-GREEN*factor_team2_de):(xe'=xe-3)&(locteam2'=fail);
+    [t2_e_d_4] (locteam2=e)&(xe>=4)&(xd<=maxd-4) -> GREEN*factor_team2_de:(xd'=xd+4)&(xe'=xe-4)&(locteam2'=d)+(1-GREEN*factor_team2_de):(xe'=xe-4)&(locteam2'=fail);
+
+    // EDGE: e <-> f  (graph.edges[7], safety G)
+    // Team1 e->f (JSON:/graph/edges[7])
+    [t1_e_f_0] (locteam1=e)&(xe>=0)&(xf<=maxf-0) -> GREEN*factor_team1_ef:(xf'=xf+0)&(xe'=xe-0)&(locteam1'=f)+(1-GREEN*factor_team1_ef):(xe'=xe-0)&(locteam1'=fail);
+    [t1_e_f_1] (locteam1=e)&(xe>=1)&(xf<=maxf-1) -> GREEN*factor_team1_ef:(xf'=xf+1)&(xe'=xe-1)&(locteam1'=f)+(1-GREEN*factor_team1_ef):(xe'=xe-1)&(locteam1'=fail);
+    [t1_e_f_2] (locteam1=e)&(xe>=2)&(xf<=maxf-2) -> GREEN*factor_team1_ef:(xf'=xf+2)&(xe'=xe-2)&(locteam1'=f)+(1-GREEN*factor_team1_ef):(xe'=xe-2)&(locteam1'=fail);
+    [t1_e_f_3] (locteam1=e)&(xe>=3)&(xf<=maxf-3) -> GREEN*factor_team1_ef:(xf'=xf+3)&(xe'=xe-3)&(locteam1'=f)+(1-GREEN*factor_team1_ef):(xe'=xe-3)&(locteam1'=fail);
+    [t1_e_f_4] (locteam1=e)&(xe>=4)&(xf<=maxf-4) -> GREEN*factor_team1_ef:(xf'=xf+4)&(xe'=xe-4)&(locteam1'=f)+(1-GREEN*factor_team1_ef):(xe'=xe-4)&(locteam1'=fail);
+
+    // Team1 f->e
+    [t1_f_e_0] (locteam1=f)&(xf>=0)&(xe<=maxe-0) -> GREEN*factor_team1_ef:(xe'=xe+0)&(xf'=xf-0)&(locteam1'=e)+(1-GREEN*factor_team1_ef):(xf'=xf-0)&(locteam1'=fail);
+    [t1_f_e_1] (locteam1=f)&(xf>=1)&(xe<=maxe-1) -> GREEN*factor_team1_ef:(xe'=xe+1)&(xf'=xf-1)&(locteam1'=e)+(1-GREEN*factor_team1_ef):(xf'=xf-1)&(locteam1'=fail);
+    [t1_f_e_2] (locteam1=f)&(xf>=2)&(xe<=maxe-2) -> GREEN*factor_team1_ef:(xe'=xe+2)&(xf'=xf-2)&(locteam1'=e)+(1-GREEN*factor_team1_ef):(xf'=xf-2)&(locteam1'=fail);
+    [t1_f_e_3] (locteam1=f)&(xf>=3)&(xe<=maxe-3) -> GREEN*factor_team1_ef:(xe'=xe+3)&(xf'=xf-3)&(locteam1'=e)+(1-GREEN*factor_team1_ef):(xf'=xf-3)&(locteam1'=fail);
+    [t1_f_e_4] (locteam1=f)&(xf>=4)&(xe<=maxe-4) -> GREEN*factor_team1_ef:(xe'=xe+4)&(xf'=xf-4)&(locteam1'=e)+(1-GREEN*factor_team1_ef):(xf'=xf-4)&(locteam1'=fail);
+
+    // Team2 e<->f (JSON:/graph/edges[7], teams[1])
+    [t2_e_f_0] (locteam2=e)&(xe>=0)&(xf<=maxf-0) -> GREEN*factor_team2_ef:(xf'=xf+0)&(xe'=xe-0)&(locteam2'=f)+(1-GREEN*factor_team2_ef):(xe'=xe-0)&(locteam2'=fail);
+    [t2_e_f_1] (locteam2=e)&(xe>=1)&(xf<=maxf-1) -> GREEN*factor_team2_ef:(xf'=xf+1)&(xe'=xe-1)&(locteam2'=f)+(1-GREEN*factor_team2_ef):(xe'=xe-1)&(locteam2'=fail);
+    [t2_e_f_2] (locteam2=e)&(xe>=2)&(xf<=maxf-2) -> GREEN*factor_team2_ef:(xf'=xf+2)&(xe'=xe-2)&(locteam2'=f)+(1-GREEN*factor_team2_ef):(xe'=xe-2)&(locteam2'=fail);
+    [t2_e_f_3] (locteam2=e)&(xe>=3)&(xf<=maxf-3) -> GREEN*factor_team2_ef:(xf'=xf+3)&(xe'=xe-3)&(locteam2'=f)+(1-GREEN*factor_team2_ef):(xe'=xe-3)&(locteam2'=fail);
+    [t2_e_f_4] (locteam2=e)&(xe>=4)&(xf<=maxf-4) -> GREEN*factor_team2_ef:(xf'=xf+4)&(xe'=xe-4)&(locteam2'=f)+(1-GREEN*factor_team2_ef):(xe'=xe-4)&(locteam2'=fail);
+
+    [t2_f_e_0] (locteam2=f)&(xf>=0)&(xe<=maxe-0) -> GREEN*factor_team2_ef:(xe'=xe+0)&(xf'=xf-0)&(locteam2'=e)+(1-GREEN*factor_team2_ef):(xf'=xf-0)&(locteam2'=fail);
+    [t2_f_e_1] (locteam2=f)&(xf>=1)&(xe<=maxe-1) -> GREEN*factor_team2_ef:(xe'=xe+1)&(xf'=xf-1)&(locteam2'=e)+(1-GREEN*factor_team2_ef):(xf'=xf-1)&(locteam2'=fail);
+    [t2_f_e_2] (locteam2=f)&(xf>=2)&(xe<=maxe-2) -> GREEN*factor_team2_ef:(xe'=xe+2)&(xf'=xf-2)&(locteam2'=e)+(1-GREEN*factor_team2_ef):(xf'=xf-2)&(locteam2'=fail);
+    [t2_f_e_3] (locteam2=f)&(xf>=3)&(xe<=maxe-3) -> GREEN*factor_team2_ef:(xe'=xe+3)&(xf'=xf-3)&(locteam2'=e)+(1-GREEN*factor_team2_ef):(xf'=xf-3)&(locteam2'=fail);
+    [t2_f_e_4] (locteam2=f)&(xf>=4)&(xe<=maxe-4) -> GREEN*factor_team2_ef:(xe'=xe+4)&(xf'=xf-4)&(locteam2'=e)+(1-GREEN*factor_team2_ef):(xf'=xf-4)&(locteam2'=fail);
+
+    // EDGE: f <-> g  (graph.edges[8], safety Y)
+    // Team1 f->g (JSON:/graph/edges[8])
+    [t1_f_g_0] (locteam1=f)&(xf>=0)&(xg<=maxg-0) -> YELLOW*factor_team1_fg:(xg'=xg+0)&(xf'=xf-0)&(locteam1'=g)+(1-YELLOW*factor_team1_fg):(xf'=xf-0)&(locteam1'=fail);
+    [t1_f_g_1] (locteam1=f)&(xf>=1)&(xg<=maxg-1) -> YELLOW*factor_team1_fg:(xg'=xg+1)&(xf'=xf-1)&(locteam1'=g)+(1-YELLOW*factor_team1_fg):(xf'=xf-1)&(locteam1'=fail);
+    [t1_f_g_2] (locteam1=f)&(xf>=2)&(xg<=maxg-2) -> YELLOW*factor_team1_fg:(xg'=xg+2)&(xf'=xf-2)&(locteam1'=g)+(1-YELLOW*factor_team1_fg):(xf'=xf-2)&(locteam1'=fail);
+    [t1_f_g_3] (locteam1=f)&(xf>=3)&(xg<=maxg-3) -> YELLOW*factor_team1_fg:(xg'=xg+3)&(xf'=xf-3)&(locteam1'=g)+(1-YELLOW*factor_team1_fg):(xf'=xf-3)&(locteam1'=fail);
+    [t1_f_g_4] (locteam1=f)&(xf>=4)&(xg<=maxg-4) -> YELLOW*factor_team1_fg:(xg'=xg+4)&(xf'=xf-4)&(locteam1'=g)+(1-YELLOW*factor_team1_fg):(xf'=xf-4)&(locteam1'=fail);
+
+    // Team1 g->f
+    [t1_g_f_0] (locteam1=g)&(xg>=0)&(xf<=maxf-0) -> YELLOW*factor_team1_fg:(xf'=xf+0)&(xg'=xg-0)&(locteam1'=f)+(1-YELLOW*factor_team1_fg):(xg'=xg-0)&(locteam1'=fail);
+    [t1_g_f_1] (locteam1=g)&(xg>=1)&(xf<=maxf-1) -> YELLOW*factor_team1_fg:(xf'=xf+1)&(xg'=xg-1)&(locteam1'=f)+(1-YELLOW*factor_team1_fg):(xg'=xg-1)&(locteam1'=fail);
+    [t1_g_f_2] (locteam1=g)&(xg>=2)&(xf<=maxf-2) -> YELLOW*factor_team1_fg:(xf'=xf+2)&(xg'=xg-2)&(locteam1'=f)+(1-YELLOW*factor_team1_fg):(xg'=xg-2)&(locteam1'=fail);
+    [t1_g_f_3] (locteam1=g)&(xg>=3)&(xf<=maxf-3) -> YELLOW*factor_team1_fg:(xf'=xf+3)&(xg'=xg-3)&(locteam1'=f)+(1-YELLOW*factor_team1_fg):(xg'=xg-3)&(locteam1'=fail);
+    [t1_g_f_4] (locteam1=g)&(xg>=4)&(xf<=maxf-4) -> YELLOW*factor_team1_fg:(xf'=xf+4)&(xg'=xg-4)&(locteam1'=f)+(1-YELLOW*factor_team1_fg):(xg'=xg-4)&(locteam1'=fail);
+
+    // Team2 f<->g (JSON:/graph/edges[8], teams[1])
+    [t2_f_g_0] (locteam2=f)&(xf>=0)&(xg<=maxg-0) -> YELLOW*factor_team2_fg:(xg'=xg+0)&(xf'=xf-0)&(locteam2'=g)+(1-YELLOW*factor_team2_fg):(xf'=xf-0)&(locteam2'=fail);
+    [t2_f_g_1] (locteam2=f)&(xf>=1)&(xg<=maxg-1) -> YELLOW*factor_team2_fg:(xg'=xg+1)&(xf'=xf-1)&(locteam2'=g)+(1-YELLOW*factor_team2_fg):(xf'=xf-1)&(locteam2'=fail);
+    [t2_f_g_2] (locteam2=f)&(xf>=2)&(xg<=maxg-2) -> YELLOW*factor_team2_fg:(xg'=xg+2)&(xf'=xf-2)&(locteam2'=g)+(1-YELLOW*factor_team2_fg):(xf'=xf-2)&(locteam2'=fail);
+    [t2_f_g_3] (locteam2=f)&(xf>=3)&(xg<=maxg-3) -> YELLOW*factor_team2_fg:(xg'=xg+3)&(xf'=xf-3)&(locteam2'=g)+(1-YELLOW*factor_team2_fg):(xf'=xf-3)&(locteam2'=fail);
+    [t2_f_g_4] (locteam2=f)&(xf>=4)&(xg<=maxg-4) -> YELLOW*factor_team2_fg:(xg'=xg+4)&(xf'=xf-4)&(locteam2'=g)+(1-YELLOW*factor_team2_fg):(xf'=xf-4)&(locteam2'=fail);
+
+    [t2_g_f_0] (locteam2=g)&(xg>=0)&(xf<=maxf-0) -> YELLOW*factor_team2_fg:(xf'=xf+0)&(xg'=xg-0)&(locteam2'=f)+(1-YELLOW*factor_team2_fg):(xg'=xg-0)&(locteam2'=fail);
+    [t2_g_f_1] (locteam2=g)&(xg>=1)&(xf<=maxf-1) -> YELLOW*factor_team2_fg:(xf'=xf+1)&(xg'=xg-1)&(locteam2'=f)+(1-YELLOW*factor_team2_fg):(xg'=xg-1)&(locteam2'=fail);
+    [t2_g_f_2] (locteam2=g)&(xg>=2)&(xf<=maxf-2) -> YELLOW*factor_team2_fg:(xf'=xf+2)&(xg'=xg-2)&(locteam2'=f)+(1-YELLOW*factor_team2_fg):(xg'=xg-2)&(locteam2'=fail);
+    [t2_g_f_3] (locteam2=g)&(xg>=3)&(xf<=maxf-3) -> YELLOW*factor_team2_fg:(xf'=xf+3)&(xg'=xg-3)&(locteam2'=f)+(1-YELLOW*factor_team2_fg):(xg'=xg-3)&(locteam2'=fail);
+    [t2_g_f_4] (locteam2=g)&(xg>=4)&(xf<=maxf-4) -> YELLOW*factor_team2_fg:(xf'=xf+4)&(xg'=xg-4)&(locteam2'=f)+(1-YELLOW*factor_team2_fg):(xg'=xg-4)&(locteam2'=fail);
+
+endmodule
+
+label "goal" = (xg >= 7); // JSON:/demands[0] node "g" qty 7
+```
+
+```properties
+// Objective: maximize probability to meet demand at node g (JSON:/objective = "max_reach_prob")
+// Pmax: probability of eventually reaching xg >= 7 (delivering at least 7 resources to node "g")
+Pmax=? [ F "goal" ]
+```

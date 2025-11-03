@@ -1,0 +1,294 @@
+// ASSUMPTION: undirected edges (graph.undirected = true) => transitions added for both directions // graph/undirected
+// ASSUMPTION: node capacity unspecified -> use maxResource = total initial resources = 8 (safe upper bound) // ASSUMPTION
+mdp
+
+const int fail = -1;
+
+// Node indices mapping // graph/nodes
+const int a = 0; // graph/nodes[0]
+const int b = 1; // graph/nodes[1]
+const int c = 2; // graph/nodes[2]
+const int d = 3; // graph/nodes[3]
+const int e = 4; // graph/nodes[4]
+const int f = 5; // graph/nodes[5]
+const int g = 6; // graph/nodes[6]
+
+// resources initialisation // resources[]
+const int inita = 2; // resources[1] node "a"
+const int initb = 0; // no explicit resource at "b"
+const int initc = 4; // resources[0] node "c"
+const int initd = 2; // resources[2] node "d"
+const int inite = 0; // no explicit resource at "e"
+const int initf = 0; // no explicit resource at "f"
+const int initg = 0; // demand node starts with 0
+
+// overall capacity / bounds // ASSUMPTION: node_capacity null -> set to sum of all resources
+const int maxResource = 8; // sum(inita+initc+initd)=8
+
+// team starts and capacities // teams[]
+const int team1Start = a; // teams[0].start = "a"
+const int team2Start = c; // teams[1].start = "c"
+const int team1Cap = 4; // teams[0].capacity
+const int team2Cap = 4; // teams[1].capacity
+
+// safety probabilities from constraints // constraints/safety_probs
+const double GREEN = 0.99; // G
+const double YELLOW = 0.85; // Y
+const double RED = 0.5; // R
+
+// Edge list (undirected, we add both directions) with indices referencing graph/edges
+// graph/edges[0] a-b distance 9.0 safety "R"
+// graph/edges[1] a-d distance 5.0 safety "R"
+// graph/edges[2] b-c distance 4.0 safety "R"
+// graph/edges[3] b-d distance 12.0 safety "Y"
+// graph/edges[4] c-g distance 6.0 safety "R"
+// graph/edges[5] c-f distance 12.0 safety "R"
+// graph/edges[6] d-e distance 2.0 safety "G"
+// graph/edges[7] e-f distance 4.0 safety "G"
+// graph/edges[8] f-g distance 10.0 safety "Y"
+
+module resourcing
+    xa : [0..maxResource] init inita; // resources at node "a" // resources where node="a"
+    xb : [0..maxResource] init initb; // node "b"
+    xc : [0..maxResource] init initc; // node "c"
+    xd : [0..maxResource] init initd; // node "d"
+    xe : [0..maxResource] init inite; // node "e"
+    xf : [0..maxResource] init initf; // node "f"
+    xg : [0..maxResource] init initg; // node "g" (demand) // demands[0].node = "g"
+
+    loct1 : [-1..6] init team1Start; // teams[0].id = "T1"
+    loct2 : [-1..6] init team2Start; // teams[1].id = "T2"
+
+    // ---------- EDGES: a <-> b (graph/edges[0]) safety = R = RED ----------
+    // team1 moves a->b with transfer k (0..team1Cap)
+    [team1_a_b_0] (loct1 = a) & (xa >= 0) & (xb <= maxResource - 0) -> RED:(xb'=xb+0)&(xa'=xa-0)&(loct1'=b) + (1-RED):(xa'=xa-0)&(loct1'=fail);
+    [team1_a_b_1] (loct1 = a) & (xa >= 1) & (xb <= maxResource - 1) -> RED:(xb'=xb+1)&(xa'=xa-1)&(loct1'=b) + (1-RED):(xa'=xa-1)&(loct1'=fail);
+    [team1_a_b_2] (loct1 = a) & (xa >= 2) & (xb <= maxResource - 2) -> RED:(xb'=xb+2)&(xa'=xa-2)&(loct1'=b) + (1-RED):(xa'=xa-2)&(loct1'=fail);
+    [team1_a_b_3] (loct1 = a) & (xa >= 3) & (xb <= maxResource - 3) -> RED:(xb'=xb+3)&(xa'=xa-3)&(loct1'=b) + (1-RED):(xa'=xa-3)&(loct1'=fail);
+    [team1_a_b_4] (loct1 = a) & (xa >= 4) & (xb <= maxResource - 4) -> RED:(xb'=xb+4)&(xa'=xa-4)&(loct1'=b) + (1-RED):(xa'=xa-4)&(loct1'=fail);
+
+    // team1 moves b->a
+    [team1_b_a_0] (loct1 = b) & (xb >= 0) & (xa <= maxResource - 0) -> RED:(xa'=xa+0)&(xb'=xb-0)&(loct1'=a) + (1-RED):(xb'=xb-0)&(loct1'=fail);
+    [team1_b_a_1] (loct1 = b) & (xb >= 1) & (xa <= maxResource - 1) -> RED:(xa'=xa+1)&(xb'=xb-1)&(loct1'=a) + (1-RED):(xb'=xb-1)&(loct1'=fail);
+    [team1_b_a_2] (loct1 = b) & (xb >= 2) & (xa <= maxResource - 2) -> RED:(xa'=xa+2)&(xb'=xb-2)&(loct1'=a) + (1-RED):(xb'=xb-2)&(loct1'=fail);
+    [team1_b_a_3] (loct1 = b) & (xb >= 3) & (xa <= maxResource - 3) -> RED:(xa'=xa+3)&(xb'=xb-3)&(loct1'=a) + (1-RED):(xb'=xb-3)&(loct1'=fail);
+    [team1_b_a_4] (loct1 = b) & (xb >= 4) & (xa <= maxResource - 4) -> RED:(xa'=xa+4)&(xb'=xb-4)&(loct1'=a) + (1-RED):(xb'=xb-4)&(loct1'=fail);
+
+    // team2 moves a->b
+    [team2_a_b_0] (loct2 = a) & (xa >= 0) & (xb <= maxResource - 0) -> RED:(xb'=xb+0)&(xa'=xa-0)&(loct2'=b) + (1-RED):(xa'=xa-0)&(loct2'=fail);
+    [team2_a_b_1] (loct2 = a) & (xa >= 1) & (xb <= maxResource - 1) -> RED:(xb'=xb+1)&(xa'=xa-1)&(loct2'=b) + (1-RED):(xa'=xa-1)&(loct2'=fail);
+    [team2_a_b_2] (loct2 = a) & (xa >= 2) & (xb <= maxResource - 2) -> RED:(xb'=xb+2)&(xa'=xa-2)&(loct2'=b) + (1-RED):(xa'=xa-2)&(loct2'=fail);
+    [team2_a_b_3] (loct2 = a) & (xa >= 3) & (xb <= maxResource - 3) -> RED:(xb'=xb+3)&(xa'=xa-3)&(loct2'=b) + (1-RED):(xa'=xa-3)&(loct2'=fail);
+    [team2_a_b_4] (loct2 = a) & (xa >= 4) & (xb <= maxResource - 4) -> RED:(xb'=xb+4)&(xa'=xa-4)&(loct2'=b) + (1-RED):(xa'=xa-4)&(loct2'=fail);
+
+    // team2 moves b->a
+    [team2_b_a_0] (loct2 = b) & (xb >= 0) & (xa <= maxResource - 0) -> RED:(xa'=xa+0)&(xb'=xb-0)&(loct2'=a) + (1-RED):(xb'=xb-0)&(loct2'=fail);
+    [team2_b_a_1] (loct2 = b) & (xb >= 1) & (xa <= maxResource - 1) -> RED:(xa'=xa+1)&(xb'=xb-1)&(loct2'=a) + (1-RED):(xb'=xb-1)&(loct2'=fail);
+    [team2_b_a_2] (loct2 = b) & (xb >= 2) & (xa <= maxResource - 2) -> RED:(xa'=xa+2)&(xb'=xb-2)&(loct2'=a) + (1-RED):(xb'=xb-2)&(loct2'=fail);
+    [team2_b_a_3] (loct2 = b) & (xb >= 3) & (xa <= maxResource - 3) -> RED:(xa'=xa+3)&(xb'=xb-3)&(loct2'=a) + (1-RED):(xb'=xb-3)&(loct2'=fail);
+    [team2_b_a_4] (loct2 = b) & (xb >= 4) & (xa <= maxResource - 4) -> RED:(xa'=xa+4)&(xb'=xb-4)&(loct2'=a) + (1-RED):(xb'=xb-4)&(loct2'=fail);
+
+    // ---------- EDGES: a <-> d (graph/edges[1]) safety = R ----------
+    // a->d team1
+    [team1_a_d_0] (loct1 = a) & (xa >= 0) & (xd <= maxResource - 0) -> RED:(xd'=xd+0)&(xa'=xa-0)&(loct1'=d) + (1-RED):(xa'=xa-0)&(loct1'=fail);
+    [team1_a_d_1] (loct1 = a) & (xa >= 1) & (xd <= maxResource - 1) -> RED:(xd'=xd+1)&(xa'=xa-1)&(loct1'=d) + (1-RED):(xa'=xa-1)&(loct1'=fail);
+    [team1_a_d_2] (loct1 = a) & (xa >= 2) & (xd <= maxResource - 2) -> RED:(xd'=xd+2)&(xa'=xa-2)&(loct1'=d) + (1-RED):(xa'=xa-2)&(loct1'=fail);
+    [team1_a_d_3] (loct1 = a) & (xa >= 3) & (xd <= maxResource - 3) -> RED:(xd'=xd+3)&(xa'=xa-3)&(loct1'=d) + (1-RED):(xa'=xa-3)&(loct1'=fail);
+    [team1_a_d_4] (loct1 = a) & (xa >= 4) & (xd <= maxResource - 4) -> RED:(xd'=xd+4)&(xa'=xa-4)&(loct1'=d) + (1-RED):(xa'=xa-4)&(loct1'=fail);
+
+    // d->a team1
+    [team1_d_a_0] (loct1 = d) & (xd >= 0) & (xa <= maxResource - 0) -> RED:(xa'=xa+0)&(xd'=xd-0)&(loct1'=a) + (1-RED):(xd'=xd-0)&(loct1'=fail);
+    [team1_d_a_1] (loct1 = d) & (xd >= 1) & (xa <= maxResource - 1) -> RED:(xa'=xa+1)&(xd'=xd-1)&(loct1'=a) + (1-RED):(xd'=xd-1)&(loct1'=fail);
+    [team1_d_a_2] (loct1 = d) & (xd >= 2) & (xa <= maxResource - 2) -> RED:(xa'=xa+2)&(xd'=xd-2)&(loct1'=a) + (1-RED):(xd'=xd-2)&(loct1'=fail);
+    [team1_d_a_3] (loct1 = d) & (xd >= 3) & (xa <= maxResource - 3) -> RED:(xa'=xa+3)&(xd'=xd-3)&(loct1'=a) + (1-RED):(xd'=xd-3)&(loct1'=fail);
+    [team1_d_a_4] (loct1 = d) & (xd >= 4) & (xa <= maxResource - 4) -> RED:(xa'=xa+4)&(xd'=xd-4)&(loct1'=a) + (1-RED):(xd'=xd-4)&(loct1'=fail);
+
+    // a<->d team2
+    [team2_a_d_0] (loct2 = a) & (xa >= 0) & (xd <= maxResource - 0) -> RED:(xd'=xd+0)&(xa'=xa-0)&(loct2'=d) + (1-RED):(xa'=xa-0)&(loct2'=fail);
+    [team2_a_d_1] (loct2 = a) & (xa >= 1) & (xd <= maxResource - 1) -> RED:(xd'=xd+1)&(xa'=xa-1)&(loct2'=d) + (1-RED):(xa'=xa-1)&(loct2'=fail);
+    [team2_a_d_2] (loct2 = a) & (xa >= 2) & (xd <= maxResource - 2) -> RED:(xd'=xd+2)&(xa'=xa-2)&(loct2'=d) + (1-RED):(xa'=xa-2)&(loct2'=fail);
+    [team2_a_d_3] (loct2 = a) & (xa >= 3) & (xd <= maxResource - 3) -> RED:(xd'=xd+3)&(xa'=xa-3)&(loct2'=d) + (1-RED):(xa'=xa-3)&(loct2'=fail);
+    [team2_a_d_4] (loct2 = a) & (xa >= 4) & (xd <= maxResource - 4) -> RED:(xd'=xd+4)&(xa'=xa-4)&(loct2'=d) + (1-RED):(xa'=xa-4)&(loct2'=fail);
+
+    [team2_d_a_0] (loct2 = d) & (xd >= 0) & (xa <= maxResource - 0) -> RED:(xa'=xa+0)&(xd'=xd-0)&(loct2'=a) + (1-RED):(xd'=xd-0)&(loct2'=fail);
+    [team2_d_a_1] (loct2 = d) & (xd >= 1) & (xa <= maxResource - 1) -> RED:(xa'=xa+1)&(xd'=xd-1)&(loct2'=a) + (1-RED):(xd'=xd-1)&(loct2'=fail);
+    [team2_d_a_2] (loct2 = d) & (xd >= 2) & (xa <= maxResource - 2) -> RED:(xa'=xa+2)&(xd'=xd-2)&(loct2'=a) + (1-RED):(xd'=xd-2)&(loct2'=fail);
+    [team2_d_a_3] (loct2 = d) & (xd >= 3) & (xa <= maxResource - 3) -> RED:(xa'=xa+3)&(xd'=xd-3)&(loct2'=a) + (1-RED):(xd'=xd-3)&(loct2'=fail);
+    [team2_d_a_4] (loct2 = d) & (xd >= 4) & (xa <= maxResource - 4) -> RED:(xa'=xa+4)&(xd'=xd-4)&(loct2'=a) + (1-RED):(xd'=xd-4)&(loct2'=fail);
+
+    // ---------- EDGES: b <-> c (graph/edges[2]) safety = R ----------
+    [team1_b_c_0] (loct1 = b) & (xb >= 0) & (xc <= maxResource - 0) -> RED:(xc'=xc+0)&(xb'=xb-0)&(loct1'=c) + (1-RED):(xb'=xb-0)&(loct1'=fail);
+    [team1_b_c_1] (loct1 = b) & (xb >= 1) & (xc <= maxResource - 1) -> RED:(xc'=xc+1)&(xb'=xb-1)&(loct1'=c) + (1-RED):(xb'=xb-1)&(loct1'=fail);
+    [team1_b_c_2] (loct1 = b) & (xb >= 2) & (xc <= maxResource - 2) -> RED:(xc'=xc+2)&(xb'=xb-2)&(loct1'=c) + (1-RED):(xb'=xb-2)&(loct1'=fail);
+    [team1_b_c_3] (loct1 = b) & (xb >= 3) & (xc <= maxResource - 3) -> RED:(xc'=xc+3)&(xb'=xb-3)&(loct1'=c) + (1-RED):(xb'=xb-3)&(loct1'=fail);
+    [team1_b_c_4] (loct1 = b) & (xb >= 4) & (xc <= maxResource - 4) -> RED:(xc'=xc+4)&(xb'=xb-4)&(loct1'=c) + (1-RED):(xb'=xb-4)&(loct1'=fail);
+
+    [team1_c_b_0] (loct1 = c) & (xc >= 0) & (xb <= maxResource - 0) -> RED:(xb'=xb+0)&(xc'=xc-0)&(loct1'=b) + (1-RED):(xc'=xc-0)&(loct1'=fail);
+    [team1_c_b_1] (loct1 = c) & (xc >= 1) & (xb <= maxResource - 1) -> RED:(xb'=xb+1)&(xc'=xc-1)&(loct1'=b) + (1-RED):(xc'=xc-1)&(loct1'=fail);
+    [team1_c_b_2] (loct1 = c) & (xc >= 2) & (xb <= maxResource - 2) -> RED:(xb'=xb+2)&(xc'=xc-2)&(loct1'=b) + (1-RED):(xc'=xc-2)&(loct1'=fail);
+    [team1_c_b_3] (loct1 = c) & (xc >= 3) & (xb <= maxResource - 3) -> RED:(xb'=xb+3)&(xc'=xc-3)&(loct1'=b) + (1-RED):(xc'=xc-3)&(loct1'=fail);
+    [team1_c_b_4] (loct1 = c) & (xc >= 4) & (xb <= maxResource - 4) -> RED:(xb'=xb+4)&(xc'=xc-4)&(loct1'=b) + (1-RED):(xc'=xc-4)&(loct1'=fail);
+
+    [team2_b_c_0] (loct2 = b) & (xb >= 0) & (xc <= maxResource - 0) -> RED:(xc'=xc+0)&(xb'=xb-0)&(loct2'=c) + (1-RED):(xb'=xb-0)&(loct2'=fail);
+    [team2_b_c_1] (loct2 = b) & (xb >= 1) & (xc <= maxResource - 1) -> RED:(xc'=xc+1)&(xb'=xb-1)&(loct2'=c) + (1-RED):(xb'=xb-1)&(loct2'=fail);
+    [team2_b_c_2] (loct2 = b) & (xb >= 2) & (xc <= maxResource - 2) -> RED:(xc'=xc+2)&(xb'=xb-2)&(loct2'=c) + (1-RED):(xb'=xb-2)&(loct2'=fail);
+    [team2_b_c_3] (loct2 = b) & (xb >= 3) & (xc <= maxResource - 3) -> RED:(xc'=xc+3)&(xb'=xb-3)&(loct2'=c) + (1-RED):(xb'=xb-3)&(loct2'=fail);
+    [team2_b_c_4] (loct2 = b) & (xb >= 4) & (xc <= maxResource - 4) -> RED:(xc'=xc+4)&(xb'=xb-4)&(loct2'=c) + (1-RED):(xb'=xb-4)&(loct2'=fail);
+
+    [team2_c_b_0] (loct2 = c) & (xc >= 0) & (xb <= maxResource - 0) -> RED:(xb'=xb+0)&(xc'=xc-0)&(loct2'=b) + (1-RED):(xc'=xc-0)&(loct2'=fail);
+    [team2_c_b_1] (loct2 = c) & (xc >= 1) & (xb <= maxResource - 1) -> RED:(xb'=xb+1)&(xc'=xc-1)&(loct2'=b) + (1-RED):(xc'=xc-1)&(loct2'=fail);
+    [team2_c_b_2] (loct2 = c) & (xc >= 2) & (xb <= maxResource - 2) -> RED:(xb'=xb+2)&(xc'=xc-2)&(loct2'=b) + (1-RED):(xc'=xc-2)&(loct2'=fail);
+    [team2_c_b_3] (loct2 = c) & (xc >= 3) & (xb <= maxResource - 3) -> RED:(xb'=xb+3)&(xc'=xc-3)&(loct2'=b) + (1-RED):(xc'=xc-3)&(loct2'=fail);
+    [team2_c_b_4] (loct2 = c) & (xc >= 4) & (xb <= maxResource - 4) -> RED:(xb'=xb+4)&(xc'=xc-4)&(loct2'=b) + (1-RED):(xc'=xc-4)&(loct2'=fail);
+
+    // ---------- EDGES: b <-> d (graph/edges[3]) safety = Y (YELLOW) ----------
+    [team1_b_d_0] (loct1 = b) & (xb >= 0) & (xd <= maxResource - 0) -> YELLOW:(xd'=xd+0)&(xb'=xb-0)&(loct1'=d) + (1-YELLOW):(xb'=xb-0)&(loct1'=fail);
+    [team1_b_d_1] (loct1 = b) & (xb >= 1) & (xd <= maxResource - 1) -> YELLOW:(xd'=xd+1)&(xb'=xb-1)&(loct1'=d) + (1-YELLOW):(xb'=xb-1)&(loct1'=fail);
+    [team1_b_d_2] (loct1 = b) & (xb >= 2) & (xd <= maxResource - 2) -> YELLOW:(xd'=xd+2)&(xb'=xb-2)&(loct1'=d) + (1-YELLOW):(xb'=xb-2)&(loct1'=fail);
+    [team1_b_d_3] (loct1 = b) & (xb >= 3) & (xd <= maxResource - 3) -> YELLOW:(xd'=xd+3)&(xb'=xb-3)&(loct1'=d) + (1-YELLOW):(xb'=xb-3)&(loct1'=fail);
+    [team1_b_d_4] (loct1 = b) & (xb >= 4) & (xd <= maxResource - 4) -> YELLOW:(xd'=xd+4)&(xb'=xb-4)&(loct1'=d) + (1-YELLOW):(xb'=xb-4)&(loct1'=fail);
+
+    [team1_d_b_0] (loct1 = d) & (xd >= 0) & (xb <= maxResource - 0) -> YELLOW:(xb'=xb+0)&(xd'=xd-0)&(loct1'=b) + (1-YELLOW):(xd'=xd-0)&(loct1'=fail);
+    [team1_d_b_1] (loct1 = d) & (xd >= 1) & (xb <= maxResource - 1) -> YELLOW:(xb'=xb+1)&(xd'=xd-1)&(loct1'=b) + (1-YELLOW):(xd'=xd-1)&(loct1'=fail);
+    [team1_d_b_2] (loct1 = d) & (xd >= 2) & (xb <= maxResource - 2) -> YELLOW:(xb'=xb+2)&(xd'=xd-2)&(loct1'=b) + (1-YELLOW):(xd'=xd-2)&(loct1'=fail);
+    [team1_d_b_3] (loct1 = d) & (xd >= 3) & (xb <= maxResource - 3) -> YELLOW:(xb'=xb+3)&(xd'=xd-3)&(loct1'=b) + (1-YELLOW):(xd'=xd-3)&(loct1'=fail);
+    [team1_d_b_4] (loct1 = d) & (xd >= 4) & (xb <= maxResource - 4) -> YELLOW:(xb'=xb+4)&(xd'=xd-4)&(loct1'=b) + (1-YELLOW):(xd'=xd-4)&(loct1'=fail);
+
+    [team2_b_d_0] (loct2 = b) & (xb >= 0) & (xd <= maxResource - 0) -> YELLOW:(xd'=xd+0)&(xb'=xb-0)&(loct2'=d) + (1-YELLOW):(xb'=xb-0)&(loct2'=fail);
+    [team2_b_d_1] (loct2 = b) & (xb >= 1) & (xd <= maxResource - 1) -> YELLOW:(xd'=xd+1)&(xb'=xb-1)&(loct2'=d) + (1-YELLOW):(xb'=xb-1)&(loct2'=fail);
+    [team2_b_d_2] (loct2 = b) & (xb >= 2) & (xd <= maxResource - 2) -> YELLOW:(xd'=xd+2)&(xb'=xb-2)&(loct2'=d) + (1-YELLOW):(xb'=xb-2)&(loct2'=fail);
+    [team2_b_d_3] (loct2 = b) & (xb >= 3) & (xd <= maxResource - 3) -> YELLOW:(xd'=xd+3)&(xb'=xb-3)&(loct2'=d) + (1-YELLOW):(xb'=xb-3)&(loct2'=fail);
+    [team2_b_d_4] (loct2 = b) & (xb >= 4) & (xd <= maxResource - 4) -> YELLOW:(xd'=xd+4)&(xb'=xb-4)&(loct2'=d) + (1-YELLOW):(xb'=xb-4)&(loct2'=fail);
+
+    [team2_d_b_0] (loct2 = d) & (xd >= 0) & (xb <= maxResource - 0) -> YELLOW:(xb'=xb+0)&(xd'=xd-0)&(loct2'=b) + (1-YELLOW):(xd'=xd-0)&(loct2'=fail);
+    [team2_d_b_1] (loct2 = d) & (xd >= 1) & (xb <= maxResource - 1) -> YELLOW:(xb'=xb+1)&(xd'=xd-1)&(loct2'=b) + (1-YELLOW):(xd'=xd-1)&(loct2'=fail);
+    [team2_d_b_2] (loct2 = d) & (xd >= 2) & (xb <= maxResource - 2) -> YELLOW:(xb'=xb+2)&(xd'=xd-2)&(loct2'=b) + (1-YELLOW):(xd'=xd-2)&(loct2'=fail);
+    [team2_d_b_3] (loct2 = d) & (xd >= 3) & (xb <= maxResource - 3) -> YELLOW:(xb'=xb+3)&(xd'=xd-3)&(loct2'=b) + (1-YELLOW):(xd'=xd-3)&(loct2'=fail);
+    [team2_d_b_4] (loct2 = d) & (xd >= 4) & (xb <= maxResource - 4) -> YELLOW:(xb'=xb+4)&(xd'=xd-4)&(loct2'=b) + (1-YELLOW):(xd'=xd-4)&(loct2'=fail);
+
+    // ---------- EDGES: c <-> g (graph/edges[4]) safety = R ----------
+    [team1_c_g_0] (loct1 = c) & (xc >= 0) & (xg <= maxResource - 0) -> RED:(xg'=xg+0)&(xc'=xc-0)&(loct1'=g) + (1-RED):(xc'=xc-0)&(loct1'=fail);
+    [team1_c_g_1] (loct1 = c) & (xc >= 1) & (xg <= maxResource - 1) -> RED:(xg'=xg+1)&(xc'=xc-1)&(loct1'=g) + (1-RED):(xc'=xc-1)&(loct1'=fail);
+    [team1_c_g_2] (loct1 = c) & (xc >= 2) & (xg <= maxResource - 2) -> RED:(xg'=xg+2)&(xc'=xc-2)&(loct1'=g) + (1-RED):(xc'=xc-2)&(loct1'=fail);
+    [team1_c_g_3] (loct1 = c) & (xc >= 3) & (xg <= maxResource - 3) -> RED:(xg'=xg+3)&(xc'=xc-3)&(loct1'=g) + (1-RED):(xc'=xc-3)&(loct1'=fail);
+    [team1_c_g_4] (loct1 = c) & (xc >= 4) & (xg <= maxResource - 4) -> RED:(xg'=xg+4)&(xc'=xc-4)&(loct1'=g) + (1-RED):(xc'=xc-4)&(loct1'=fail);
+
+    [team1_g_c_0] (loct1 = g) & (xg >= 0) & (xc <= maxResource - 0) -> RED:(xc'=xc+0)&(xg'=xg-0)&(loct1'=c) + (1-RED):(xg'=xg-0)&(loct1'=fail);
+    [team1_g_c_1] (loct1 = g) & (xg >= 1) & (xc <= maxResource - 1) -> RED:(xc'=xc+1)&(xg'=xg-1)&(loct1'=c) + (1-RED):(xg'=xg-1)&(loct1'=fail);
+    [team1_g_c_2] (loct1 = g) & (xg >= 2) & (xc <= maxResource - 2) -> RED:(xc'=xc+2)&(xg'=xg-2)&(loct1'=c) + (1-RED):(xg'=xg-2)&(loct1'=fail);
+    [team1_g_c_3] (loct1 = g) & (xg >= 3) & (xc <= maxResource - 3) -> RED:(xc'=xc+3)&(xg'=xg-3)&(loct1'=c) + (1-RED):(xg'=xg-3)&(loct1'=fail);
+    [team1_g_c_4] (loct1 = g) & (xg >= 4) & (xc <= maxResource - 4) -> RED:(xc'=xc+4)&(xg'=xg-4)&(loct1'=c) + (1-RED):(xg'=xg-4)&(loct1'=fail);
+
+    [team2_c_g_0] (loct2 = c) & (xc >= 0) & (xg <= maxResource - 0) -> RED:(xg'=xg+0)&(xc'=xc-0)&(loct2'=g) + (1-RED):(xc'=xc-0)&(loct2'=fail);
+    [team2_c_g_1] (loct2 = c) & (xc >= 1) & (xg <= maxResource - 1) -> RED:(xg'=xg+1)&(xc'=xc-1)&(loct2'=g) + (1-RED):(xc'=xc-1)&(loct2'=fail);
+    [team2_c_g_2] (loct2 = c) & (xc >= 2) & (xg <= maxResource - 2) -> RED:(xg'=xg+2)&(xc'=xc-2)&(loct2'=g) + (1-RED):(xc'=xc-2)&(loct2'=fail);
+    [team2_c_g_3] (loct2 = c) & (xc >= 3) & (xg <= maxResource - 3) -> RED:(xg'=xg+3)&(xc'=xc-3)&(loct2'=g) + (1-RED):(xc'=xc-3)&(loct2'=fail);
+    [team2_c_g_4] (loct2 = c) & (xc >= 4) & (xg <= maxResource - 4) -> RED:(xg'=xg+4)&(xc'=xc-4)&(loct2'=g) + (1-RED):(xc'=xc-4)&(loct2'=fail);
+
+    [team2_g_c_0] (loct2 = g) & (xg >= 0) & (xc <= maxResource - 0) -> RED:(xc'=xc+0)&(xg'=xg-0)&(loct2'=c) + (1-RED):(xg'=xg-0)&(loct2'=fail);
+    [team2_g_c_1] (loct2 = g) & (xg >= 1) & (xc <= maxResource - 1) -> RED:(xc'=xc+1)&(xg'=xg-1)&(loct2'=c) + (1-RED):(xg'=xg-1)&(loct2'=fail);
+    [team2_g_c_2] (loct2 = g) & (xg >= 2) & (xc <= maxResource - 2) -> RED:(xc'=xc+2)&(xg'=xg-2)&(loct2'=c) + (1-RED):(xg'=xg-2)&(loct2'=fail);
+    [team2_g_c_3] (loct2 = g) & (xg >= 3) & (xc <= maxResource - 3) -> RED:(xc'=xc+3)&(xg'=xg-3)&(loct2'=c) + (1-RED):(xg'=xg-3)&(loct2'=fail);
+    [team2_g_c_4] (loct2 = g) & (xg >= 4) & (xc <= maxResource - 4) -> RED:(xc'=xc+4)&(xg'=xg-4)&(loct2'=c) + (1-RED):(xg'=xg-4)&(loct2'=fail);
+
+    // ---------- EDGES: c <-> f (graph/edges[5]) safety = R ----------
+    [team1_c_f_0] (loct1 = c) & (xc >= 0) & (xf <= maxResource - 0) -> RED:(xf'=xf+0)&(xc'=xc-0)&(loct1'=f) + (1-RED):(xc'=xc-0)&(loct1'=fail);
+    [team1_c_f_1] (loct1 = c) & (xc >= 1) & (xf <= maxResource - 1) -> RED:(xf'=xf+1)&(xc'=xc-1)&(loct1'=f) + (1-RED):(xc'=xc-1)&(loct1'=fail);
+    [team1_c_f_2] (loct1 = c) & (xc >= 2) & (xf <= maxResource - 2) -> RED:(xf'=xf+2)&(xc'=xc-2)&(loct1'=f) + (1-RED):(xc'=xc-2)&(loct1'=fail);
+    [team1_c_f_3] (loct1 = c) & (xc >= 3) & (xf <= maxResource - 3) -> RED:(xf'=xf+3)&(xc'=xc-3)&(loct1'=f) + (1-RED):(xc'=xc-3)&(loct1'=fail);
+    [team1_c_f_4] (loct1 = c) & (xc >= 4) & (xf <= maxResource - 4) -> RED:(xf'=xf+4)&(xc'=xc-4)&(loct1'=f) + (1-RED):(xc'=xc-4)&(loct1'=fail);
+
+    [team1_f_c_0] (loct1 = f) & (xf >= 0) & (xc <= maxResource - 0) -> RED:(xc'=xc+0)&(xf'=xf-0)&(loct1'=c) + (1-RED):(xf'=xf-0)&(loct1'=fail);
+    [team1_f_c_1] (loct1 = f) & (xf >= 1) & (xc <= maxResource - 1) -> RED:(xc'=xc+1)&(xf'=xf-1)&(loct1'=c) + (1-RED):(xf'=xf-1)&(loct1'=fail);
+    [team1_f_c_2] (loct1 = f) & (xf >= 2) & (xc <= maxResource - 2) -> RED:(xc'=xc+2)&(xf'=xf-2)&(loct1'=c) + (1-RED):(xf'=xf-2)&(loct1'=fail);
+    [team1_f_c_3] (loct1 = f) & (xf >= 3) & (xc <= maxResource - 3) -> RED:(xc'=xc+3)&(xf'=xf-3)&(loct1'=c) + (1-RED):(xf'=xf-3)&(loct1'=fail);
+    [team1_f_c_4] (loct1 = f) & (xf >= 4) & (xc <= maxResource - 4) -> RED:(xc'=xc+4)&(xf'=xf-4)&(loct1'=c) + (1-RED):(xf'=xf-4)&(loct1'=fail);
+
+    [team2_c_f_0] (loct2 = c) & (xc >= 0) & (xf <= maxResource - 0) -> RED:(xf'=xf+0)&(xc'=xc-0)&(loct2'=f) + (1-RED):(xc'=xc-0)&(loct2'=fail);
+    [team2_c_f_1] (loct2 = c) & (xc >= 1) & (xf <= maxResource - 1) -> RED:(xf'=xf+1)&(xc'=xc-1)&(loct2'=f) + (1-RED):(xc'=xc-1)&(loct2'=fail);
+    [team2_c_f_2] (loct2 = c) & (xc >= 2) & (xf <= maxResource - 2) -> RED:(xf'=xf+2)&(xc'=xc-2)&(loct2'=f) + (1-RED):(xc'=xc-2)&(loct2'=fail);
+    [team2_c_f_3] (loct2 = c) & (xc >= 3) & (xf <= maxResource - 3) -> RED:(xf'=xf+3)&(xc'=xc-3)&(loct2'=f) + (1-RED):(xc'=xc-3)&(loct2'=fail);
+    [team2_c_f_4] (loct2 = c) & (xc >= 4) & (xf <= maxResource - 4) -> RED:(xf'=xf+4)&(xc'=xc-4)&(loct2'=f) + (1-RED):(xc'=xc-4)&(loct2'=fail);
+
+    [team2_f_c_0] (loct2 = f) & (xf >= 0) & (xc <= maxResource - 0) -> RED:(xc'=xc+0)&(xf'=xf-0)&(loct2'=c) + (1-RED):(xf'=xf-0)&(loct2'=fail);
+    [team2_f_c_1] (loct2 = f) & (xf >= 1) & (xc <= maxResource - 1) -> RED:(xc'=xc+1)&(xf'=xf-1)&(loct2'=c) + (1-RED):(xf'=xf-1)&(loct2'=fail);
+    [team2_f_c_2] (loct2 = f) & (xf >= 2) & (xc <= maxResource - 2) -> RED:(xc'=xc+2)&(xf'=xf-2)&(loct2'=c) + (1-RED):(xf'=xf-2)&(loct2'=fail);
+    [team2_f_c_3] (loct2 = f) & (xf >= 3) & (xc <= maxResource - 3) -> RED:(xc'=xc+3)&(xf'=xf-3)&(loct2'=c) + (1-RED):(xf'=xf-3)&(loct2'=fail);
+    [team2_f_c_4] (loct2 = f) & (xf >= 4) & (xc <= maxResource - 4) -> RED:(xc'=xc+4)&(xf'=xf-4)&(loct2'=c) + (1-RED):(xf'=xf-4)&(loct2'=fail);
+
+    // ---------- EDGES: d <-> e (graph/edges[6]) safety = G ----------
+    [team1_d_e_0] (loct1 = d) & (xd >= 0) & (xe <= maxResource - 0) -> GREEN:(xe'=xe+0)&(xd'=xd-0)&(loct1'=e) + (1-GREEN):(xd'=xd-0)&(loct1'=fail);
+    [team1_d_e_1] (loct1 = d) & (xd >= 1) & (xe <= maxResource - 1) -> GREEN:(xe'=xe+1)&(xd'=xd-1)&(loct1'=e) + (1-GREEN):(xd'=xd-1)&(loct1'=fail);
+    [team1_d_e_2] (loct1 = d) & (xd >= 2) & (xe <= maxResource - 2) -> GREEN:(xe'=xe+2)&(xd'=xd-2)&(loct1'=e) + (1-GREEN):(xd'=xd-2)&(loct1'=fail);
+    [team1_d_e_3] (loct1 = d) & (xd >= 3) & (xe <= maxResource - 3) -> GREEN:(xe'=xe+3)&(xd'=xd-3)&(loct1'=e) + (1-GREEN):(xd'=xd-3)&(loct1'=fail);
+    [team1_d_e_4] (loct1 = d) & (xd >= 4) & (xe <= maxResource - 4) -> GREEN:(xe'=xe+4)&(xd'=xd-4)&(loct1'=e) + (1-GREEN):(xd'=xd-4)&(loct1'=fail);
+
+    [team1_e_d_0] (loct1 = e) & (xe >= 0) & (xd <= maxResource - 0) -> GREEN:(xd'=xd+0)&(xe'=xe-0)&(loct1'=d) + (1-GREEN):(xe'=xe-0)&(loct1'=fail);
+    [team1_e_d_1] (loct1 = e) & (xe >= 1) & (xd <= maxResource - 1) -> GREEN:(xd'=xd+1)&(xe'=xe-1)&(loct1'=d) + (1-GREEN):(xe'=xe-1)&(loct1'=fail);
+    [team1_e_d_2] (loct1 = e) & (xe >= 2) & (xd <= maxResource - 2) -> GREEN:(xd'=xd+2)&(xe'=xe-2)&(loct1'=d) + (1-GREEN):(xe'=xe-2)&(loct1'=fail);
+    [team1_e_d_3] (loct1 = e) & (xe >= 3) & (xd <= maxResource - 3) -> GREEN:(xd'=xd+3)&(xe'=xe-3)&(loct1'=d) + (1-GREEN):(xe'=xe-3)&(loct1'=fail);
+    [team1_e_d_4] (loct1 = e) & (xe >= 4) & (xd <= maxResource - 4) -> GREEN:(xd'=xd+4)&(xe'=xe-4)&(loct1'=d) + (1-GREEN):(xe'=xe-4)&(loct1'=fail);
+
+    [team2_d_e_0] (loct2 = d) & (xd >= 0) & (xe <= maxResource - 0) -> GREEN:(xe'=xe+0)&(xd'=xd-0)&(loct2'=e) + (1-GREEN):(xd'=xd-0)&(loct2'=fail);
+    [team2_d_e_1] (loct2 = d) & (xd >= 1) & (xe <= maxResource - 1) -> GREEN:(xe'=xe+1)&(xd'=xd-1)&(loct2'=e) + (1-GREEN):(xd'=xd-1)&(loct2'=fail);
+    [team2_d_e_2] (loct2 = d) & (xd >= 2) & (xe <= maxResource - 2) -> GREEN:(xe'=xe+2)&(xd'=xd-2)&(loct2'=e) + (1-GREEN):(xd'=xd-2)&(loct2'=fail);
+    [team2_d_e_3] (loct2 = d) & (xd >= 3) & (xe <= maxResource - 3) -> GREEN:(xe'=xe+3)&(xd'=xd-3)&(loct2'=e) + (1-GREEN):(xd'=xd-3)&(loct2'=fail);
+    [team2_d_e_4] (loct2 = d) & (xd >= 4) & (xe <= maxResource - 4) -> GREEN:(xe'=xe+4)&(xd'=xd-4)&(loct2'=e) + (1-GREEN):(xd'=xd-4)&(loct2'=fail);
+
+    [team2_e_d_0] (loct2 = e) & (xe >= 0) & (xd <= maxResource - 0) -> GREEN:(xd'=xd+0)&(xe'=xe-0)&(loct2'=d) + (1-GREEN):(xe'=xe-0)&(loct2'=fail);
+    [team2_e_d_1] (loct2 = e) & (xe >= 1) & (xd <= maxResource - 1) -> GREEN:(xd'=xd+1)&(xe'=xe-1)&(loct2'=d) + (1-GREEN):(xe'=xe-1)&(loct2'=fail);
+    [team2_e_d_2] (loct2 = e) & (xe >= 2) & (xd <= maxResource - 2) -> GREEN:(xd'=xd+2)&(xe'=xe-2)&(loct2'=d) + (1-GREEN):(xe'=xe-2)&(loct2'=fail);
+    [team2_e_d_3] (loct2 = e) & (xe >= 3) & (xd <= maxResource - 3) -> GREEN:(xd'=xd+3)&(xe'=xe-3)&(loct2'=d) + (1-GREEN):(xe'=xe-3)&(loct2'=fail);
+    [team2_e_d_4] (loct2 = e) & (xe >= 4) & (xd <= maxResource - 4) -> GREEN:(xd'=xd+4)&(xe'=xe-4)&(loct2'=d) + (1-GREEN):(xe'=xe-4)&(loct2'=fail);
+
+    // ---------- EDGES: e <-> f (graph/edges[7]) safety = G ----------
+    [team1_e_f_0] (loct1 = e) & (xe >= 0) & (xf <= maxResource - 0) -> GREEN:(xf'=xf+0)&(xe'=xe-0)&(loct1'=f) + (1-GREEN):(xe'=xe-0)&(loct1'=fail);
+    [team1_e_f_1] (loct1 = e) & (xe >= 1) & (xf <= maxResource - 1) -> GREEN:(xf'=xf+1)&(xe'=xe-1)&(loct1'=f) + (1-GREEN):(xe'=xe-1)&(loct1'=fail);
+    [team1_e_f_2] (loct1 = e) & (xe >= 2) & (xf <= maxResource - 2) -> GREEN:(xf'=xf+2)&(xe'=xe-2)&(loct1'=f) + (1-GREEN):(xe'=xe-2)&(loct1'=fail);
+    [team1_e_f_3] (loct1 = e) & (xe >= 3) & (xf <= maxResource - 3) -> GREEN:(xf'=xf+3)&(xe'=xe-3)&(loct1'=f) + (1-GREEN):(xe'=xe-3)&(loct1'=fail);
+    [team1_e_f_4] (loct1 = e) & (xe >= 4) & (xf <= maxResource - 4) -> GREEN:(xf'=xf+4)&(xe'=xe-4)&(loct1'=f) + (1-GREEN):(xe'=xe-4)&(loct1'=fail);
+
+    [team1_f_e_0] (loct1 = f) & (xf >= 0) & (xe <= maxResource - 0) -> GREEN:(xe'=xe+0)&(xf'=xf-0)&(loct1'=e) + (1-GREEN):(xf'=xf-0)&(loct1'=fail);
+    [team1_f_e_1] (loct1 = f) & (xf >= 1) & (xe <= maxResource - 1) -> GREEN:(xe'=xe+1)&(xf'=xf-1)&(loct1'=e) + (1-GREEN):(xf'=xf-1)&(loct1'=fail);
+    [team1_f_e_2] (loct1 = f) & (xf >= 2) & (xe <= maxResource - 2) -> GREEN:(xe'=xe+2)&(xf'=xf-2)&(loct1'=e) + (1-GREEN):(xf'=xf-2)&(loct1'=fail);
+    [team1_f_e_3] (loct1 = f) & (xf >= 3) & (xe <= maxResource - 3) -> GREEN:(xe'=xe+3)&(xf'=xf-3)&(loct1'=e) + (1-GREEN):(xf'=xf-3)&(loct1'=fail);
+    [team1_f_e_4] (loct1 = f) & (xf >= 4) & (xe <= maxResource - 4) -> GREEN:(xe'=xe+4)&(xf'=xf-4)&(loct1'=e) + (1-GREEN):(xf'=xf-4)&(loct1'=fail);
+
+    [team2_e_f_0] (loct2 = e) & (xe >= 0) & (xf <= maxResource - 0) -> GREEN:(xf'=xf+0)&(xe'=xe-0)&(loct2'=f) + (1-GREEN):(xe'=xe-0)&(loct2'=fail);
+    [team2_e_f_1] (loct2 = e) & (xe >= 1) & (xf <= maxResource - 1) -> GREEN:(xf'=xf+1)&(xe'=xe-1)&(loct2'=f) + (1-GREEN):(xe'=xe-1)&(loct2'=fail);
+    [team2_e_f_2] (loct2 = e) & (xe >= 2) & (xf <= maxResource - 2) -> GREEN:(xf'=xf+2)&(xe'=xe-2)&(loct2'=f) + (1-GREEN):(xe'=xe-2)&(loct2'=fail);
+    [team2_e_f_3] (loct2 = e) & (xe >= 3) & (xf <= maxResource - 3) -> GREEN:(xf'=xf+3)&(xe'=xe-3)&(loct2'=f) + (1-GREEN):(xe'=xe-3)&(loct2'=fail);
+    [team2_e_f_4] (loct2 = e) & (xe >= 4) & (xf <= maxResource - 4) -> GREEN:(xf'=xf+4)&(xe'=xe-4)&(loct2'=f) + (1-GREEN):(xe'=xe-4)&(loct2'=fail);
+
+    [team2_f_e_0] (loct2 = f) & (xf >= 0) & (xe <= maxResource - 0) -> GREEN:(xe'=xe+0)&(xf'=xf-0)&(loct2'=e) + (1-GREEN):(xf'=xf-0)&(loct2'=fail);
+    [team2_f_e_1] (loct2 = f) & (xf >= 1) & (xe <= maxResource - 1) -> GREEN:(xe'=xe+1)&(xf'=xf-1)&(loct2'=e) + (1-GREEN):(xf'=xf-1)&(loct2'=fail);
+    [team2_f_e_2] (loct2 = f) & (xf >= 2) & (xe <= maxResource - 2) -> GREEN:(xe'=xe+2)&(xf'=xf-2)&(loct2'=e) + (1-GREEN):(xf'=xf-2)&(loct2'=fail);
+    [team2_f_e_3] (loct2 = f) & (xf >= 3) & (xe <= maxResource - 3) -> GREEN:(xe'=xe+3)&(xf'=xf-3)&(loct2'=e) + (1-GREEN):(xf'=xf-3)&(loct2'=fail);
+    [team2_f_e_4] (loct2 = f) & (xf >= 4) & (xe <= maxResource - 4) -> GREEN:(xe'=xe+4)&(xf'=xf-4)&(loct2'=e) + (1-GREEN):(xf'=xf-4)&(loct2'=fail);
+
+    // ---------- EDGES: f <-> g (graph/edges[8]) safety = Y ----------
+    [team1_f_g_0] (loct1 = f) & (xf >= 0) & (xg <= maxResource - 0) -> YELLOW:(xg'=xg+0)&(xf'=xf-0)&(loct1'=g) + (1-YELLOW):(xf'=xf-0)&(loct1'=fail);
+    [team1_f_g_1] (loct1 = f) & (xf >= 1) & (xg <= maxResource - 1) -> YELLOW:(xg'=xg+1)&(xf'=xf-1)&(loct1'=g) + (1-YELLOW):(xf'=xf-1)&(loct1'=fail);
+    [team1_f_g_2] (loct1 = f) & (xf >= 2) & (xg <= maxResource - 2) -> YELLOW:(xg'=xg+2)&(xf'=xf-2)&(loct1'=g) + (1-YELLOW):(xf'=xf-2)&(loct1'=fail);
+    [team1_f_g_3] (loct1 = f) & (xf >= 3) & (xg <= maxResource - 3) -> YELLOW:(xg'=xg+3)&(xf'=xf-3)&(loct1'=g) + (1-YELLOW):(xf'=xf-3)&(loct1'=fail);
+    [team1_f_g_4] (loct1 = f) & (xf >= 4) & (xg <= maxResource - 4) -> YELLOW:(xg'=xg+4)&(xf'=xf-4)&(loct1'=g) + (1-YELLOW):(xf'=xf-4)&(loct1'=fail);
+
+    [team1_g_f_0] (loct1 = g) & (xg >= 0) & (xf <= maxResource - 0) -> YELLOW:(xf'=xf+0)&(xg'=xg-0)&(loct1'=f) + (1-YELLOW):(xg'=xg-0)&(loct1'=fail);
+    [team1_g_f_1] (loct1 = g) & (xg >= 1) & (xf <= maxResource - 1) -> YELLOW:(xf'=xf+1)&(xg'=xg-1)&(loct1'=f) + (1-YELLOW):(xg'=xg-1)&(loct1'=fail);
+    [team1_g_f_2] (loct1 = g) & (xg >= 2) & (xf <= maxResource - 2) -> YELLOW:(xf'=xf+2)&(xg'=xg-2)&(loct1'=f) + (1-YELLOW):(xg'=xg-2)&(loct1'=fail);
+    [team1_g_f_3] (loct1 = g) & (xg >= 3) & (xf <= maxResource - 3) -> YELLOW:(xf'=xf+3)&(xg'=xg-3)&(loct1'=f) + (1-YELLOW):(xg'=xg-3)&(loct1'=fail);
+    [team1_g_f_4] (loct1 = g) & (xg >= 4) & (xf <= maxResource - 4) -> YELLOW:(xf'=xf+4)&(xg'=xg-4)&(loct1'=f) + (1-YELLOW):(xg'=xg-4)&(loct1'=fail);
+
+    [team2_f_g_0] (loct2 = f) & (xf >= 0) & (xg <= maxResource - 0) -> YELLOW:(xg'=xg+0)&(xf'=xf-0)&(loct2'=g) + (1-YELLOW):(xf'=xf-0)&(loct2'=fail);
+    [team2_f_g_1] (loct2 = f) & (xf >= 1) & (xg <= maxResource - 1) -> YELLOW:(xg'=xg+1)&(xf'=xf-1)&(loct2'=g) + (1-YELLOW):(xf'=xf-1)&(loct2'=fail);
+    [team2_f_g_2] (loct2 = f) & (xf >= 2) & (xg <= maxResource - 2) -> YELLOW:(xg'=xg+2)&(xf'=xf-2)&(loct2'=g) + (1-YELLOW):(xf'=xf-2)&(loct2'=fail);
+    [team2_f_g_3] (loct2 = f) & (xf >= 3) & (xg <= maxResource - 3) -> YELLOW:(xg'=xg+3)&(xf'=xf-3)&(loct2'=g) + (1-YELLOW):(xf'=xf-3)&(loct2'=fail);
+    [team2_f_g_4] (loct2 = f) & (xf >= 4) & (xg <= maxResource - 4) -> YELLOW:(xg'=xg+4)&(xf'=xf-4)&(loct2'=g) + (1-YELLOW):(xf'=xf-4)&(loct2'=fail);
+
+    [team2_g_f_0] (loct2 = g) & (xg >= 0) & (xf <= maxResource - 0) -> YELLOW:(xf'=xf+0)&(xg'=xg-0)&(loct2'=f) + (1-YELLOW):(xg'=xg-0)&(loct2'=fail);
+    [team2_g_f_1] (loct2 = g) & (xg >= 1) & (xf <= maxResource - 1) -> YELLOW:(xf'=xf+1)&(xg'=xg-1)&(loct2'=f) + (1-YELLOW):(xg'=xg-1)&(loct2'=fail);
+    [team2_g_f_2] (loct2 = g) & (xg >= 2) & (xf <= maxResource - 2) -> YELLOW:(xf'=xf+2)&(xg'=xg-2)&(loct2'=f) + (1-YELLOW):(xg'=xg-2)&(loct2'=fail);
+    [team2_g_f_3] (loct2 = g) & (xg >= 3) & (xf <= maxResource - 3) -> YELLOW:(xf'=xf+3)&(xg'=xg-3)&(loct2'=f) + (1-YELLOW):(xg'=xg-3)&(loct2'=fail);
+    [team2_g_f_4] (loct2 = g) & (xg >= 4) & (xf <= maxResource - 4) -> YELLOW:(xf'=xf+4)&(xg'=xg-4)&(loct2'=f) + (1-YELLOW):(xg'=xg-4)&(loct2'=fail);
+
+endmodule

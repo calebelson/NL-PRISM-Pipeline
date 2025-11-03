@@ -1,0 +1,27 @@
+1. Yes, the available supplies can satisfy the demands at g, as there are 8 resources in total (2 at a + 4 at c + 2 at d), which exceeds the required 7.
+
+2. The plan is feasible and is detailed in the step-by-step description below.
+
+3. The plan optimizes exclusively for reliability by selecting the highest-probability paths available for each team: the direct red path for Team 2 (highest reliability for resources at c) and the red-to-green-to-green-to-yellow path for Team 1 (highest reliability for resources at a and d, given the unavoidable red edge).
+
+4. N/A, as a feasible plan exists.
+
+5. The probability of success for the plan (at least 7 resources reaching g) is 0.5 × 0.5 × 0.99 × 0.99 × 0.85 ≈ 0.2083.
+
+6. Here is the step-by-step description of the plan. The teams operate independently, and the distances are provided for reference but do not affect the reliability optimization.
+
+**Team 1 (starting at a):**
+- Load 2 resources at a (carrying 2 out of capacity 4).
+- Travel from a to d along the red edge (distance 5, safety probability 0.5).
+- Load 2 resources at d (carrying 4 out of capacity 4).
+- Travel from d to e along the green edge (distance 2, safety probability 0.99).
+- Travel from e to f along the green edge (distance 4, safety probability 0.99).
+- Travel from f to g along the yellow edge (distance 10, safety probability 0.85).
+- Unload 4 resources at g.
+
+**Team 2 (starting at c):**
+- Load 4 resources at c (carrying 4 out of capacity 4).
+- Travel from c to g along the red edge (distance 6, safety probability 0.5).
+- Unload 4 resources at g.
+
+To explain how to arrive at the solution: The total resources delivered will be 8 if both teams succeed in their paths (4 from Team 1 + 4 from Team 2), which meets or exceeds 7. The probability is the product of each team's independent success probabilities, as failure of either team results in at most 4 resources at g, which is insufficient. Team 1's success probability is the product of its edge safety probabilities (0.5 × 0.99 × 0.99 × 0.85 ≈ 0.4165). Team 2's success probability is 0.5. The overall probability is therefore 0.4165 × 0.5 ≈ 0.2083.

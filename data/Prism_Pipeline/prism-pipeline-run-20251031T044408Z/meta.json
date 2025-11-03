@@ -1,0 +1,77 @@
+{
+  "parse_scenario": {
+    "input": [
+      {
+        "role": "system",
+        "content": "Convert the user's disaster scenario into a JSON object that matches the provided schema.\n    Do not invent nodes or edges. Use safety values only from {G,Y,R}.\n    If a required value is missing, pick the smallest reasonable default and state it explicitly."
+      },
+      {
+        "role": "user",
+        "content": "Two teams: T1 at a, and T2 at c, each can carry 4 resources at a time.\n                Point c has 4 resources, a and d each have 2. Point g wants 7 resources.\n                Routes: a-b red distance 9, a-d red distance 5, b-c red distance 4, b-d yellow distance 12, c-g red distance 6, c-f red distance 12, d-e green distance 2, e-f green distance 4, f-g yellow distance 10. Undirected.\n                Safety probabilities are green = 0.99, yellow = 0.85, red = 0.5. Objective is to maximise probability of reaching the goal."
+      }
+    ],
+    "used_model": "gpt-5-mini-2025-08-07",
+    "usage": "ResponseUsage(input_tokens=745, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=2026, output_tokens_details=OutputTokensDetails(reasoning_tokens=1536), total_tokens=2771)",
+    "elapsed_time": "0:00:33.147391"
+  },
+  "composer": {
+    "template_used": true,
+    "used_model": "gpt-5-mini-2025-08-07",
+    "usage": "ResponseUsage(input_tokens=29270, input_tokens_details=InputTokensDetails(cached_tokens=28416), output_tokens=16925, output_tokens_details=OutputTokensDetails(reasoning_tokens=2048), total_tokens=46195)",
+    "elapsed_time": "0:04:26.519394",
+    "model_lines": 294,
+    "properties_lines": 2
+  },
+  "prism_error_recovery": {
+    "initial_error": "PRISM\n=====\n\nVersion: 4.9\nDate: Fri Oct 31 17:49:15 NZDT 2025\nHostname: Calebs-MacBook-Pro-2.local\nMemory limits: cudd=1g, java(heap)=1g\nCommand line: prism '/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/model.prism' '/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/properties.props' -prop 1 -exportstrat '/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/strat.tra:type=induced,mode=restrict,reach=false' -exportmodel '/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/strat.sta' -exportmodel '/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/strat.lab'\n\nParsing PRISM model file \"/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/model.prism\"...\n\nError: Module \"team1\" is not allowed to modify variable \"xb\" (\"xb\", line 70, column 74).\n\n",
+    "recovery_attempts": [
+      {
+        "method": "auto-fix",
+        "broken_model_backup": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/model.prism.broken-20251031-175317",
+        "result": "failed",
+        "error": "PRISM\n=====\n\nVersion: 4.9\nDate: Fri Oct 31 17:53:17 NZDT 2025\nHostname: Calebs-MacBook-Pro-2.local\nMemory limits: cudd=1g, java(heap)=1g\nCommand line: prism '/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/model.prism' '/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/properties.props' -prop 1 -exportstrat '/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/strat.tra:type=induced,mode=restrict,reach=false' -exportmodel '/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/strat.sta' -exportmodel '/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/strat.lab'\n\nParsing PRISM model file \"/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/model.prism\"...\n\nError: Synchronous command cannot modify global variable (\"xb\", line 68, column 74).\n\n"
+      },
+      {
+        "method": "regenerate",
+        "broken_model_backup": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/model.prism.broken-20251031-175351"
+      }
+    ],
+    "resolution": "regenerate-success"
+  },
+  "prism_verification": {
+    "verification_probability": 0.2555327872754044,
+    "verification_probability_description": "Maximum probability of reaching the goal as computed by PRISM model checking",
+    "model_file": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/model.prism",
+    "properties_file": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/properties.props",
+    "strategy_files": {
+      "tra": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/strat.tra",
+      "sta": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/strat.sta",
+      "lab": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/strat.lab"
+    },
+    "restricted_model_files": {
+      "tra": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/restricted.tra",
+      "sta": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/restricted.sta",
+      "lab": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/restricted.lab"
+    }
+  },
+  "optimal_path": {
+    "num_steps": 25,
+    "optimal_path_probability": 0.020477941405441687,
+    "optimal_path_probability_description": "Probability of success for this specific optimal path from the initial state",
+    "initial_state": 110,
+    "final_state": 25,
+    "files": {
+      "txt": "runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/optimal_path.txt"
+    }
+  },
+  "strategy_explanation": {
+    "file": "runs/Prism_Pipeline/prism-pipeline-run-20251031T044408Z/strategy_explanation.md",
+    "model": "gpt-5-mini-2025-08-07",
+    "explanation": "## Overview\nTotal actions: 24. Final path success probability \u2248 2.0683% (overall path probability \u2248 0.02068). Key challenge: many successive risky moves (several 50% and 85% links and many 99% transfers) combine multiplicatively, so the overall success is driven down despite many high-confidence (99%) steps.\n\n## Step-by-Step Actions\n1. Step 1: Team 2: c\u2192g carrying 4 resources (50% success) | Overall: 50.0000%  \n2. Step 2: Team 2: g\u2192f carrying 0 resources (85% success) | Overall: 42.5000%  \n3. Step 3: Team 2: f\u2192e carrying 0 resources (99% success) | Overall: 42.0750%  \n4. Step 4: Team 2: e\u2192d carrying 0 resources (99% success) | Overall: 41.6543%  \n5. Step 5: Team 1: a\u2192d carrying 1 resources (50% success) | Overall: 20.8271%  \n6. Step 6: Team 1: d\u2192a carrying 0 resources (50% success) | Overall: 10.4136%  \n7. Step 7: Team 1: a\u2192d carrying 1 resources (50% success) | Overall: 5.2068%  \n8. Step 8: Team 1: d\u2192e carrying 1 resources (99% success) | Overall: 5.1547%  \n9. Step 9: Team 1: e\u2192d carrying 0 resources (99% success) | Overall: 5.1032%  \n10. Step 10: Team 1: d\u2192e carrying 1 resources (99% success) | Overall: 5.0521%  \n11. Step 11: Team 1: e\u2192d carrying 0 resources (99% success) | Overall: 5.0016%  \n12. Step 12: Team 1: d\u2192e carrying 1 resources (99% success) | Overall: 4.9516%  \n13. Step 13: Team 2: d\u2192e carrying 1 resources (99% success) | Overall: 4.9021%  \n14. Step 14: Team 1: e\u2192f carrying 1 resources (99% success) | Overall: 4.8531%  \n15. Step 15: Team 1: f\u2192e carrying 0 resources (99% success) | Overall: 4.8045%  \n16. Step 16: Team 1: e\u2192f carrying 1 resources (99% success) | Overall: 4.7565%  \n17. Step 17: Team 1: f\u2192e carrying 0 resources (99% success) | Overall: 4.7089%  \n18. Step 18: Team 1: e\u2192f carrying 1 resources (99% success) | Overall: 4.6618%  \n19. Step 19: Team 2: e\u2192f carrying 1 resources (99% success) | Overall: 4.6618% -> 4.6618%*0.99 = 4.6183% (rolled into next line)  \n20. Step 19 (continued): after Team 2 action above overall = 4.6618% * 0.99 = 4.6183% (displayed below as continuity)  \n21. Step 19 (renumbering for clarity resolved below) \u2014 to keep strict sequential numbering, continue:  \n19. Step 19: Team 2: e\u2192f carrying 1 resources (99% success) | Overall: 4.6618% -> 4.6183%  \n20. Step 20: Team 1: f\u2192g carrying 1 resources (85% success) | Overall: 3.9316% \u2192 (4.6183% * 0.85 = 3.9256%)  \n21. Step 21: Team 1: g\u2192f carrying 0 resources (85% success) | Overall: 3.9256% * 0.85 = 3.3378%  \n22. Step 22: Team 1: f\u2192g carrying 1 resources (85% success) | Overall: 3.3378% * 0.85 = 2.8372%  \n23. Step 23: Team 1: g\u2192f carrying 0 resources (85% success) | Overall: 2.8372% * 0.85 = 2.4116%  \n24. Step 24: Team 1: f\u2192g carrying 1 resources (85% success) | Overall: 2.4116% * 0.85 = 2.0683%\n\n(Notes on the last block: steps 19\u201324 include repeated f\u2194g shuttling by Team 1 and one final e\u2192f by Team 2; each 85% move further reduces the running overall probability. The per-step percentages shown are the single-step success probabilities; the Overall column shows the running cumulative success after applying that step.)\n\n## Final State\n- Team 1 final location: g  \n- Team 2 final location: f  \n- Resource distribution: a=0, b=0, c=0, d=0, e=0, f=1, g=7\n\nSummary: The plan concentrates almost all supplies at g (7 units) and 1 unit at f; the overall probability that this full sequence of moves succeeds is about 2.07%, driven down by multiple risky/50% moves and several 85% shuttles despite many high-confidence 99% transfers.",
+    "usage": "ResponseUsage(input_tokens=3291, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=6748, output_tokens_details=OutputTokensDetails(reasoning_tokens=5504), total_tokens=10039)"
+  },
+  "overall": {
+    "time_started": "20251031T044408Z",
+    "elapsed_time": "0:16:23.481845"
+  }
+}

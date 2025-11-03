@@ -1,0 +1,60 @@
+Short answer
+1) Yes. Total supply is 8 (a=2, d=2, c=4), which can satisfy demand 7 at g.
+2) Best plan (maximize reliability):
+- Team 2 (at c): Carry 4 from c to g via c–g (red).
+- Team 1 (at a): Carry 3 from a/d to g via a–d (red), d–e (green), e–f (green), f–g (yellow). Load 2 from a at start and 1 from d at d. (You may take both from d and deliver 4; it does not change reliability.)
+3) This plan minimizes the number of low-reliability (red) traversals and avoids extra trips.
+5) Probability of success = 0.5 × (0.5 × 0.99 × 0.99 × 0.85) = 0.20827 (≈20.83%).
+6) Step-by-step below.
+
+Details and justification
+
+Assumptions
+- Edge safety is independent per traversal; an undirected edge has the same success probability in either direction.
+- Failure removes the team and any resources it is carrying at that moment.
+
+Key route reliabilities
+- Red = 0.5, Yellow = 0.85, Green = 0.99.
+- Safest c→g path is direct c–g (red) with 0.5. Any detour (e.g., c–f–g) is worse: 0.5×0.85=0.425.
+- Safest a→g path is a–d–e–f–g with probability 0.5×0.99×0.99×0.85 = 0.4165425.
+- From d→g via e,f is 0.99×0.99×0.85 = 0.833085.
+
+Why this is optimal for reliability
+- You must use at least one red traversal to move anything out of c and at least one red traversal to move anything out of a. The proposed plan uses exactly two red traversals overall (c–g and a–d), the theoretical minimum.
+- Any alternative that:
+  - Splits loads into multiple trips, or
+  - Adds detours (e.g., a–b–d instead of a–d, or c–f–g instead of c–g),
+  multiplies additional factors <1, reducing overall success probability.
+- Letting one team “cover everything” requires many additional traversals (including reds to reach a) and produces a much lower overall success probability than 0.208.
+
+Routing and allocation plan (step-by-step)
+Team 2 (start at c):
+1) Load 4 resources at c (full capacity).
+2) Move c → g via edge c–g (red, p=0.5).
+3) Unload 4 at g. Do not move again.
+
+Team 1 (start at a):
+1) Load 2 resources at a (remaining capacity 2).
+2) Move a → d via edge a–d (red, p=0.5).
+3) At d, load 1 resource (you may load both; reliability unchanged).
+4) Move d → e (green, p=0.99).
+5) Move e → f (green, p=0.99).
+6) Move f → g (yellow, p=0.85).
+7) Unload 3 (or 4) at g.
+
+Delivered quantity
+- Team 2 delivers 4 from c.
+- Team 1 delivers 3 (exactly meeting 7 total). Optionally deliver 4 (total 8); it does not change reliability because the route is the same and no extra traversals are added.
+
+Probability of success
+- Team 2 trip: 0.5.
+- Team 1 trip: 0.5×0.99×0.99×0.85 = 0.4165425.
+- Overall (both must succeed for ≥7 to arrive): 0.5 × 0.4165425 = 0.20827125 ≈ 20.83%.
+
+Notes on infeasible or inferior alternatives
+- If Team 2 fails on c–g, remaining supply (a+d=4) cannot reach 7 → plan fails; hence we avoid splitting Team 2’s 4 into multiple trips (does not improve success).
+- Sending Team 2 via c–f–g (0.425) or via c–b–d–e–f–g (≈0.354) is strictly worse than direct c–g (0.5).
+- Having a single team deliver all 7 requires multiple additional traversals (including two red traversals to extract anything from a), yielding overall success well below 0.208.
+
+Conclusion
+- Feasible and optimized plan is one trip per team: T2 c→g direct with 4; T1 a→d→e→f→g with 3 (or 4). This maximizes the probability of achieving the 7-unit goal at g, with success probability ≈20.83%.

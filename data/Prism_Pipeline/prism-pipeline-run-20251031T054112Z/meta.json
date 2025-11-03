@@ -1,0 +1,61 @@
+{
+  "parse_scenario": {
+    "input": [
+      {
+        "role": "system",
+        "content": "Convert the user's disaster scenario into a JSON object that matches the provided schema.\n    Do not invent nodes or edges. Use safety values only from {G,Y,R}.\n    If a required value is missing, pick the smallest reasonable default and state it explicitly."
+      },
+      {
+        "role": "user",
+        "content": "Two teams: T1 at a, and T2 at c, each can carry 4 resources at a time.\n                Point c has 4 resources, a and d each have 2. Point g wants 7 resources.\n                Routes: a-b red distance 9, a-d red distance 5, b-c red distance 4, b-d yellow distance 12, c-g red distance 6, c-f red distance 12, d-e green distance 2, e-f green distance 4, f-g yellow distance 10. Undirected.\n                Safety probabilities are green = 0.99, yellow = 0.85, red = 0.5. Objective is to maximise probability of reaching the goal."
+      }
+    ],
+    "used_model": "gpt-5-mini-2025-08-07",
+    "usage": "ResponseUsage(input_tokens=745, input_tokens_details=InputTokensDetails(cached_tokens=0), output_tokens=1547, output_tokens_details=OutputTokensDetails(reasoning_tokens=1088), total_tokens=2292)",
+    "elapsed_time": "0:00:23.691735"
+  },
+  "composer": {
+    "template_used": true,
+    "used_model": "gpt-5-mini-2025-08-07",
+    "usage": "ResponseUsage(input_tokens=29270, input_tokens_details=InputTokensDetails(cached_tokens=28416), output_tokens=17414, output_tokens_details=OutputTokensDetails(reasoning_tokens=1728), total_tokens=46684)",
+    "elapsed_time": "0:04:26.506676",
+    "model_lines": 300,
+    "properties_lines": 3
+  },
+  "prism_verification": {
+    "verification_probability": 0.2555327872754044,
+    "verification_probability_description": "Maximum probability of reaching the goal as computed by PRISM model checking",
+    "model_file": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T054112Z/model.prism",
+    "properties_file": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T054112Z/properties.props",
+    "strategy_files": {
+      "tra": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T054112Z/strat.tra",
+      "sta": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T054112Z/strat.sta",
+      "lab": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T054112Z/strat.lab"
+    },
+    "restricted_model_files": {
+      "tra": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T054112Z/restricted.tra",
+      "sta": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T054112Z/restricted.sta",
+      "lab": "/Users/calebelson/Library/Mobile Documents/com~apple~CloudDocs/School/Winter 2025/NL-PRISM-Pipeline/runs/Prism_Pipeline/prism-pipeline-run-20251031T054112Z/restricted.lab"
+    }
+  },
+  "optimal_path": {
+    "num_steps": 25,
+    "optimal_path_probability": 0.020477941405441687,
+    "optimal_path_probability_description": "Probability of success for this specific optimal path from the initial state",
+    "initial_state": 110,
+    "final_state": 25,
+    "files": {
+      "txt": "runs/Prism_Pipeline/prism-pipeline-run-20251031T054112Z/optimal_path.txt"
+    }
+  },
+  "strategy_explanation": {
+    "file": "runs/Prism_Pipeline/prism-pipeline-run-20251031T054112Z/strategy_explanation.md",
+    "model": "gpt-5-mini-2025-08-07",
+    "explanation": "## Overview\nTotal steps: 25 (24 actions executed).  \nFinal success probability: 2.0478% (path probability 0.020478).  \nKey challenge: multiple risky traversals (many small-failure-risk 99% legs and several 50% legs) and repeated back-and-forth shuttling to accumulate the 7 units at g.\n\n## Step-by-Step Actions\n1. Step 1: Team 2: c\u2192g carrying 4 resources (50.0000% success) | Overall: 50.0000%  \n2. Step 2: Team 2: g\u2192f carrying 0 resources (85.0000% success) | Overall: 42.5000%  \n3. Step 3: Team 2: f\u2192e carrying 0 resources (99.0000% success) | Overall: 42.0750%  \n4. Step 4: Team 2: e\u2192d carrying 0 resources (99.0000% success) | Overall: 41.6543%  \n5. Step 5: Team 1: a\u2192d carrying 1 resources (50.0000% success) | Overall: 20.8271%  \n6. Step 6: Team 1: d\u2192a carrying 0 resources (50.0000% success) | Overall: 10.4136%  \n7. Step 7: Team 1: a\u2192d carrying 1 resources (50.0000% success) | Overall: 5.2068%  \n8. Step 8: Team 1: d\u2192e carrying 1 resources (99.0000% success) | Overall: 5.1547%  \n9. Step 9: Team 1: e\u2192d carrying 0 resources (99.0000% success) | Overall: 5.1032%  \n10. Step 10: Team 1: d\u2192e carrying 1 resources (99.0000% success) | Overall: 5.0521%  \n11. Step 11: Team 1: e\u2192d carrying 0 resources (99.0000% success) | Overall: 5.0016%  \n12. Step 12: Team 2: d\u2192e carrying 1 resources (99.0000% success) | Overall: 4.9516%  \n13. Step 13: Team 1: e\u2192f carrying 1 resources (99.0000% success) | Overall: 4.9021%  \n14. Step 14: Team 1: f\u2192e carrying 0 resources (99.0000% success) | Overall: 4.8531%  \n15. Step 15: Team 1: e\u2192f carrying 1 resources (99.0000% success) | Overall: 4.8045%  \n16. Step 16: Team 1: f\u2192e carrying 0 resources (99.0000% success) | Overall: 4.7565%  \n17. Step 17: Team 1: e\u2192f carrying 1 resources (99.0000% success) | Overall: 4.7089%  \n18. Step 18: Team 2: e\u2192f carrying 1 resources (99.0000% success) | Overall: 4.6618%  \n19. Step 19: Team 1: f\u2192g carrying 1 resources (85.0000% success) | Overall: 4.6152%  \n20. Step 20: Team 1: g\u2192f carrying 0 resources (85.0000% success) | Overall: 3.9229%  \n21. Step 21: Team 1: f\u2192g carrying 1 resources (85.0000% success) | Overall: 3.3345%  \n22. Step 22: Team 1: g\u2192f carrying 0 resources (85.0000% success) | Overall: 2.8343%  \n23. Step 23: Team 1: f\u2192g carrying 1 resources (85.0000% success) | Overall: 2.4092%  \n24. Step 24: Team 1: f\u2192g carrying 1 resources (85.0000% success) | Overall: 2.0478%\n\n## Final State\n- Team 1 ends at: g  \n- Team 2 ends at: f  \n- Resources by node:\n  - a: 0\n  - b: 0\n  - c: 0\n  - d: 0\n  - e: 0\n  - f: 1\n  - g: 7\n\nSummary: The strategy concentrates deliveries at g to meet the demand of 7 units (final xg = 7) with team1 finishing at g and team2 at f; the overall probability that this entire action sequence succeeds is ~2.0478%.",
+    "usage": "ResponseUsage(input_tokens=3341, input_tokens_details=InputTokensDetails(cached_tokens=2816), output_tokens=13087, output_tokens_details=OutputTokensDetails(reasoning_tokens=12032), total_tokens=16428)"
+  },
+  "overall": {
+    "time_started": "20251031T054112Z",
+    "elapsed_time": "0:08:41.838508"
+  }
+}

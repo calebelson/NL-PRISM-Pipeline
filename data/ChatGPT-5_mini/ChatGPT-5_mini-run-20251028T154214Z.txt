@@ -1,0 +1,76 @@
+Short answer first
+- 1) Feasible? Yes. Total stock = c(4)+a(2)+d(2)=8 ≥ demand 7.
+- 2)–6) Best reliability plan (maximize probability of getting ≥7 resources to g): described below with step-by-step routing, reasoning, and full probability calculation. The plan yields a probability of success ≈ 0.243 (≈24.3%).
+
+Why this general approach
+- Because a single team alone cannot reliably guarantee 7 units without extremely risky extra crossings, the plan must make the team with the highest single-trip success probability perform the first move so there is a reasonable chance the surviving network of moves can reach 7.
+- The safest (highest-probability) single-route contributions:
+  - d → g via d-e-f-g is very safe: 0.99·0.99·0.85 = 0.833085.
+  - c → g direct is the best single move from c to g: red edge c-g with p = 0.5 (better than going c-f-g which would be 0.5·0.85 = 0.425).
+  - a → g must use the red a-d link at least once (a-d is red p=0.5), so any plan that uses supplies at a pays that 0.5 factor.
+
+Chosen high-reliability plan (policy with contingencies)
+Notation: p_red=0.5, p_yellow=0.85, p_green=0.99.
+Useful precomputed path probabilities:
+- d → g (one-way) = 0.99·0.99·0.85 = 0.833085.
+- g → d (one-way) same = 0.833085.
+- roundtrip g ↔ d (go to d and return to g) = 0.833085^2 ≈ 0.69304.
+- a → g if going a→d→e→f→g requires the red a-d once: 0.5·0.99·0.99·0.85 = 0.4165425.
+- g → a → g (T2 goes from g to a and returns to g) requires two red traversals a-d and d-a: probability ≈ 0.833085^2 · 0.5^2 ≈ 0.17326.
+
+Top-level plan (maximize reliability)
+1. Reserve Team 1 (T1 at a). Do not send T1 until we see whether Team 2 (T2 at c) succeeds on an initial, relatively-high-probability move. (Keeping one team idle until you know whether the other succeeds increases conditional survivability and thus overall reliability.)
+2. Send Team 2 (T2) first: load 4 resources at c and go directly c → g via the single red edge (p = 0.5). This is the single best first move from c (it maximizes the chance that T2 contributes at all).
+3. If T2 fails on that move, the plan fails because even if T1 survives later it cannot deliver the remaining 7 alone (capacity/time/trips constraints). So success requires that T2 survive this first crossing.
+4. If T2 succeeds and arrives at g, proceed as follows (contingent actions):
+   A. T2 attempts to fetch d’s 2 resources immediately by doing g → d → g (go to d via g-f-e-d and return via d-e-f-g). The roundtrip success probability is ≈0.69304. If T2 succeeds on that roundtrip, the delivered total becomes 4 (initial) + 2 (from d) = 6. At that point we need just 1 more unit.
+      - Then instruct T1 (starting at a) to go a → d → e → f → g (pick up a’s 2, deliver to g). T1’s success probability on this one-way trip is ≈0.4165425. If T1 succeeds, the delivered total becomes ≥8 → success.
+      - If T1 fails, allow T2 (still alive at g) a final attempt to go g → a → g to fetch a’s 2 (roundtrip probability ≈0.17326). If that attempt succeeds then delivered total ≥7 → success. If both of these fail → failure.
+   B. If T2 fails when trying the g → d → g roundtrip (so after the first successful c→g it dies while fetching d), then T1 is still available. In that case instruct T1 to go a → d → g and attempt to fetch both a’s and d’s resources in one go (carry up to 4). T1’s success probability for that trip is ≈0.4165425. If T1 succeeds then total delivered ≥8 → success. If T1 fails → failure.
+
+Why this policy is optimal (intuitive)
+- T2’s first move must succeed (otherwise no feasible recovery), and direct c→g is the single highest-probability move from c (p=0.5). Sending T1 first would start with a lower initial success chance (T1’s a→g path has p≈0.4165), reducing the chance that someone makes an initial contribution.
+- Keeping T1 in reserve gives the highest conditional probability of completing the remainder after learning whether T2 survived. Using T2 to fetch d is natural because d→g legs are very safe (green/yellow), so once T2 is at g the retrieval of d is comparatively reliable.
+- The contingencies exploit the higher safety of green/yellow links (d↔g) and only pay the unavoidable red risk (a-d) when necessary.
+
+Probability calculation (step-by-step)
+- Event definitions:
+  - E0 = “T2 succeeds on the initial c→g trip” ; P(E0) = p_red = 0.5.
+  - p_gd = d↔g one-way = 0.833085, hence roundtrip g→d→g success q1 = p_gd^2 ≈ 0.69304.
+  - r = probability T1 succeeds on a→d→e→f→g = 0.4165425.
+  - p_fallback_T2_a = probability T2 (from g) can do roundtrip g→a→g = q1·0.25 ≈ 0.17326 (equivalently p_gd^2 * 0.5^2).
+
+- Conditioning on E0 (T2 made it to g initially), the probability that we eventually get to 7 or more is:
+   P_success | E0 = P(T2 fetches d and we still get the last unit) · + P(T2 fails fetch d and T1 fetches both a & d)
+   = q1 * P(get +1 unit after d fetch) + (1 − q1) * r
+
+   Where after d fetch (which makes total 6) we try T1 (prob r) and, if that fails, T2 fallback (prob p_fallback_T2_a). So:
+   P(get +1 unit after d fetch) = 1 − (1 − r)(1 − p_fallback_T2_a)
+     = r + p_fallback_T2_a − r·p_fallback_T2_a.
+
+   Numerically:
+   q1 ≈ 0.69304
+   r ≈ 0.4165425
+   p_fallback_T2_a ≈ 0.17326
+   => P(get +1 | d fetched) ≈ 0.4165425 + 0.17326 − (0.4165425·0.17326) ≈ 0.5176825.
+
+   So
+   P_success | E0 ≈ 0.69304·0.5176825 + (1 − 0.69304)·0.4165425
+                ≈ 0.35864 + 0.12783
+                ≈ 0.48647.
+
+- Total P_success = P(E0) · P_success | E0 = 0.5 · 0.48647 ≈ 0.243235 → ≈24.3%.
+
+Summary (final)
+- Feasible: yes (8 units available).
+- Recommended plan (maximize reliability):
+  1) Send T2 first: load 4 at c → go direct c→g (p = 0.5).
+  2) If T2 dies on that first move the plan cannot reach 7 (failure).
+  3) If T2 reaches g:
+     - T2 attempts g→d→g to fetch d’s 2 (roundtrip p ≈ 0.69304).
+     - If that succeeds (now 6 delivered), call T1 to attempt a→d→e→f→g (p ≈ 0.41654). If T1 fails, let T2 attempt g→a→g fallback (p ≈ 0.17326).
+     - If T2’s attempt to fetch d fails, call T1 to attempt a→d→g (p ≈ 0.41654) to try to bring the remaining 4 units.
+- Probability the plan delivers at least 7 units ≈ 0.243 (24.3%).
+
+If you want
+- I can provide an alternative plan optimized for expected number of items delivered (rather than pure reliability), or exhaustively search alternative ordering/contingency trees and produce exact rational expressions for the final probability.

@@ -1,0 +1,139 @@
+Supply Feasibility
+
+There are 8 total resources available (2 at a, 4 at c, and 2 at d), which is enough to meet the demand of g needing 7 resources—the supply is feasible.
+
+Best Reliability Paths for Supply Delivery
+The goal is to maximize the probability that resources reach g. Failure of a single team (with loss of up to 4 resources) means the plan fails if the remaining resources are insufficient. Here is the optimal routing strategy based on maximizing route reliability (not distance or speed):
+
+From a to g: The highest reliability path is a → d → e → f → g (colors: red, green, green, yellow), with a per-team success probability of about 0.4165.
+
+From c to g: The only direct path is c → g (color: red), with a per-team success probability of 0.5.
+
+From d to g: The highest reliability path is d → e → f → g (colors: green, green, yellow), with a per-team success probability of 0.8331.
+
+Resource Allocation and Team Routing
+Team 1 (T1) starts at a, Team 2 (T2) at c. Each team can carry up to 4 resources per trip. The available resources are 2 at a, 4 at c, and 2 at d.
+
+T1 (at a):
+First trip: Pick up 2 from a, go to d (distance 5, red: 0.5), pick up 2 more from d, and proceed to e (green: 0.99), f (green: 0.99), and finally g (yellow: 0.85).
+Success probability per trip: 
+0.5
+×
+0.99
+×
+0.99
+×
+0.85
+=
+0.4165
+0.5×0.99×0.99×0.85=0.4165.
+Resources delivered per trip: 4.
+
+T2 (at c):
+First trip: Pick up 4 from c, go directly to g (distance 6, red: 0.5).
+Success probability per trip: 0.5.
+Resources delivered per trip: 4.
+
+Alternative: Collecting from d
+
+T2 (at c):
+Could theoretically go c → d → e → f → g (colors: yellow, green, green, yellow), but this route requires traversing c → d (yellow, 0.85), then d → e → f → g (green, green, yellow: 0.8331).
+Per-trip success probability: 
+0.85
+×
+0.8331
+=
+0.7082
+0.85×0.8331=0.7082.
+Resources delivered: Would pick up 2 from d, so this is not efficient to meet demand (only 6 resources total delivered if both teams succeed, missing demand of 7).
+
+T1 (at a):
+Could go a → d (red, 0.5), pick up 2, and d → g (green, green, yellow, 0.83).
+But then T2 must deliver everything at c (4) directly, and T1 can deliver only 2 from d (total = 6; insufficient).
+
+Optimal Plan
+To maximize both delivery sufficiency and reliability, the best plan is:
+
+T2 (at c) makes a direct delivery to g with 4 resources, probability 0.5 per trip.
+
+T1 (at a) picks up 2 from a, goes to d, picks up 2 more, and proceeds (d → e → f → g) with 4 resources, probability 0.4165 per trip.
+
+If either team fails, at most 4 resources are lost, making it impossible to meet the demand of 7 with the remaining 4 resources.
+Both teams must succeed for the goal to be reached.
+
+Probability of Success
+Since both teams must succeed for a total of 8 resources to reach g (the demand is 7):
+
+P
+(
+success
+)
+=
+P
+(
+T1 succeeds
+)
+×
+P
+(
+T2 succeeds
+)
+=
+0.4165
+×
+0.5
+=
+0.2083
+P(success)=P(T1 succeeds)×P(T2 succeeds)=0.4165×0.5=0.2083
+Overall probability of delivering at least 7 resources to g: 20.83%.
+
+Step-by-Step Plan
+Team 1 (T1):
+
+Load: 2 resources from a.
+
+Travel: a → d (red, 0.5).
+
+Load: 2 more resources from d.
+
+Travel: d → e (green, 0.99), e → f (green, 0.99), f → g (yellow, 0.85).
+
+Unload: 4 resources at g.
+
+Team 2 (T2):
+
+Load: 4 resources from c.
+
+Travel: c → g (red, 0.5).
+
+Unload: 4 resources at g.
+
+Outcome
+If both teams succeed: 8 resources reach g (surplus of 1).
+
+If either team fails: Only 4 resources reach g (insufficient).
+
+Summary Table
+Team	Route	Resources Carried	Per-trip Success Probability	Needed for Demand?
+T1	a → d → e → f → g	4	0.4165	Yes
+T2	c → g	4	0.5	Yes
+Only if both T1 and T2 succeed is the demand met—probability of both succeeding: 20.83%.
+If either fails, the plan fails to meet demand, and all carried resources are lost.
+No higher-reliability routing exists that also satisfies the demand constraint.
+
+Conclusion
+Feasibility: The supply is sufficient to meet the demand at g.
+
+Optimal Plan:
+
+T1: a → d → e → f → g (carry 4, P = 0.4165).
+
+T2: c → g (carry 4, P = 0.5).
+
+Both must succeed.
+
+Probability: Overall plan success is 20.83%.
+
+Explanation: Any other routing would either not deliver enough resources or have equal/lower reliability. No single path from a or c to g offers higher combined reliability and resource delivery. Multi-hop paths increase reliability but do not deliver enough resources in a single trip.
+
+If teams could split or make multiple trips, higher success probabilities might be possible, but with only two teams and one possible delivery each, the above is optimal within the constraints.

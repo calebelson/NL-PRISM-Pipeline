@@ -1,0 +1,38 @@
+Short answer
+1) Yes. Total available = 8 (a:2, c:4, d:2) ≥ demand 7.
+2) Best plan (maximize reliability):
+- Team 1 (from a): carry 2 from a to d (a–d, red 0.5), pick up 2 from d, then d–e–f–g (green 0.99, green 0.99, yellow 0.85) to deliver 4 to g.
+- Team 2 (from c): carry 3 from c directly to g (c–g, red 0.5).
+Run sequentially (either order); both trips must succeed.
+3) This plan uses the highest-reliability paths and the minimum number of risky (red/yellow) traversals needed.
+5) Probability of success = (0.5 × 0.99 × 0.99 × 0.85) × 0.5 = 0.4165425 × 0.5 ≈ 0.2083 (20.83%).
+6) Step-by-step below.
+
+Why this is optimal for reliability
+- From c to g, the most reliable route is the direct red edge (p = 0.5). Any detour (e.g., via f–e–d) multiplies the same red (0.5) by additional edges (<1), so it is strictly worse.
+- From a to g, the most reliable route is a–d (red 0.5) then d–e–f–g (0.99·0.99·0.85 = 0.833085), giving 0.4165425 one-way. Any alternative from a uses more red/yellow and yields a lower probability.
+- To reach 7, you must use at least 3 units from c (since a+d initially have only 4). Thus at least one c→g red traversal with cargo ≥3 is unavoidable. You must also move ≥3 units from the a+d side to g, requiring at least one a→g traversal. Therefore, an upper bound on success is 0.5 (best c→g) × 0.4165425 (best a→g), which our plan attains. Splitting loads or adding trips only multiplies in extra sub-1 factors and reduces success probability.
+
+Routing and allocation plan (maximize reliability)
+- Team 1 (T1) at a:
+  1) Load 2 at a.
+  2) Move a→d (red, p = 0.5).
+  3) At d, load 2 more (now carrying 4 total).
+  4) Move d→e (green, 0.99) → f (green, 0.99) → g (yellow, 0.85).
+  5) Offload 4 at g. T1 is done.
+
+- Team 2 (T2) at c:
+  6) Load 3 at c.
+  7) Move c→g (red, p = 0.5).
+  8) Offload 3 at g. T2 is done.
+
+- Sequence: Execute the two deliveries sequentially (order does not change the success probability; sending them one after the other avoids overlapping risk without benefit).
+
+Leg probabilities and overall success
+- T1 trip probability: 0.5 (a–d) × 0.99 × 0.99 × 0.85 = 0.4165425.
+- T2 trip probability: 0.5 (c–g).
+- Overall success probability: 0.4165425 × 0.5 ≈ 0.2083 (20.83%).
+
+Notes on constraints and failures
+- Any failure while carrying ≥2 resources immediately makes total remaining resources < 7, so the plan fails by the problem’s rule. Hence minimizing the number of trips and using the single most reliable routes maximizes success probability.
+- Splitting loads (e.g., two or more trips from c at 0.5 each, or multiple trips from a) would multiply additional sub-1 probabilities and strictly reduces the chance all required deliveries succeed.

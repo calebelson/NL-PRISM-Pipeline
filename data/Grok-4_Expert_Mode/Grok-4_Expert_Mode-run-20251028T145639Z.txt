@@ -1,0 +1,17 @@
+1. Yes, the available supplies (total of 8 resources across points a, c, and d) can satisfy the demand of 7 resources at g.
+
+2. The routing and allocation plan is as follows, optimized for reliability by using the highest-probability paths available for each team and minimizing unnecessary risks.
+
+5. The probability of success for this plan (at least 7 resources reaching g) is 0.5 × 0.5 × 0.99 × 0.99 × 0.85 = 0.20827125 (approximately 20.83%).
+
+6. Step-by-step description of the plan:
+
+- Team 2 starts at point c and loads all 4 available resources there (its maximum capacity).
+- Team 2 travels from c to g via the direct red route (safety probability 0.5). Upon successful arrival at g, it unloads the 4 resources.
+- Independently, Team 1 starts at point a and loads the 2 available resources there.
+- Team 1 travels from a to d via the direct red route (safety probability 0.5).
+- Upon successful arrival at d, Team 1 loads the 2 available resources there (bringing its total carried resources to 4, its maximum capacity).
+- Team 1 then travels from d to e via the green route (safety probability 0.99), from e to f via the green route (safety probability 0.99), and from f to g via the yellow route (safety probability 0.85).
+- Upon successful arrival at g, Team 1 unloads the 4 resources.
+
+The traversals are independent, and the success probabilities multiply as all steps must succeed for at least 7 resources (4 from Team 2 + 3 or more from Team 1, but in this all-or-nothing configuration per team, it requires both teams to fully succeed for 8 resources). If any traversal fails for a team, that team and its carried resources are lost at that point, resulting in fewer than 7 resources reaching g.

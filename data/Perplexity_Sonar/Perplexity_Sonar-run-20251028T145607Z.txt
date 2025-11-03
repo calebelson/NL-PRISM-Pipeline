@@ -1,0 +1,93 @@
+The available resources are sufficient to meet the demand at point g, and an optimal plan has been determined to maximize the probability of successfully delivering at least 7 resources.
+
+Feasibility
+The total available resources are 
+2
+2 at point a, 
+4
+4 at point c, and 
+2
+2 at point d, resulting in a sum of 
+8
+8 resources . Since the demand at point g is 
+7
+7, the supply exceeds the requirement, making the task feasible .
+
+Optimal Plan
+The routing and allocation strategy maximizes reliability by assigning each team to the most efficient and safest possible route given their starting positions and the risk probabilities associated with each path color.
+
+Team 1 (T1): Starts at point a with 2 resources. It moves to point d to collect the 2 resources located there, fully loading its 4-resource capacity. It then proceeds via the green and yellow segments (d-e, e-f, f-g) to deliver all 4 resources to g. The probability of T1 successfully completing this route is 
+0.4165425
+0.4165425, calculated as 
+0.5
+×
+0.99
+×
+0.99
+×
+0.85
+0.5×0.99×0.99×0.85 .
+
+Team 2 (T2): Starts at point c with 4 resources. It takes the direct red route from c to g, which has a success probability of 
+0.5
+0.5. This is the highest possible probability for any route from c to g .
+
+Both teams operate independently, and their routes are designed to avoid unnecessary risk while ensuring full utilization of available resources.
+
+Success Probability
+The mission succeeds only if both teams successfully deliver their loads, as a failure of either team results in only 4 resources reaching g, which is insufficient . The joint success probability is the product of the individual probabilities:
+
+P
+(
+success
+)
+=
+P
+(
+T1
+)
+×
+P
+(
+T2
+)
+=
+0.4165425
+×
+0.5
+=
+0.20827125
+P(success)=P(T1)×P(T2)=0.4165425×0.5=0.20827125
+Thus, the probability of successfully delivering at least 7 resources to g is approximately 
+20.83
+%
+20.83% .
+
+Step-by-Step Execution
+T1 at a: Collects 2 resources from point a.
+
+T1 moves a → d: Travels along the red edge (failure probability 
+0.5
+0.5), collects 2 resources from d, now carrying 4.
+
+T1 moves d → e → f → g: Travels along green (d-e, 
+P
+=
+0.99
+P=0.99) and green (e-f, 
+P
+=
+0.99
+P=0.99) edges, then yellow (f-g, 
+P
+=
+0.85
+P=0.85) to deliver 4 resources to g.
+
+T2 at c: Collects 4 resources from point c.
+
+T2 moves c → g: Travels along the red edge (failure probability 
+0.5
+0.5) to deliver 4 resources to g.
+
+Outcome: If both teams succeed, a total of 8 resources reach g, satisfying the demand .

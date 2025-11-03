@@ -1,0 +1,63 @@
+Short answer first
+- Feasible: yes — total supply = 2 (a) + 4 (c) + 2 (d) = 8 ≥ 7.
+- Reliability-optimized plan (best single-plan I find): T1 picks up a and d supplies and goes a→d→e→f→g; T2 goes c→g directly. This maximizes each team’s route reliability given constraints.
+- Probability that g receives ≥7 resources under this plan (with the assumptions below) ≈ 0.2083 (≈20.83%).
+- Reason: neither team alone can deliver 7 resources (each capacity ≤4 and initial supplies at any single location ≤4), so the plan that minimizes the number and riskiness of loaded traversals for each team (and therefore maximizes joint success probability) is the best reliability strategy.
+
+Assumptions I use
+- Edge traversal failures are independent events and a failure kills the team and destroys whatever it is carrying. Teams’ survival events are independent.
+- Teams may do multiple visits but every traversal creates risk; because we optimize reliability (not speed or distance), extra trips that add risky edges generally reduce success probability.
+- Teams may pick up the supplies at their starting nodes and at nodes they visit (subject to capacity 4). You can schedule pickup order at nodes visited.
+- We evaluate a single-plan (each team makes the planned trip(s)); I also consider contingencies qualitatively and show they do not increase the maximum reliability.
+
+Network reliability values (given)
+- green edge safety p = 0.99
+- yellow edge safety p = 0.85
+- red edge safety p = 0.50
+
+Routes and their success probabilities (product of edge safeties)
+- d → e → f → g  : 0.99 * 0.99 * 0.85 = 0.833085
+- a → d → e → f → g : 0.50 * 0.99 * 0.99 * 0.85 = 0.4165425
+- c → g (direct red) : 0.50
+- c → f → g : 0.50 * 0.85 = 0.425
+
+Why I choose the plan below
+- c→g direct is the single-most reliable way for the 4 units at c to reach g (0.50), better than c→f→g (0.425) or c→b→d→... (more red edges).
+- The supplies at d can reach g very reliably via the green links (d→e→f→g) if a team can operate from d. The only red link needed to bring resources from a to that green backbone is a→d (0.50). So the best realistic route for the supplies at a and d is to consolidate them and use the d→e→f→g green/yellow chain.
+- Because neither team alone can deliver 7 units, both must contribute; therefore we should maximize the product of the teams’ success probabilities. The chosen routes minimize the number of red edges traversed while carrying resources.
+
+Detailed plan (step-by-step)
+1. Pre-load and pickup decisions:
+   - Team 1 (T1) at a: pick up the two resources at a. Travel immediately to d via a–d (red). When at d, pick up the two resources at d (so T1 then carries up to 4).
+   - Team 2 (T2) at c: pick up all four resources at c and depart directly to g via c–g (red).
+
+   Note: T1 could pick up d’s goods after traversing a–d, so only the a goods are exposed to that a→d red traversal. Load decisions do not change route safety (edge failure probabilities independent of load), but consolidating supplies onto the fewer trips avoids extra traversals.
+
+2. Movement (one trip each):
+   - T1 route: a → d (red, p = 0.50) → e (green, 0.99) → f (green, 0.99) → g (yellow, 0.85). If T1 survives the full route, it delivers the goods from a and d (up to 4 units).
+   - T2 route: c → g (red, p = 0.50). If T2 survives, it delivers c’s 4 units.
+
+3. Termination condition:
+   - If both teams arrive successfully, g receives the full 8 resources (success).
+   - If either team fails en route, any goods it carried are lost. If after a failure it is still theoretically possible for the other team to fetch additional goods by making extra trips, that is a contingency that can be attempted, but any extra trips require additional risky traversals and will have lower overall reliability than the primary plan. Because neither team alone can bring 7 without contacting remote supplies (which would require extra red traversals), the one-shot simultaneous plan optimizes the joint probability of success.
+
+Probability calculation
+- P(T1 reaches g delivering its load) = product of edge safeties for a→d→e→f→g
+  = 0.50 * 0.99 * 0.99 * 0.85 = 0.4165425 (≈ 41.65%).
+
+- P(T2 reaches g delivering its load) = c→g = 0.50 (50%).
+
+- Because the successful deliveries that produce ≥7 units require both teams to succeed (no single team can deliver 7 alone), the probability of delivering at least 7 with the plan above is:
+  P(success) = P(T1 succeeds AND T2 succeeds) = 0.4165425 * 0.50 = 0.20827125 ≈ 0.2083 (20.83%).
+
+Notes on contingencies and why they don’t improve max reliability
+- Could we improve overall success probability by sequencing trips or planning contingencies (e.g., have one team attempt later to fetch leftover supplies if the other fails)? Possibly, but every attempt to fetch remote supplies from c/a/d beyond the single minimal trip forces extra red or many-edge traversals; those extra traversals reduce the marginal probability of success substantially. Since neither team can deliver 7 on its own without visiting remote nodes that require additional red edges, any contingency path requires more risky edges and therefore yields lower expected success than the straightforward two-team one-trip approach.
+- Example: If T2 fails and T1 then tries to fetch the 4 at c, T1 must traverse extra red edges (a–b or a–d–b–c combinations) adding at least one or two red traversals (0.5 factor per red). Multiplying those additional 0.5 factors onto the remaining success probability gives a net conditional probability that is lower than the baseline joint success probability. Thus contingency actions do not increase the overall success probability beyond the plan above.
+
+Conclusion
+- Feasible: yes (total supply = 8).
+- Best reliability-focused plan: T1: a → d → e → f → g carrying supplies from a and d; T2: c → g carrying c’s supplies.
+- Success probability (≥7 resources reach g) ≈ 0.2083 (≈20.83%).
+- If you want, I can:
+  - compute alternative plan probabilities (sequenced trips, contingencies) and show numeric comparisons,
+  - or optimize under a different objective (e.g., maximize expected number of resources delivered instead of probability of reaching at least 7).

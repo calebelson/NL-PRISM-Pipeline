@@ -1,0 +1,300 @@
+// ASSUMPTION: node_capacity not specified -> set per-node max to total initial resources (8) to allow all flow // JSON:constraints.node_capacity
+// ASSUMPTION: teams always attempt moves carrying 0..capacity units; on movement failure (route unsafe) the team is lost (locteam = fail) but resources still deducted as in template
+// JSON:graph, teams, resources, demands used for constants below
+
+mdp
+
+const int fail = -1;
+// JSON:graph.nodes
+const int a = 0;
+const int b = 1;
+const int c = 2;
+const int d = 3;
+const int e = 4;
+const int f = 5;
+const int g = 6;
+
+// JSON:resources initial quantities
+const int inita = 2; // JSON:resources[1] node a qty 2
+const int initb = 0;
+const int initc = 4; // JSON:resources[0] node c qty 4
+const int initd = 2; // JSON:resources[2] node d qty 2
+const int inite = 0;
+const int initf = 0;
+const int initg = 0;
+
+// node capacity assumptions
+const int maxa = 8;
+const int maxb = 8;
+const int maxc = 8;
+const int maxd = 8;
+const int maxe = 8;
+const int maxf = 8;
+const int maxg = 8;
+
+// JSON:teams
+const int team1Start = a; // teams[0].start
+const int team2Start = c; // teams[1].start
+const int teamCapacity = 4; // teams[*].capacity
+
+// JSON:constraints.safety_probs
+const double GREEN = 0.99; // G
+const double YELLOW = 0.85; // Y
+const double RED = 0.5; // R
+
+// factors (no per-edge team factors specified -> set to 1.0)
+const double factor_team1 = 1.0;
+const double factor_team2 = 1.0;
+
+// For readability we use direct safety constants per edge in transitions
+module city_resourcing
+    // resource at each node // JSON:resources
+    xa : [0..maxa] init inita; // JSON:resources when node=="a"
+    xb : [0..maxb] init initb; // b
+    xc : [0..maxc] init initc; // c
+    xd : [0..maxd] init initd; // d
+    xe : [0..maxe] init inite; // e
+    xf : [0..maxf] init initf; // f
+    xg : [0..maxg] init initg; // g (demand node) // JSON:demands[0].node == "g" qty 7
+
+    // team locations: -1 means lost // JSON:teams[*].start
+    locteam1 : [-1..6] init team1Start; // teams[0].id = T1
+    locteam2 : [-1..6] init team2Start; // teams[1].id = T2
+
+    // ---- Transitions for team1 (T1) ----
+    // Edge a <-> b  // JSON:graph.edges[0] {"from_":"a","to":"b","safety":"R","distance":9.0}
+    [t1_a_b_0] (locteam1=a)&(xa>=0)&(xb<=maxb-0) -> RED*factor_team1:(xb'=xb+0)&(xa'=xa-0)&(locteam1'=b)+(1-RED*factor_team1):(xa'=xa-0)&(locteam1'=fail);
+    [t1_a_b_1] (locteam1=a)&(xa>=1)&(xb<=maxb-1) -> RED*factor_team1:(xb'=xb+1)&(xa'=xa-1)&(locteam1'=b)+(1-RED*factor_team1):(xa'=xa-1)&(locteam1'=fail);
+    [t1_a_b_2] (locteam1=a)&(xa>=2)&(xb<=maxb-2) -> RED*factor_team1:(xb'=xb+2)&(xa'=xa-2)&(locteam1'=b)+(1-RED*factor_team1):(xa'=xa-2)&(locteam1'=fail);
+    [t1_a_b_3] (locteam1=a)&(xa>=3)&(xb<=maxb-3) -> RED*factor_team1:(xb'=xb+3)&(xa'=xa-3)&(locteam1'=b)+(1-RED*factor_team1):(xa'=xa-3)&(locteam1'=fail);
+    [t1_a_b_4] (locteam1=a)&(xa>=4)&(xb<=maxb-4) -> RED*factor_team1:(xb'=xb+4)&(xa'=xa-4)&(locteam1'=b)+(1-RED*factor_team1):(xa'=xa-4)&(locteam1'=fail);
+
+    [t1_b_a_0] (locteam1=b)&(xb>=0)&(xa<=maxa-0) -> RED*factor_team1:(xa'=xa+0)&(xb'=xb-0)&(locteam1'=a)+(1-RED*factor_team1):(xb'=xb-0)&(locteam1'=fail);
+    [t1_b_a_1] (locteam1=b)&(xb>=1)&(xa<=maxa-1) -> RED*factor_team1:(xa'=xa+1)&(xb'=xb-1)&(locteam1'=a)+(1-RED*factor_team1):(xb'=xb-1)&(locteam1'=fail);
+    [t1_b_a_2] (locteam1=b)&(xb>=2)&(xa<=maxa-2) -> RED*factor_team1:(xa'=xa+2)&(xb'=xb-2)&(locteam1'=a)+(1-RED*factor_team1):(xb'=xb-2)&(locteam1'=fail);
+    [t1_b_a_3] (locteam1=b)&(xb>=3)&(xa<=maxa-3) -> RED*factor_team1:(xa'=xa+3)&(xb'=xb-3)&(locteam1'=a)+(1-RED*factor_team1):(xb'=xb-3)&(locteam1'=fail);
+    [t1_b_a_4] (locteam1=b)&(xb>=4)&(xa<=maxa-4) -> RED*factor_team1:(xa'=xa+4)&(xb'=xb-4)&(locteam1'=a)+(1-RED*factor_team1):(xb'=xb-4)&(locteam1'=fail);
+
+    // Edge a <-> d  // JSON:graph.edges[1] {"from_":"a","to":"d","safety":"R","distance":5.0}
+    [t1_a_d_0] (locteam1=a)&(xa>=0)&(xd<=maxd-0) -> RED*factor_team1:(xd'=xd+0)&(xa'=xa-0)&(locteam1'=d)+(1-RED*factor_team1):(xa'=xa-0)&(locteam1'=fail);
+    [t1_a_d_1] (locteam1=a)&(xa>=1)&(xd<=maxd-1) -> RED*factor_team1:(xd'=xd+1)&(xa'=xa-1)&(locteam1'=d)+(1-RED*factor_team1):(xa'=xa-1)&(locteam1'=fail);
+    [t1_a_d_2] (locteam1=a)&(xa>=2)&(xd<=maxd-2) -> RED*factor_team1:(xd'=xd+2)&(xa'=xa-2)&(locteam1'=d)+(1-RED*factor_team1):(xa'=xa-2)&(locteam1'=fail);
+    [t1_a_d_3] (locteam1=a)&(xa>=3)&(xd<=maxd-3) -> RED*factor_team1:(xd'=xd+3)&(xa'=xa-3)&(locteam1'=d)+(1-RED*factor_team1):(xa'=xa-3)&(locteam1'=fail);
+    [t1_a_d_4] (locteam1=a)&(xa>=4)&(xd<=maxd-4) -> RED*factor_team1:(xd'=xd+4)&(xa'=xa-4)&(locteam1'=d)+(1-RED*factor_team1):(xa'=xa-4)&(locteam1'=fail);
+
+    [t1_d_a_0] (locteam1=d)&(xd>=0)&(xa<=maxa-0) -> RED*factor_team1:(xa'=xa+0)&(xd'=xd-0)&(locteam1'=a)+(1-RED*factor_team1):(xd'=xd-0)&(locteam1'=fail);
+    [t1_d_a_1] (locteam1=d)&(xd>=1)&(xa<=maxa-1) -> RED*factor_team1:(xa'=xa+1)&(xd'=xd-1)&(locteam1'=a)+(1-RED*factor_team1):(xd'=xd-1)&(locteam1'=fail);
+    [t1_d_a_2] (locteam1=d)&(xd>=2)&(xa<=maxa-2) -> RED*factor_team1:(xa'=xa+2)&(xd'=xd-2)&(locteam1'=a)+(1-RED*factor_team1):(xd'=xd-2)&(locteam1'=fail);
+    [t1_d_a_3] (locteam1=d)&(xd>=3)&(xa<=maxa-3) -> RED*factor_team1:(xa'=xa+3)&(xd'=xd-3)&(locteam1'=a)+(1-RED*factor_team1):(xd'=xd-3)&(locteam1'=fail);
+    [t1_d_a_4] (locteam1=d)&(xd>=4)&(xa<=maxa-4) -> RED*factor_team1:(xa'=xa+4)&(xd'=xd-4)&(locteam1'=a)+(1-RED*factor_team1):(xd'=xd-4)&(locteam1'=fail);
+
+    // Edge b <-> c  // JSON:graph.edges[2] {"from_":"b","to":"c","safety":"R","distance":4.0}
+    [t1_b_c_0] (locteam1=b)&(xb>=0)&(xc<=maxc-0) -> RED*factor_team1:(xc'=xc+0)&(xb'=xb-0)&(locteam1'=c)+(1-RED*factor_team1):(xb'=xb-0)&(locteam1'=fail);
+    [t1_b_c_1] (locteam1=b)&(xb>=1)&(xc<=maxc-1) -> RED*factor_team1:(xc'=xc+1)&(xb'=xb-1)&(locteam1'=c)+(1-RED*factor_team1):(xb'=xb-1)&(locteam1'=fail);
+    [t1_b_c_2] (locteam1=b)&(xb>=2)&(xc<=maxc-2) -> RED*factor_team1:(xc'=xc+2)&(xb'=xb-2)&(locteam1'=c)+(1-RED*factor_team1):(xb'=xb-2)&(locteam1'=fail);
+    [t1_b_c_3] (locteam1=b)&(xb>=3)&(xc<=maxc-3) -> RED*factor_team1:(xc'=xc+3)&(xb'=xb-3)&(locteam1'=c)+(1-RED*factor_team1):(xb'=xb-3)&(locteam1'=fail);
+    [t1_b_c_4] (locteam1=b)&(xb>=4)&(xc<=maxc-4) -> RED*factor_team1:(xc'=xc+4)&(xb'=xb-4)&(locteam1'=c)+(1-RED*factor_team1):(xb'=xb-4)&(locteam1'=fail);
+
+    [t1_c_b_0] (locteam1=c)&(xc>=0)&(xb<=maxb-0) -> RED*factor_team1:(xb'=xb+0)&(xc'=xc-0)&(locteam1'=b)+(1-RED*factor_team1):(xc'=xc-0)&(locteam1'=fail);
+    [t1_c_b_1] (locteam1=c)&(xc>=1)&(xb<=maxb-1) -> RED*factor_team1:(xb'=xb+1)&(xc'=xc-1)&(locteam1'=b)+(1-RED*factor_team1):(xc'=xc-1)&(locteam1'=fail);
+    [t1_c_b_2] (locteam1=c)&(xc>=2)&(xb<=maxb-2) -> RED*factor_team1:(xb'=xb+2)&(xc'=xc-2)&(locteam1'=b)+(1-RED*factor_team1):(xc'=xc-2)&(locteam1'=fail);
+    [t1_c_b_3] (locteam1=c)&(xc>=3)&(xb<=maxb-3) -> RED*factor_team1:(xb'=xb+3)&(xc'=xc-3)&(locteam1'=b)+(1-RED*factor_team1):(xc'=xc-3)&(locteam1'=fail);
+    [t1_c_b_4] (locteam1=c)&(xc>=4)&(xb<=maxb-4) -> RED*factor_team1:(xb'=xb+4)&(xc'=xc-4)&(locteam1'=b)+(1-RED*factor_team1):(xc'=xc-4)&(locteam1'=fail);
+
+    // Edge b <-> d  // JSON:graph.edges[3] {"from_":"b","to":"d","safety":"Y","distance":12.0}
+    [t1_b_d_0] (locteam1=b)&(xb>=0)&(xd<=maxd-0) -> YELLOW*factor_team1:(xd'=xd+0)&(xb'=xb-0)&(locteam1'=d)+(1-YELLOW*factor_team1):(xb'=xb-0)&(locteam1'=fail);
+    [t1_b_d_1] (locteam1=b)&(xb>=1)&(xd<=maxd-1) -> YELLOW*factor_team1:(xd'=xd+1)&(xb'=xb-1)&(locteam1'=d)+(1-YELLOW*factor_team1):(xb'=xb-1)&(locteam1'=fail);
+    [t1_b_d_2] (locteam1=b)&(xb>=2)&(xd<=maxd-2) -> YELLOW*factor_team1:(xd'=xd+2)&(xb'=xb-2)&(locteam1'=d)+(1-YELLOW*factor_team1):(xb'=xb-2)&(locteam1'=fail);
+    [t1_b_d_3] (locteam1=b)&(xb>=3)&(xd<=maxd-3) -> YELLOW*factor_team1:(xd'=xd+3)&(xb'=xb-3)&(locteam1'=d)+(1-YELLOW*factor_team1):(xb'=xb-3)&(locteam1'=fail);
+    [t1_b_d_4] (locteam1=b)&(xb>=4)&(xd<=maxd-4) -> YELLOW*factor_team1:(xd'=xd+4)&(xb'=xb-4)&(locteam1'=d)+(1-YELLOW*factor_team1):(xb'=xb-4)&(locteam1'=fail);
+
+    [t1_d_b_0] (locteam1=d)&(xd>=0)&(xb<=maxb-0) -> YELLOW*factor_team1:(xb'=xb+0)&(xd'=xd-0)&(locteam1'=b)+(1-YELLOW*factor_team1):(xd'=xd-0)&(locteam1'=fail);
+    [t1_d_b_1] (locteam1=d)&(xd>=1)&(xb<=maxb-1) -> YELLOW*factor_team1:(xb'=xb+1)&(xd'=xd-1)&(locteam1'=b)+(1-YELLOW*factor_team1):(xd'=xd-1)&(locteam1'=fail);
+    [t1_d_b_2] (locteam1=d)&(xd>=2)&(xb<=maxb-2) -> YELLOW*factor_team1:(xb'=xb+2)&(xd'=xd-2)&(locteam1'=b)+(1-YELLOW*factor_team1):(xd'=xd-2)&(locteam1'=fail);
+    [t1_d_b_3] (locteam1=d)&(xd>=3)&(xb<=maxb-3) -> YELLOW*factor_team1:(xb'=xb+3)&(xd'=xd-3)&(locteam1'=b)+(1-YELLOW*factor_team1):(xd'=xd-3)&(locteam1'=fail);
+    [t1_d_b_4] (locteam1=d)&(xd>=4)&(xb<=maxb-4) -> YELLOW*factor_team1:(xb'=xb+4)&(xd'=xd-4)&(locteam1'=b)+(1-YELLOW*factor_team1):(xd'=xd-4)&(locteam1'=fail);
+
+    // Edge c <-> g  // JSON:graph.edges[4] {"from_":"c","to":"g","safety":"R","distance":6.0}
+    [t1_c_g_0] (locteam1=c)&(xc>=0)&(xg<=maxg-0) -> RED*factor_team1:(xg'=xg+0)&(xc'=xc-0)&(locteam1'=g)+(1-RED*factor_team1):(xc'=xc-0)&(locteam1'=fail);
+    [t1_c_g_1] (locteam1=c)&(xc>=1)&(xg<=maxg-1) -> RED*factor_team1:(xg'=xg+1)&(xc'=xc-1)&(locteam1'=g)+(1-RED*factor_team1):(xc'=xc-1)&(locteam1'=fail);
+    [t1_c_g_2] (locteam1=c)&(xc>=2)&(xg<=maxg-2) -> RED*factor_team1:(xg'=xg+2)&(xc'=xc-2)&(locteam1'=g)+(1-RED*factor_team1):(xc'=xc-2)&(locteam1'=fail);
+    [t1_c_g_3] (locteam1=c)&(xc>=3)&(xg<=maxg-3) -> RED*factor_team1:(xg'=xg+3)&(xc'=xc-3)&(locteam1'=g)+(1-RED*factor_team1):(xc'=xc-3)&(locteam1'=fail);
+    [t1_c_g_4] (locteam1=c)&(xc>=4)&(xg<=maxg-4) -> RED*factor_team1:(xg'=xg+4)&(xc'=xc-4)&(locteam1'=g)+(1-RED*factor_team1):(xc'=xc-4)&(locteam1'=fail);
+
+    [t1_g_c_0] (locteam1=g)&(xg>=0)&(xc<=maxc-0) -> RED*factor_team1:(xc'=xc+0)&(xg'=xg-0)&(locteam1'=c)+(1-RED*factor_team1):(xg'=xg-0)&(locteam1'=fail);
+    [t1_g_c_1] (locteam1=g)&(xg>=1)&(xc<=maxc-1) -> RED*factor_team1:(xc'=xc+1)&(xg'=xg-1)&(locteam1'=c)+(1-RED*factor_team1):(xg'=xg-1)&(locteam1'=fail);
+    [t1_g_c_2] (locteam1=g)&(xg>=2)&(xc<=maxc-2) -> RED*factor_team1:(xc'=xc+2)&(xg'=xg-2)&(locteam1'=c)+(1-RED*factor_team1):(xg'=xg-2)&(locteam1'=fail);
+    [t1_g_c_3] (locteam1=g)&(xg>=3)&(xc<=maxc-3) -> RED*factor_team1:(xc'=xc+3)&(xg'=xg-3)&(locteam1'=c)+(1-RED*factor_team1):(xg'=xg-3)&(locteam1'=fail);
+    [t1_g_c_4] (locteam1=g)&(xg>=4)&(xc<=maxc-4) -> RED*factor_team1:(xc'=xc+4)&(xg'=xg-4)&(locteam1'=c)+(1-RED*factor_team1):(xg'=xg-4)&(locteam1'=fail);
+
+    // Edge c <-> f  // JSON:graph.edges[5] {"from_":"c","to":"f","safety":"R","distance":12.0}
+    [t1_c_f_0] (locteam1=c)&(xc>=0)&(xf<=maxf-0) -> RED*factor_team1:(xf'=xf+0)&(xc'=xc-0)&(locteam1'=f)+(1-RED*factor_team1):(xc'=xc-0)&(locteam1'=fail);
+    [t1_c_f_1] (locteam1=c)&(xc>=1)&(xf<=maxf-1) -> RED*factor_team1:(xf'=xf+1)&(xc'=xc-1)&(locteam1'=f)+(1-RED*factor_team1):(xc'=xc-1)&(locteam1'=fail);
+    [t1_c_f_2] (locteam1=c)&(xc>=2)&(xf<=maxf-2) -> RED*factor_team1:(xf'=xf+2)&(xc'=xc-2)&(locteam1'=f)+(1-RED*factor_team1):(xc'=xc-2)&(locteam1'=fail);
+    [t1_c_f_3] (locteam1=c)&(xc>=3)&(xf<=maxf-3) -> RED*factor_team1:(xf'=xf+3)&(xc'=xc-3)&(locteam1'=f)+(1-RED*factor_team1):(xc'=xc-3)&(locteam1'=fail);
+    [t1_c_f_4] (locteam1=c)&(xc>=4)&(xf<=maxf-4) -> RED*factor_team1:(xf'=xf+4)&(xc'=xc-4)&(locteam1'=f)+(1-RED*factor_team1):(xc'=xc-4)&(locteam1'=fail);
+
+    [t1_f_c_0] (locteam1=f)&(xf>=0)&(xc<=maxc-0) -> RED*factor_team1:(xc'=xc+0)&(xf'=xf-0)&(locteam1'=c)+(1-RED*factor_team1):(xf'=xf-0)&(locteam1'=fail);
+    [t1_f_c_1] (locteam1=f)&(xf>=1)&(xc<=maxc-1) -> RED*factor_team1:(xc'=xc+1)&(xf'=xf-1)&(locteam1'=c)+(1-RED*factor_team1):(xf'=xf-1)&(locteam1'=fail);
+    [t1_f_c_2] (locteam1=f)&(xf>=2)&(xc<=maxc-2) -> RED*factor_team1:(xc'=xc+2)&(xf'=xf-2)&(locteam1'=c)+(1-RED*factor_team1):(xf'=xf-2)&(locteam1'=fail);
+    [t1_f_c_3] (locteam1=f)&(xf>=3)&(xc<=maxc-3) -> RED*factor_team1:(xc'=xc+3)&(xf'=xf-3)&(locteam1'=c)+(1-RED*factor_team1):(xf'=xf-3)&(locteam1'=fail);
+    [t1_f_c_4] (locteam1=f)&(xf>=4)&(xc<=maxc-4) -> RED*factor_team1:(xc'=xc+4)&(xf'=xf-4)&(locteam1'=c)+(1-RED*factor_team1):(xf'=xf-4)&(locteam1'=fail);
+
+    // Edge d <-> e  // JSON:graph.edges[6] {"from_":"d","to":"e","safety":"G","distance":2.0}
+    [t1_d_e_0] (locteam1=d)&(xd>=0)&(xe<=maxe-0) -> GREEN*factor_team1:(xe'=xe+0)&(xd'=xd-0)&(locteam1'=e)+(1-GREEN*factor_team1):(xd'=xd-0)&(locteam1'=fail);
+    [t1_d_e_1] (locteam1=d)&(xd>=1)&(xe<=maxe-1) -> GREEN*factor_team1:(xe'=xe+1)&(xd'=xd-1)&(locteam1'=e)+(1-GREEN*factor_team1):(xd'=xd-1)&(locteam1'=fail);
+    [t1_d_e_2] (locteam1=d)&(xd>=2)&(xe<=maxe-2) -> GREEN*factor_team1:(xe'=xe+2)&(xd'=xd-2)&(locteam1'=e)+(1-GREEN*factor_team1):(xd'=xd-2)&(locteam1'=fail);
+    [t1_d_e_3] (locteam1=d)&(xd>=3)&(xe<=maxe-3) -> GREEN*factor_team1:(xe'=xe+3)&(xd'=xd-3)&(locteam1'=e)+(1-GREEN*factor_team1):(xd'=xd-3)&(locteam1'=fail);
+    [t1_d_e_4] (locteam1=d)&(xd>=4)&(xe<=maxe-4) -> GREEN*factor_team1:(xe'=xe+4)&(xd'=xd-4)&(locteam1'=e)+(1-GREEN*factor_team1):(xd'=xd-4)&(locteam1'=fail);
+
+    [t1_e_d_0] (locteam1=e)&(xe>=0)&(xd<=maxd-0) -> GREEN*factor_team1:(xd'=xd+0)&(xe'=xe-0)&(locteam1'=d)+(1-GREEN*factor_team1):(xe'=xe-0)&(locteam1'=fail);
+    [t1_e_d_1] (locteam1=e)&(xe>=1)&(xd<=maxd-1) -> GREEN*factor_team1:(xd'=xd+1)&(xe'=xe-1)&(locteam1'=d)+(1-GREEN*factor_team1):(xe'=xe-1)&(locteam1'=fail);
+    [t1_e_d_2] (locteam1=e)&(xe>=2)&(xd<=maxd-2) -> GREEN*factor_team1:(xd'=xd+2)&(xe'=xe-2)&(locteam1'=d)+(1-GREEN*factor_team1):(xe'=xe-2)&(locteam1'=fail);
+    [t1_e_d_3] (locteam1=e)&(xe>=3)&(xd<=maxd-3) -> GREEN*factor_team1:(xd'=xd+3)&(xe'=xe-3)&(locteam1'=d)+(1-GREEN*factor_team1):(xe'=xe-3)&(locteam1'=fail);
+    [t1_e_d_4] (locteam1=e)&(xe>=4)&(xd<=maxd-4) -> GREEN*factor_team1:(xd'=xd+4)&(xe'=xe-4)&(locteam1'=d)+(1-GREEN*factor_team1):(xe'=xe-4)&(locteam1'=fail);
+
+    // Edge e <-> f  // JSON:graph.edges[7] {"from_":"e","to":"f","safety":"G","distance":4.0}
+    [t1_e_f_0] (locteam1=e)&(xe>=0)&(xf<=maxf-0) -> GREEN*factor_team1:(xf'=xf+0)&(xe'=xe-0)&(locteam1'=f)+(1-GREEN*factor_team1):(xe'=xe-0)&(locteam1'=fail);
+    [t1_e_f_1] (locteam1=e)&(xe>=1)&(xf<=maxf-1) -> GREEN*factor_team1:(xf'=xf+1)&(xe'=xe-1)&(locteam1'=f)+(1-GREEN*factor_team1):(xe'=xe-1)&(locteam1'=fail);
+    [t1_e_f_2] (locteam1=e)&(xe>=2)&(xf<=maxf-2) -> GREEN*factor_team1:(xf'=xf+2)&(xe'=xe-2)&(locteam1'=f)+(1-GREEN*factor_team1):(xe'=xe-2)&(locteam1'=fail);
+    [t1_e_f_3] (locteam1=e)&(xe>=3)&(xf<=maxf-3) -> GREEN*factor_team1:(xf'=xf+3)&(xe'=xe-3)&(locteam1'=f)+(1-GREEN*factor_team1):(xe'=xe-3)&(locteam1'=fail);
+    [t1_e_f_4] (locteam1=e)&(xe>=4)&(xf<=maxf-4) -> GREEN*factor_team1:(xf'=xf+4)&(xe'=xe-4)&(locteam1'=f)+(1-GREEN*factor_team1):(xe'=xe-4)&(locteam1'=fail);
+
+    [t1_f_e_0] (locteam1=f)&(xf>=0)&(xe<=maxe-0) -> GREEN*factor_team1:(xe'=xe+0)&(xf'=xf-0)&(locteam1'=e)+(1-GREEN*factor_team1):(xf'=xf-0)&(locteam1'=fail);
+    [t1_f_e_1] (locteam1=f)&(xf>=1)&(xe<=maxe-1) -> GREEN*factor_team1:(xe'=xe+1)&(xf'=xf-1)&(locteam1'=e)+(1-GREEN*factor_team1):(xf'=xf-1)&(locteam1'=fail);
+    [t1_f_e_2] (locteam1=f)&(xf>=2)&(xe<=maxe-2) -> GREEN*factor_team1:(xe'=xe+2)&(xf'=xf-2)&(locteam1'=e)+(1-GREEN*factor_team1):(xf'=xf-2)&(locteam1'=fail);
+    [t1_f_e_3] (locteam1=f)&(xf>=3)&(xe<=maxe-3) -> GREEN*factor_team1:(xe'=xe+3)&(xf'=xf-3)&(locteam1'=e)+(1-GREEN*factor_team1):(xf'=xf-3)&(locteam1'=fail);
+    [t1_f_e_4] (locteam1=f)&(xf>=4)&(xe<=maxe-4) -> GREEN*factor_team1:(xe'=xe+4)&(xf'=xf-4)&(locteam1'=e)+(1-GREEN*factor_team1):(xf'=xf-4)&(locteam1'=fail);
+
+    // Edge f <-> g  // JSON:graph.edges[8] {"from_":"f","to":"g","safety":"Y","distance":10.0}
+    [t1_f_g_0] (locteam1=f)&(xf>=0)&(xg<=maxg-0) -> YELLOW*factor_team1:(xg'=xg+0)&(xf'=xf-0)&(locteam1'=g)+(1-YELLOW*factor_team1):(xf'=xf-0)&(locteam1'=fail);
+    [t1_f_g_1] (locteam1=f)&(xf>=1)&(xg<=maxg-1) -> YELLOW*factor_team1:(xg'=xg+1)&(xf'=xf-1)&(locteam1'=g)+(1-YELLOW*factor_team1):(xf'=xf-1)&(locteam1'=fail);
+    [t1_f_g_2] (locteam1=f)&(xf>=2)&(xg<=maxg-2) -> YELLOW*factor_team1:(xg'=xg+2)&(xf'=xf-2)&(locteam1'=g)+(1-YELLOW*factor_team1):(xf'=xf-2)&(locteam1'=fail);
+    [t1_f_g_3] (locteam1=f)&(xf>=3)&(xg<=maxg-3) -> YELLOW*factor_team1:(xg'=xg+3)&(xf'=xf-3)&(locteam1'=g)+(1-YELLOW*factor_team1):(xf'=xf-3)&(locteam1'=fail);
+    [t1_f_g_4] (locteam1=f)&(xf>=4)&(xg<=maxg-4) -> YELLOW*factor_team1:(xg'=xg+4)&(xf'=xf-4)&(locteam1'=g)+(1-YELLOW*factor_team1):(xf'=xf-4)&(locteam1'=fail);
+
+    [t1_g_f_0] (locteam1=g)&(xg>=0)&(xf<=maxf-0) -> YELLOW*factor_team1:(xf'=xf+0)&(xg'=xg-0)&(locteam1'=f)+(1-YELLOW*factor_team1):(xg'=xg-0)&(locteam1'=fail);
+    [t1_g_f_1] (locteam1=g)&(xg>=1)&(xf<=maxf-1) -> YELLOW*factor_team1:(xf'=xf+1)&(xg'=xg-1)&(locteam1'=f)+(1-YELLOW*factor_team1):(xg'=xg-1)&(locteam1'=fail);
+    [t1_g_f_2] (locteam1=g)&(xg>=2)&(xf<=maxf-2) -> YELLOW*factor_team1:(xf'=xf+2)&(xg'=xg-2)&(locteam1'=f)+(1-YELLOW*factor_team1):(xg'=xg-2)&(locteam1'=fail);
+    [t1_g_f_3] (locteam1=g)&(xg>=3)&(xf<=maxf-3) -> YELLOW*factor_team1:(xf'=xf+3)&(xg'=xg-3)&(locteam1'=f)+(1-YELLOW*factor_team1):(xg'=xg-3)&(locteam1'=fail);
+    [t1_g_f_4] (locteam1=g)&(xg>=4)&(xf<=maxf-4) -> YELLOW*factor_team1:(xf'=xf+4)&(xg'=xg-4)&(locteam1'=f)+(1-YELLOW*factor_team1):(xg'=xg-4)&(locteam1'=fail);
+
+    // ---- Transitions for team2 (T2) ----
+    // Edge a <-> b  // JSON:graph.edges[0]
+    [t2_a_b_0] (locteam2=a)&(xa>=0)&(xb<=maxb-0) -> RED*factor_team2:(xb'=xb+0)&(xa'=xa-0)&(locteam2'=b)+(1-RED*factor_team2):(xa'=xa-0)&(locteam2'=fail);
+    [t2_a_b_1] (locteam2=a)&(xa>=1)&(xb<=maxb-1) -> RED*factor_team2:(xb'=xb+1)&(xa'=xa-1)&(locteam2'=b)+(1-RED*factor_team2):(xa'=xa-1)&(locteam2'=fail);
+    [t2_a_b_2] (locteam2=a)&(xa>=2)&(xb<=maxb-2) -> RED*factor_team2:(xb'=xb+2)&(xa'=xa-2)&(locteam2'=b)+(1-RED*factor_team2):(xa'=xa-2)&(locteam2'=fail);
+    [t2_a_b_3] (locteam2=a)&(xa>=3)&(xb<=maxb-3) -> RED*factor_team2:(xb'=xb+3)&(xa'=xa-3)&(locteam2'=b)+(1-RED*factor_team2):(xa'=xa-3)&(locteam2'=fail);
+    [t2_a_b_4] (locteam2=a)&(xa>=4)&(xb<=maxb-4) -> RED*factor_team2:(xb'=xb+4)&(xa'=xa-4)&(locteam2'=b)+(1-RED*factor_team2):(xa'=xa-4)&(locteam2'=fail);
+
+    [t2_b_a_0] (locteam2=b)&(xb>=0)&(xa<=maxa-0) -> RED*factor_team2:(xa'=xa+0)&(xb'=xb-0)&(locteam2'=a)+(1-RED*factor_team2):(xb'=xb-0)&(locteam2'=fail);
+    [t2_b_a_1] (locteam2=b)&(xb>=1)&(xa<=maxa-1) -> RED*factor_team2:(xa'=xa+1)&(xb'=xb-1)&(locteam2'=a)+(1-RED*factor_team2):(xb'=xb-1)&(locteam2'=fail);
+    [t2_b_a_2] (locteam2=b)&(xb>=2)&(xa<=maxa-2) -> RED*factor_team2:(xa'=xa+2)&(xb'=xb-2)&(locteam2'=a)+(1-RED*factor_team2):(xb'=xb-2)&(locteam2'=fail);
+    [t2_b_a_3] (locteam2=b)&(xb>=3)&(xa<=maxa-3) -> RED*factor_team2:(xa'=xa+3)&(xb'=xb-3)&(locteam2'=a)+(1-RED*factor_team2):(xb'=xb-3)&(locteam2'=fail);
+    [t2_b_a_4] (locteam2=b)&(xb>=4)&(xa<=maxa-4) -> RED*factor_team2:(xa'=xa+4)&(xb'=xb-4)&(locteam2'=a)+(1-RED*factor_team2):(xb'=xb-4)&(locteam2'=fail);
+
+    // Edge a <-> d  // JSON:graph.edges[1]
+    [t2_a_d_0] (locteam2=a)&(xa>=0)&(xd<=maxd-0) -> RED*factor_team2:(xd'=xd+0)&(xa'=xa-0)&(locteam2'=d)+(1-RED*factor_team2):(xa'=xa-0)&(locteam2'=fail);
+    [t2_a_d_1] (locteam2=a)&(xa>=1)&(xd<=maxd-1) -> RED*factor_team2:(xd'=xd+1)&(xa'=xa-1)&(locteam2'=d)+(1-RED*factor_team2):(xa'=xa-1)&(locteam2'=fail);
+    [t2_a_d_2] (locteam2=a)&(xa>=2)&(xd<=maxd-2) -> RED*factor_team2:(xd'=xd+2)&(xa'=xa-2)&(locteam2'=d)+(1-RED*factor_team2):(xa'=xa-2)&(locteam2'=fail);
+    [t2_a_d_3] (locteam2=a)&(xa>=3)&(xd<=maxd-3) -> RED*factor_team2:(xd'=xd+3)&(xa'=xa-3)&(locteam2'=d)+(1-RED*factor_team2):(xa'=xa-3)&(locteam2'=fail);
+    [t2_a_d_4] (locteam2=a)&(xa>=4)&(xd<=maxd-4) -> RED*factor_team2:(xd'=xd+4)&(xa'=xa-4)&(locteam2'=d)+(1-RED*factor_team2):(xa'=xa-4)&(locteam2'=fail);
+
+    [t2_d_a_0] (locteam2=d)&(xd>=0)&(xa<=maxa-0) -> RED*factor_team2:(xa'=xa+0)&(xd'=xd-0)&(locteam2'=a)+(1-RED*factor_team2):(xd'=xd-0)&(locteam2'=fail);
+    [t2_d_a_1] (locteam2=d)&(xd>=1)&(xa<=maxa-1) -> RED*factor_team2:(xa'=xa+1)&(xd'=xd-1)&(locteam2'=a)+(1-RED*factor_team2):(xd'=xd-1)&(locteam2'=fail);
+    [t2_d_a_2] (locteam2=d)&(xd>=2)&(xa<=maxa-2) -> RED*factor_team2:(xa'=xa+2)&(xd'=xd-2)&(locteam2'=a)+(1-RED*factor_team2):(xd'=xd-2)&(locteam2'=fail);
+    [t2_d_a_3] (locteam2=d)&(xd>=3)&(xa<=maxa-3) -> RED*factor_team2:(xa'=xa+3)&(xd'=xd-3)&(locteam2'=a)+(1-RED*factor_team2):(xd'=xd-3)&(locteam2'=fail);
+    [t2_d_a_4] (locteam2=d)&(xd>=4)&(xa<=maxa-4) -> RED*factor_team2:(xa'=xa+4)&(xd'=xd-4)&(locteam2'=a)+(1-RED*factor_team2):(xd'=xd-4)&(locteam2'=fail);
+
+    // Edge b <-> c  // JSON:graph.edges[2]
+    [t2_b_c_0] (locteam2=b)&(xb>=0)&(xc<=maxc-0) -> RED*factor_team2:(xc'=xc+0)&(xb'=xb-0)&(locteam2'=c)+(1-RED*factor_team2):(xb'=xb-0)&(locteam2'=fail);
+    [t2_b_c_1] (locteam2=b)&(xb>=1)&(xc<=maxc-1) -> RED*factor_team2:(xc'=xc+1)&(xb'=xb-1)&(locteam2'=c)+(1-RED*factor_team2):(xb'=xb-1)&(locteam2'=fail);
+    [t2_b_c_2] (locteam2=b)&(xb>=2)&(xc<=maxc-2) -> RED*factor_team2:(xc'=xc+2)&(xb'=xb-2)&(locteam2'=c)+(1-RED*factor_team2):(xb'=xb-2)&(locteam2'=fail);
+    [t2_b_c_3] (locteam2=b)&(xb>=3)&(xc<=maxc-3) -> RED*factor_team2:(xc'=xc+3)&(xb'=xb-3)&(locteam2'=c)+(1-RED*factor_team2):(xb'=xb-3)&(locteam2'=fail);
+    [t2_b_c_4] (locteam2=b)&(xb>=4)&(xc<=maxc-4) -> RED*factor_team2:(xc'=xc+4)&(xb'=xb-4)&(locteam2'=c)+(1-RED*factor_team2):(xb'=xb-4)&(locteam2'=fail);
+
+    [t2_c_b_0] (locteam2=c)&(xc>=0)&(xb<=maxb-0) -> RED*factor_team2:(xb'=xb+0)&(xc'=xc-0)&(locteam2'=b)+(1-RED*factor_team2):(xc'=xc-0)&(locteam2'=fail);
+    [t2_c_b_1] (locteam2=c)&(xc>=1)&(xb<=maxb-1) -> RED*factor_team2:(xb'=xb+1)&(xc'=xc-1)&(locteam2'=b)+(1-RED*factor_team2):(xc'=xc-1)&(locteam2'=fail);
+    [t2_c_b_2] (locteam2=c)&(xc>=2)&(xb<=maxb-2) -> RED*factor_team2:(xb'=xb+2)&(xc'=xc-2)&(locteam2'=b)+(1-RED*factor_team2):(xc'=xc-2)&(locteam2'=fail);
+    [t2_c_b_3] (locteam2=c)&(xc>=3)&(xb<=maxb-3) -> RED*factor_team2:(xb'=xb+3)&(xc'=xc-3)&(locteam2'=b)+(1-RED*factor_team2):(xc'=xc-3)&(locteam2'=fail);
+    [t2_c_b_4] (locteam2=c)&(xc>=4)&(xb<=maxb-4) -> RED*factor_team2:(xb'=xb+4)&(xc'=xc-4)&(locteam2'=b)+(1-RED*factor_team2):(xc'=xc-4)&(locteam2'=fail);
+
+    // Edge b <-> d  // JSON:graph.edges[3]
+    [t2_b_d_0] (locteam2=b)&(xb>=0)&(xd<=maxd-0) -> YELLOW*factor_team2:(xd'=xd+0)&(xb'=xb-0)&(locteam2'=d)+(1-YELLOW*factor_team2):(xb'=xb-0)&(locteam2'=fail);
+    [t2_b_d_1] (locteam2=b)&(xb>=1)&(xd<=maxd-1) -> YELLOW*factor_team2:(xd'=xd+1)&(xb'=xb-1)&(locteam2'=d)+(1-YELLOW*factor_team2):(xb'=xb-1)&(locteam2'=fail);
+    [t2_b_d_2] (locteam2=b)&(xb>=2)&(xd<=maxd-2) -> YELLOW*factor_team2:(xd'=xd+2)&(xb'=xb-2)&(locteam2'=d)+(1-YELLOW*factor_team2):(xb'=xb-2)&(locteam2'=fail);
+    [t2_b_d_3] (locteam2=b)&(xb>=3)&(xd<=maxd-3) -> YELLOW*factor_team2:(xd'=xd+3)&(xb'=xb-3)&(locteam2'=d)+(1-YELLOW*factor_team2):(xb'=xb-3)&(locteam2'=fail);
+    [t2_b_d_4] (locteam2=b)&(xb>=4)&(xd<=maxd-4) -> YELLOW*factor_team2:(xd'=xd+4)&(xb'=xb-4)&(locteam2'=d)+(1-YELLOW*factor_team2):(xb'=xb-4)&(locteam2'=fail);
+
+    [t2_d_b_0] (locteam2=d)&(xd>=0)&(xb<=maxb-0) -> YELLOW*factor_team2:(xb'=xb+0)&(xd'=xd-0)&(locteam2'=b)+(1-YELLOW*factor_team2):(xd'=xd-0)&(locteam2'=fail);
+    [t2_d_b_1] (locteam2=d)&(xd>=1)&(xb<=maxb-1) -> YELLOW*factor_team2:(xb'=xb+1)&(xd'=xd-1)&(locteam2'=b)+(1-YELLOW*factor_team2):(xd'=xd-1)&(locteam2'=fail);
+    [t2_d_b_2] (locteam2=d)&(xd>=2)&(xb<=maxb-2) -> YELLOW*factor_team2:(xb'=xb+2)&(xd'=xd-2)&(locteam2'=b)+(1-YELLOW*factor_team2):(xd'=xd-2)&(locteam2'=fail);
+    [t2_d_b_3] (locteam2=d)&(xd>=3)&(xb<=maxb-3) -> YELLOW*factor_team2:(xb'=xb+3)&(xd'=xd-3)&(locteam2'=b)+(1-YELLOW*factor_team2):(xd'=xd-3)&(locteam2'=fail);
+    [t2_d_b_4] (locteam2=d)&(xd>=4)&(xb<=maxb-4) -> YELLOW*factor_team2:(xb'=xb+4)&(xd'=xd-4)&(locteam2'=b)+(1-YELLOW*factor_team2):(xd'=xd-4)&(locteam2'=fail);
+
+    // Edge c <-> g  // JSON:graph.edges[4]
+    [t2_c_g_0] (locteam2=c)&(xc>=0)&(xg<=maxg-0) -> RED*factor_team2:(xg'=xg+0)&(xc'=xc-0)&(locteam2'=g)+(1-RED*factor_team2):(xc'=xc-0)&(locteam2'=fail);
+    [t2_c_g_1] (locteam2=c)&(xc>=1)&(xg<=maxg-1) -> RED*factor_team2:(xg'=xg+1)&(xc'=xc-1)&(locteam2'=g)+(1-RED*factor_team2):(xc'=xc-1)&(locteam2'=fail);
+    [t2_c_g_2] (locteam2=c)&(xc>=2)&(xg<=maxg-2) -> RED*factor_team2:(xg'=xg+2)&(xc'=xc-2)&(locteam2'=g)+(1-RED*factor_team2):(xc'=xc-2)&(locteam2'=fail);
+    [t2_c_g_3] (locteam2=c)&(xc>=3)&(xg<=maxg-3) -> RED*factor_team2:(xg'=xg+3)&(xc'=xc-3)&(locteam2'=g)+(1-RED*factor_team2):(xc'=xc-3)&(locteam2'=fail);
+    [t2_c_g_4] (locteam2=c)&(xc>=4)&(xg<=maxg-4) -> RED*factor_team2:(xg'=xg+4)&(xc'=xc-4)&(locteam2'=g)+(1-RED*factor_team2):(xc'=xc-4)&(locteam2'=fail);
+
+    [t2_g_c_0] (locteam2=g)&(xg>=0)&(xc<=maxc-0) -> RED*factor_team2:(xc'=xc+0)&(xg'=xg-0)&(locteam2'=c)+(1-RED*factor_team2):(xg'=xg-0)&(locteam2'=fail);
+    [t2_g_c_1] (locteam2=g)&(xg>=1)&(xc<=maxc-1) -> RED*factor_team2:(xc'=xc+1)&(xg'=xg-1)&(locteam2'=c)+(1-RED*factor_team2):(xg'=xg-1)&(locteam2'=fail);
+    [t2_g_c_2] (locteam2=g)&(xg>=2)&(xc<=maxc-2) -> RED*factor_team2:(xc'=xc+2)&(xg'=xg-2)&(locteam2'=c)+(1-RED*factor_team2):(xg'=xg-2)&(locteam2'=fail);
+    [t2_g_c_3] (locteam2=g)&(xg>=3)&(xc<=maxc-3) -> RED*factor_team2:(xc'=xc+3)&(xg'=xg-3)&(locteam2'=c)+(1-RED*factor_team2):(xg'=xg-3)&(locteam2'=fail);
+    [t2_g_c_4] (locteam2=g)&(xg>=4)&(xc<=maxc-4) -> RED*factor_team2:(xc'=xc+4)&(xg'=xg-4)&(locteam2'=c)+(1-RED*factor_team2):(xg'=xg-4)&(locteam2'=fail);
+
+    // Edge c <-> f  // JSON:graph.edges[5]
+    [t2_c_f_0] (locteam2=c)&(xc>=0)&(xf<=maxf-0) -> RED*factor_team2:(xf'=xf+0)&(xc'=xc-0)&(locteam2'=f)+(1-RED*factor_team2):(xc'=xc-0)&(locteam2'=fail);
+    [t2_c_f_1] (locteam2=c)&(xc>=1)&(xf<=maxf-1) -> RED*factor_team2:(xf'=xf+1)&(xc'=xc-1)&(locteam2'=f)+(1-RED*factor_team2):(xc'=xc-1)&(locteam2'=fail);
+    [t2_c_f_2] (locteam2=c)&(xc>=2)&(xf<=maxf-2) -> RED*factor_team2:(xf'=xf+2)&(xc'=xc-2)&(locteam2'=f)+(1-RED*factor_team2):(xc'=xc-2)&(locteam2'=fail);
+    [t2_c_f_3] (locteam2=c)&(xc>=3)&(xf<=maxf-3) -> RED*factor_team2:(xf'=xf+3)&(xc'=xc-3)&(locteam2'=f)+(1-RED*factor_team2):(xc'=xc-3)&(locteam2'=fail);
+    [t2_c_f_4] (locteam2=c)&(xc>=4)&(xf<=maxf-4) -> RED*factor_team2:(xf'=xf+4)&(xc'=xc-4)&(locteam2'=f)+(1-RED*factor_team2):(xc'=xc-4)&(locteam2'=fail);
+
+    [t2_f_c_0] (locteam2=f)&(xf>=0)&(xc<=maxc-0) -> RED*factor_team2:(xc'=xc+0)&(xf'=xf-0)&(locteam2'=c)+(1-RED*factor_team2):(xf'=xf-0)&(locteam2'=fail);
+    [t2_f_c_1] (locteam2=f)&(xf>=1)&(xc<=maxc-1) -> RED*factor_team2:(xc'=xc+1)&(xf'=xf-1)&(locteam2'=c)+(1-RED*factor_team2):(xf'=xf-1)&(locteam2'=fail);
+    [t2_f_c_2] (locteam2=f)&(xf>=2)&(xc<=maxc-2) -> RED*factor_team2:(xc'=xc+2)&(xf'=xf-2)&(locteam2'=c)+(1-RED*factor_team2):(xf'=xf-2)&(locteam2'=fail);
+    [t2_f_c_3] (locteam2=f)&(xf>=3)&(xc<=maxc-3) -> RED*factor_team2:(xc'=xc+3)&(xf'=xf-3)&(locteam2'=c)+(1-RED*factor_team2):(xf'=xf-3)&(locteam2'=fail);
+    [t2_f_c_4] (locteam2=f)&(xf>=4)&(xc<=maxc-4) -> RED*factor_team2:(xc'=xc+4)&(xf'=xf-4)&(locteam2'=c)+(1-RED*factor_team2):(xf'=xf-4)&(locteam2'=fail);
+
+    // Edge d <-> e  // JSON:graph.edges[6]
+    [t2_d_e_0] (locteam2=d)&(xd>=0)&(xe<=maxe-0) -> GREEN*factor_team2:(xe'=xe+0)&(xd'=xd-0)&(locteam2'=e)+(1-GREEN*factor_team2):(xd'=xd-0)&(locteam2'=fail);
+    [t2_d_e_1] (locteam2=d)&(xd>=1)&(xe<=maxe-1) -> GREEN*factor_team2:(xe'=xe+1)&(xd'=xd-1)&(locteam2'=e)+(1-GREEN*factor_team2):(xd'=xd-1)&(locteam2'=fail);
+    [t2_d_e_2] (locteam2=d)&(xd>=2)&(xe<=maxe-2) -> GREEN*factor_team2:(xe'=xe+2)&(xd'=xd-2)&(locteam2'=e)+(1-GREEN*factor_team2):(xd'=xd-2)&(locteam2'=fail);
+    [t2_d_e_3] (locteam2=d)&(xd>=3)&(xe<=maxe-3) -> GREEN*factor_team2:(xe'=xe+3)&(xd'=xd-3)&(locteam2'=e)+(1-GREEN*factor_team2):(xd'=xd-3)&(locteam2'=fail);
+    [t2_d_e_4] (locteam2=d)&(xd>=4)&(xe<=maxe-4) -> GREEN*factor_team2:(xe'=xe+4)&(xd'=xd-4)&(locteam2'=e)+(1-GREEN*factor_team2):(xd'=xd-4)&(locteam2'=fail);
+
+    [t2_e_d_0] (locteam2=e)&(xe>=0)&(xd<=maxd-0) -> GREEN*factor_team2:(xd'=xd+0)&(xe'=xe-0)&(locteam2'=d)+(1-GREEN*factor_team2):(xe'=xe-0)&(locteam2'=fail);
+    [t2_e_d_1] (locteam2=e)&(xe>=1)&(xd<=maxd-1) -> GREEN*factor_team2:(xd'=xd+1)&(xe'=xe-1)&(locteam2'=d)+(1-GREEN*factor_team2):(xe'=xe-1)&(locteam2'=fail);
+    [t2_e_d_2] (locteam2=e)&(xe>=2)&(xd<=maxd-2) -> GREEN*factor_team2:(xd'=xd+2)&(xe'=xe-2)&(locteam2'=d)+(1-GREEN*factor_team2):(xe'=xe-2)&(locteam2'=fail);
+    [t2_e_d_3] (locteam2=e)&(xe>=3)&(xd<=maxd-3) -> GREEN*factor_team2:(xd'=xd+3)&(xe'=xe-3)&(locteam2'=d)+(1-GREEN*factor_team2):(xe'=xe-3)&(locteam2'=fail);
+    [t2_e_d_4] (locteam2=e)&(xe>=4)&(xd<=maxd-4) -> GREEN*factor_team2:(xd'=xd+4)&(xe'=xe-4)&(locteam2'=d)+(1-GREEN*factor_team2):(xe'=xe-4)&(locteam2'=fail);
+
+    // Edge e <-> f  // JSON:graph.edges[7]
+    [t2_e_f_0] (locteam2=e)&(xe>=0)&(xf<=maxf-0) -> GREEN*factor_team2:(xf'=xf+0)&(xe'=xe-0)&(locteam2'=f)+(1-GREEN*factor_team2):(xe'=xe-0)&(locteam2'=fail);
+    [t2_e_f_1] (locteam2=e)&(xe>=1)&(xf<=maxf-1) -> GREEN*factor_team2:(xf'=xf+1)&(xe'=xe-1)&(locteam2'=f)+(1-GREEN*factor_team2):(xe'=xe-1)&(locteam2'=fail);
+    [t2_e_f_2] (locteam2=e)&(xe>=2)&(xf<=maxf-2) -> GREEN*factor_team2:(xf'=xf+2)&(xe'=xe-2)&(locteam2'=f)+(1-GREEN*factor_team2):(xe'=xe-2)&(locteam2'=fail);
+    [t2_e_f_3] (locteam2=e)&(xe>=3)&(xf<=maxf-3) -> GREEN*factor_team2:(xf'=xf+3)&(xe'=xe-3)&(locteam2'=f)+(1-GREEN*factor_team2):(xe'=xe-3)&(locteam2'=fail);
+    [t2_e_f_4] (locteam2=e)&(xe>=4)&(xf<=maxf-4) -> GREEN*factor_team2:(xf'=xf+4)&(xe'=xe-4)&(locteam2'=f)+(1-GREEN*factor_team2):(xe'=xe-4)&(locteam2'=fail);
+
+    [t2_f_e_0] (locteam2=f)&(xf>=0)&(xe<=maxe-0) -> GREEN*factor_team2:(xe'=xe+0)&(xf'=xf-0)&(locteam2'=e)+(1-GREEN*factor_team2):(xf'=xf-0)&(locteam2'=fail);
+    [t2_f_e_1] (locteam2=f)&(xf>=1)&(xe<=maxe-1) -> GREEN*factor_team2:(xe'=xe+1)&(xf'=xf-1)&(locteam2'=e)+(1-GREEN*factor_team2):(xf'=xf-1)&(locteam2'=fail);
+    [t2_f_e_2] (locteam2=f)&(xf>=2)&(xe<=maxe-2) -> GREEN*factor_team2:(xe'=xe+2)&(xf'=xf-2)&(locteam2'=e)+(1-GREEN*factor_team2):(xf'=xf-2)&(locteam2'=fail);
+    [t2_f_e_3] (locteam2=f)&(xf>=3)&(xe<=maxe-3) -> GREEN*factor_team2:(xe'=xe+3)&(xf'=xf-3)&(locteam2'=e)+(1-GREEN*factor_team2):(xf'=xf-3)&(locteam2'=fail);
+    [t2_f_e_4] (locteam2=f)&(xf>=4)&(xe<=maxe-4) -> GREEN*factor_team2:(xe'=xe+4)&(xf'=xf-4)&(locteam2'=e)+(1-GREEN*factor_team2):(xf'=xf-4)&(locteam2'=fail);
+
+    // Edge f <-> g  // JSON:graph.edges[8]
+    [t2_f_g_0] (locteam2=f)&(xf>=0)&(xg<=maxg-0) -> YELLOW*factor_team2:(xg'=xg+0)&(xf'=xf-0)&(locteam2'=g)+(1-YELLOW*factor_team2):(xf'=xf-0)&(locteam2'=fail);
+    [t2_f_g_1] (locteam2=f)&(xf>=1)&(xg<=maxg-1) -> YELLOW*factor_team2:(xg'=xg+1)&(xf'=xf-1)&(locteam2'=g)+(1-YELLOW*factor_team2):(xf'=xf-1)&(locteam2'=fail);
+    [t2_f_g_2] (locteam2=f)&(xf>=2)&(xg<=maxg-2) -> YELLOW*factor_team2:(xg'=xg+2)&(xf'=xf-2)&(locteam2'=g)+(1-YELLOW*factor_team2):(xf'=xf-2)&(locteam2'=fail);
+    [t2_f_g_3] (locteam2=f)&(xf>=3)&(xg<=maxg-3) -> YELLOW*factor_team2:(xg'=xg+3)&(xf'=xf-3)&(locteam2'=g)+(1-YELLOW*factor_team2):(xf'=xf-3)&(locteam2'=fail);
+    [t2_f_g_4] (locteam2=f)&(xf>=4)&(xg<=maxg-4) -> YELLOW*factor_team2:(xg'=xg+4)&(xf'=xf-4)&(locteam2'=g)+(1-YELLOW*factor_team2):(xf'=xf-4)&(locteam2'=fail);
+
+    [t2_g_f_0] (locteam2=g)&(xg>=0)&(xf<=maxf-0) -> YELLOW*factor_team2:(xf'=xf+0)&(xg'=xg-0)&(locteam2'=f)+(1-YELLOW*factor_team2):(xg'=xg-0)&(locteam2'=fail);
+    [t2_g_f_1] (locteam2=g)&(xg>=1)&(xf<=maxf-1) -> YELLOW*factor_team2:(xf'=xf+1)&(xg'=xg-1)&(locteam2'=f)+(1-YELLOW*factor_team2):(xg'=xg-1)&(locteam2'=fail);
+    [t2_g_f_2] (locteam2=g)&(xg>=2)&(xf<=maxf-2) -> YELLOW*factor_team2:(xf'=xf+2)&(xg'=xg-2)&(locteam2'=f)+(1-YELLOW*factor_team2):(xg'=xg-2)&(locteam2'=fail);
+    [t2_g_f_3] (locteam2=g)&(xg>=3)&(xf<=maxf-3) -> YELLOW*factor_team2:(xf'=xf+3)&(xg'=xg-3)&(locteam2'=f)+(1-YELLOW*factor_team2):(xg'=xg-3)&(locteam2'=fail);
+    [t2_g_f_4] (locteam2=g)&(xg>=4)&(xf<=maxf-4) -> YELLOW*factor_team2:(xf'=xf+4)&(xg'=xg-4)&(locteam2'=f)+(1-YELLOW*factor_team2):(xg'=xg-4)&(locteam2'=fail);
+
+endmodule

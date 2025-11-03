@@ -1,0 +1,76 @@
+Looking at this logistics problem, I'll analyze the feasibility and develop an optimal routing plan.
+
+## 1. Feasibility Check
+
+**Available resources:**
+- Point a: 2 resources
+- Point c: 4 resources  
+- Point d: 2 resources
+- **Total: 8 resources**
+
+**Required:** 7 resources at point g
+
+**Conclusion:** The demand is feasible since 8 ≥ 7 resources.
+
+## 2. Critical Constraint Analysis
+
+With each team able to carry maximum 4 resources and needing 7 total at g, **both teams MUST successfully deliver** for the mission to succeed:
+- Maximum single team delivery: 4 resources < 7 required
+- Minimum successful configuration: 4 + 3 = 7 resources
+
+## 3. Optimal Routing Plan
+
+After analyzing all possible paths and their probabilities:
+
+### Team 1 (T1) - Starting at point a:
+**Mission:** Collect 2 resources from a + 2 resources from d, deliver 4 total to g
+**Optimal path:** a → d → e → f → g
+- a → d (red): 0.5
+- d → e (green): 0.99
+- e → f (green): 0.99
+- f → g (yellow): 0.85
+- **Total probability: 0.5 × 0.99 × 0.99 × 0.85 = 0.4166**
+
+### Team 2 (T2) - Starting at point c:
+**Mission:** Collect 4 resources from c, deliver to g
+**Optimal path:** c → g (direct)
+- c → g (red): 0.5
+- **Total probability: 0.5**
+
+Alternative paths for T2 (c→f→g) yield lower probability (0.425), making the direct route optimal despite being "red."
+
+## 4. Why This Plan is Optimal
+
+- The selected paths maximize individual team success probabilities
+- T1 uses the safer green corridors after the initial red segment
+- T2 takes the calculated risk of the direct red route rather than multiple red segments
+- Both teams carry maximum capacity (4 each = 8 total), providing a buffer above the 7 required
+
+## 5. Probability of Success
+
+Since both teams must succeed:
+**P(success) = P(T1 succeeds) × P(T2 succeeds) = 0.4166 × 0.5 = 0.2083**
+
+**The plan has a 20.83% probability of success.**
+
+## 6. Step-by-Step Plan Description
+
+**Step 1:** Team 1 at point a loads 2 resources
+
+**Step 2:** Team 2 at point c loads 4 resources
+
+**Step 3:** Team 1 travels from a to d via the red route (distance 5)
+
+**Step 4:** Team 1 loads 2 additional resources at point d (now carrying 4 total)
+
+**Step 5:** Team 2 travels directly from c to g via the red route (distance 6)
+
+**Step 6:** Team 1 travels from d to e via the green route (distance 2)
+
+**Step 7:** Team 1 continues from e to f via the green route (distance 4)
+
+**Step 8:** Team 1 completes journey from f to g via the yellow route (distance 10)
+
+**Step 9:** Both teams deliver their resources at g (4 + 4 = 8 resources delivered, exceeding the 7 required)
+
+This plan represents the highest probability of success given the constraints. While 20.83% may seem low, it's the optimal solution given the high-risk red routes that cannot be entirely avoided and the requirement for both teams to succeed.
