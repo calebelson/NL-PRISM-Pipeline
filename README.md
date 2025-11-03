@@ -23,7 +23,3 @@ The `data/` directory contains experimental runs comparing different LLM approac
 ## Dissertation
 
 The full dissertation documenting this research is available in the `docs/` directory.
-
-## License
-
-See [LICENSE](src/LICENSE) for details.
