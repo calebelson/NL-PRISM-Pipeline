@@ -12,14 +12,14 @@ This repository contains the complete research project for applying formal verif
 
 ## Overview
 
-The `src/` directory contains a pipeline that bridges formal verification and disaster response planning. It uses large language models to convert natural language disaster scenarios into formal PRISM models, verifies optimal strategies, and generates human-readable explanations.
+The [`src/`](src/) directory contains a pipeline that bridges formal verification and disaster response planning. It uses large language models to convert natural language disaster scenarios into formal PRISM models, verifies optimal strategies, and generates human-readable explanations.
 
 **For detailed documentation, setup instructions, and usage examples, see [src/README.md](src/README.md).**
 
 ## Experimental Data
 
-The `data/` directory contains experimental runs comparing different LLM approaches (ChatGPT, Claude, Gemini, etc.) used in the dissertation.
+The [`data/`](data/) directory contains experimental runs comparing different LLM approaches (ChatGPT, Claude, Gemini, etc.) used in the dissertation.
 
 ## Dissertation
 
-The full dissertation documenting this research is available in the `docs/` directory.
+The full dissertation documenting this research is available in the [`docs/`](docs/) directory.
