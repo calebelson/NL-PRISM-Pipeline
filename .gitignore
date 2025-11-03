@@ -1,16 +1,49 @@
-# Python-generated files
+# macOS files# macOS files# Python-generated files
+
+.DS_Store
+
+._.DS_Store.DS_Store__pycache__/
+
+**/.DS_Store
+
+**/._.DS_Store._.DS_Store*.py[oc]
+
+
+
+# Python cache**/.DS_Storebuild/
+
 __pycache__/
-*.py[oc]
+
+*.py[oc]**/._.DS_Storedist/
+
 build/
-dist/
+
+dist/wheels/
+
 wheels/
-*.egg-info
+
+*.egg-info# Python cache*.egg-info
+
+
+
+# Virtual environments__pycache__/
+
+.venv/
+
+venv/*.py[oc]# Virtual environments
+
+
+
+# Run data.venv
+
+src/runs/
 
 # Virtual environments
-.venv
 
-# Run data
-runs/*
+.venv/# Run data
+
+venv/src/runs/*
+
 
 # Various
 .DS_Store

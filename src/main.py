@@ -13,7 +13,9 @@ def main():
     log("Run started...")
     ts = datetime.datetime.now(datetime.UTC).strftime('%Y%m%dT%H%M%SZ')
     time_zero = time.time()
-    out_dir = pathlib.Path('runs/Prism_Pipeline') / f'prism-pipeline-run-{ts}'
+    # Get the directory where this script is located (src/)
+    script_dir = pathlib.Path(__file__).parent
+    out_dir = script_dir / 'runs' / 'Prism_Pipeline' / f'prism-pipeline-run-{ts}'
     out_dir.mkdir(parents=True, exist_ok=True)
     model = "gpt-5-mini-2025-08-07"
 
@@ -49,7 +51,7 @@ def main():
 
     # ---------- JSON → PRISM via LLM ----------
     template_text = None
-    template_path = pathlib.Path('templates') / 'case-study-model.txt'
+    template_path = script_dir / 'templates' / 'case-study-model.txt'
     if template_path.exists():
         template_text = template_path.read_text(encoding='utf-8')
 
