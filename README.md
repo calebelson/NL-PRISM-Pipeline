@@ -5,9 +5,9 @@ This repository contains the complete research project for applying formal verif
 ## Repository Structure
 
 ```
-├── src/                  # Pipeline source code and tool documentation
+├── data/                 # Experimental results used in evaluation
 ├── docs/                 # Dissertation PDF
-└── data/                 # Experimental results used in evaluation
+└── src/                  # Pipeline source code and tool documentation
 ```
 
 ## Overview
